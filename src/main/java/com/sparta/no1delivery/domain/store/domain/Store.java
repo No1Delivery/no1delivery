@@ -38,4 +38,9 @@ public class Store extends BaseUserEntity {
     @Embedded
     private Rating rating = new Rating(); // 초기값 지정
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "P_STORE_CATEGORY", joinColumns = @JoinColumn(name = "store_id"))
+    @OrderColumn(name = "category_idx")
+    private List<StoreCategory> categories;
+
 }
