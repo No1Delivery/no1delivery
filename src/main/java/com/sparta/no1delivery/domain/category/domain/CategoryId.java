@@ -1,8 +1,10 @@
 package com.sparta.no1delivery.domain.category.domain;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
