@@ -94,7 +94,7 @@ public class Order extends BaseUserEntity {
 
 
     // 비즈니스 로직
-
+        //총합 계산
     private void calculateAndSetTotalPrice() {
         this.totalPrice = orderItems.stream()
                 .mapToInt(OrderItem::getSubtotalPrice)
