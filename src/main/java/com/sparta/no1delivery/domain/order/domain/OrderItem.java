@@ -10,11 +10,11 @@ import java.util.UUID;
 @Entity
 @Table(name = "P_ORDER_ITEM")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA 기본 생성자
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderItem {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_idx", nullable = false, updatable = false)
     private UUID orderIdx;
 
@@ -40,9 +40,20 @@ public class OrderItem {
     @Column(name = "subtotal_price", nullable = false)
     private int subtotalPrice;
 
-    public OrderItem(UUID menuId, String menuName, String menuOption, int quantity, int menuPrice) {
-        if (quantity <= 0) throw new IllegalArgumentException("수량은 1 이상이어야 합니다.");
-        this.orderIdx = UUID.randomUUID();
+    public OrderItem(UUID menuId,
+                     String menuName,
+                     String menuOption,
+                     int quantity,
+                     int menuPrice) {
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("수량은 1 이상이어야 합니다.");
+        }
+
+        if (menuPrice < 0) {
+            throw new IllegalArgumentException("가격은 0 이상이어야 합니다.");
+        }
+
         this.menuId = menuId;
         this.menuName = menuName;
         this.menuOption = menuOption;
@@ -51,7 +62,8 @@ public class OrderItem {
         this.subtotalPrice = menuPrice * quantity;
     }
 
-    public void setOrder(Order order) {
+    // Aggregate 내부에서만 호출되도록 접근 제한
+    void setOrder(Order order) {
         this.order = order;
     }
 }

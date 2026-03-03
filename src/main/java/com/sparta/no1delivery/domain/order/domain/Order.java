@@ -2,80 +2,72 @@ package com.sparta.no1delivery.domain.order.domain;
 
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "P_Order")
 public class Order extends BaseUserEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_id", nullable = false, updatable = false)
     private UUID orderId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false)
-    private OrderStatus status;  //주문 상태
+    private OrderStatus status;
 
     @Column(name = "canceled_at")
-    private LocalDateTime canceledAt; //주문 취소 시간
+    private LocalDateTime canceledAt;
 
-    @Column(name = "total_price")
-    private int totalPrice; //주문 총 금액
+    @Column(name = "total_price", nullable = false)
+    private int totalPrice;
 
-    @Column(name = "orderer_id")
-    private Long ordererId; //주문자 Id
+    @Column(name = "orderer_id", nullable = false)
+    private Long ordererId;
 
-    @Column(name = "orderer_name")
-    private String ordererName; //주문자 이름
+    @Column(name = "orderer_name", nullable = false)
+    private String ordererName;
 
-    @Column(name = "address")
-    private String address;  // 배송 주소
+    @Column(name = "address", nullable = false)
+    private String address;
 
     @Column(name = "detail_address")
-    private String detailAddress; // 배송 상세주소
+    private String detailAddress;
 
-    @Column(name = "store_id")
-    private UUID storeId;  //가게 Id
+    @Column(name = "store_id", nullable = false)
+    private UUID storeId;
 
-    @Column(name = "store_name")
-    private String storeName;  //가게 이름
+    @Column(name = "store_name", nullable = false)
+    private String storeName;
 
-    @Column(name = "requestMemo")
-    private String requestMemo; // 고객 요청 사항
+    @Column(name = "request_memo")
+    private String requestMemo;
 
     @Column(length = 45)
-    private String deletedBy;   // soft delete 기록: 누가 삭제했는지
+    private String deletedBy;
 
     @Column
-    private LocalDateTime deletedAt; // soft delete 기록: 언제 삭제했는지
+    private LocalDateTime deletedAt;
 
     @OneToMany(mappedBy = "order",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<OrderItem> orderItems; // 주문 항목 리스트
+    private List<OrderItem> orderItems = new ArrayList<>();
 
 
-    // soft delete 메서드
-    public void markDeleted(String username) {
-        this.deletedBy = username;
-        this.deletedAt = LocalDateTime.now();
-    }
+    //생성 로직
 
 
-    // 총합 계산 setter 추가
-    public void setTotalPrice(int totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    // 주문 생성 시 필수 로직
     public static Order createOrder(Long ordererId,
                                     String ordererName,
                                     String address,
@@ -83,43 +75,57 @@ public class Order extends BaseUserEntity {
                                     UUID storeId,
                                     String storeName,
                                     String requestMemo,
-                                    List<OrderItem> orderItems) {
+                                    List<OrderItem> items) {
 
-        if (orderItems == null || orderItems.isEmpty()) {
+        if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("주문 항목은 최소 1개 이상이어야 합니다.");
         }
 
-        Order order = Order.builder()
-                .status(OrderStatus.ORDERED)
-                .ordererId(ordererId)
-                .ordererName(ordererName)
-                .address(address)
-                .detailAddress(detailAddress)
-                .storeId(storeId)
-                .storeName(storeName)
-                .requestMemo(requestMemo)
-                .orderItems(orderItems)
-                .build();
+        Order order = new Order();
+        order.status = OrderStatus.ORDERED;
+        order.ordererId = ordererId;
+        order.ordererName = ordererName;
+        order.address = address;
+        order.detailAddress = detailAddress;
+        order.storeId = storeId;
+        order.storeName = storeName;
+        order.requestMemo = requestMemo;
 
-        // 연관관계 편의 메서드
-        orderItems.forEach(item -> item.setOrder(order));
-
-        // 총 금액 계산
-        order.setTotalPrice(order.calculateTotalPrice());
+        items.forEach(order::addOrderItem);
+        order.calculateAndSetTotalPrice();
 
         return order;
     }
 
-    //주문 총 금액 계산
-    private int calculateTotalPrice() {
-        return orderItems.stream()
+
+    //연관관계 메서드
+
+
+    public void addOrderItem(OrderItem item) {
+        orderItems.add(item);
+        item.setOrder(this);
+    }
+
+
+    //비즈니스 로직
+
+    private void calculateAndSetTotalPrice() {
+        this.totalPrice = orderItems.stream()
                 .mapToInt(OrderItem::getSubtotalPrice)
                 .sum();
     }
 
-    // 주문 취소 ->  주문 상태 변경 + 취소 시간 기록
     public void cancel() {
+        if (this.status == OrderStatus.CANCELLED) {
+            throw new IllegalStateException("이미 취소된 주문입니다.");
+        }
+
         this.status = OrderStatus.CANCELLED;
         this.canceledAt = LocalDateTime.now();
+    }
+
+    public void markDeleted(String username) {
+        this.deletedBy = username;
+        this.deletedAt = LocalDateTime.now();
     }
 }
