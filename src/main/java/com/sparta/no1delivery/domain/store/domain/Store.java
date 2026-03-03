@@ -28,6 +28,10 @@ public class Store extends BaseUserEntity {
     @Column(length = 100, name = "description")
     private String description;
 
+    @Column(length = 20)
+    @Enumerated(EnumType.STRING)
+    private StoreStatus status;
+
     @Column(name = "phone")
     private String phone;
 
