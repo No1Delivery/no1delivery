@@ -63,12 +63,14 @@ public class Payment {
         this.amount = new PaymentAmount(amount);
     }
 
+    //도메인 로직 만들기
     // 중복 결제 방지 도메인 로직
     public void verifyNotProcessed(){
         if(this.status != PaymentStatus.READY || this.status != PaymentStatus.IN_PROGRESS){
             throw new CustomException(ErrorCode.PAYMENT_ALREADY_PROCESSED);
         }
     }
+
 
 
 
