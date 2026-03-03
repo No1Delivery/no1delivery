@@ -1,5 +1,6 @@
 package com.sparta.no1delivery.domain.store.domain;
 
+import com.sparta.no1delivery.global.domain.service.AddressToCoords;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -26,13 +27,13 @@ public class StoreAddress {
     @Column(name = "longitude")
     private double longitude; // 경도
 
-    protected StoreAddress(String address, String detailAddress) {
+    protected StoreAddress(String address, String detailAddress, AddressToCoords addressToCoords) {
         this.address = address;
         this.detailAddress = detailAddress;
 
         if (!StringUtils.hasText(address) || !StringUtils.hasText(detailAddress)) return;
 
-        double[] coords = {0, 0};
+        double[] coords = addressToCoords.convert(address);
         latitude = coords[0];
         longitude = coords[1];
 
