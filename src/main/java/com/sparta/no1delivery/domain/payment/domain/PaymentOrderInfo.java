@@ -2,25 +2,25 @@ package com.sparta.no1delivery.domain.payment.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
 public class PaymentOrderInfo {
 
-    @Column
+    @Column(length = 45, nullable = false, updatable = false)
     private UUID orderId;
 
-    @Column
+    @Column(length = 45, nullable = false, updatable = false)
     private String orderName;
 
-
+    @Builder
+    protected PaymentOrderInfo(UUID orderId, String orderName) {
+        this.orderId = orderId;
+        this.orderName = orderName;
+    }
 
 }
