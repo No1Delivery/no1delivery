@@ -13,13 +13,13 @@ import java.util.UUID;
 public class Owner {
 
     @Column(length=45, name="owner_id", nullable = false)
-    public UUID id;
+    public Long id;
 
     @Column(length=45, name="owner_name", nullable = false)
     public String name;
 
     @Builder
-    protected Owner(UUID id, String name) {
+    protected Owner(Long id, String name) {
         this.id = id;
         this.name = name;
     }

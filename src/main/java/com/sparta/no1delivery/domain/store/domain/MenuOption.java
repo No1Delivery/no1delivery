@@ -2,9 +2,12 @@ package com.sparta.no1delivery.domain.store.domain;
 
 import com.sparta.no1delivery.domain.store.infrastructure.converter.MenuSubOptionConverter;
 import com.sparta.no1delivery.global.domain.Price;
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Embeddable
@@ -33,18 +36,27 @@ public class MenuOption {
     private boolean isMultiple; // 다중 선택 가능 여부
 
     @Builder
-    protected MenuOption(
-            String name,
-            int price,
-            List<MenuSubOption> subOptions,
-            boolean isEssential,
-            boolean isMultiple
-    )  {
+    protected MenuOption(String name, int price, List<MenuSubOption> subOptions, boolean isEssential, boolean isMultiple)  {
+        validateDuplicateSuboptions(subOptions);
+
         this.name = name;
         this.price = new Price(price);
         this.subOptions = subOptions;
         this.isEssential = isEssential;
         this.isMultiple = isMultiple;
+    }
+
+    private void validateDuplicateSuboptions(List<MenuSubOption> subOptions) {
+        if (subOptions == null || subOptions.isEmpty()) return;
+
+        long uniqueCount = subOptions.stream()
+                .map(MenuSubOption::name)
+                .distinct()
+                .count();
+
+        if (uniqueCount != subOptions.size()) {
+            throw new CustomException(ErrorCode.DUPLICATE_SUB_OPTION_NAME);
+        }
     }
 
 }
