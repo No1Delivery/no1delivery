@@ -41,7 +41,17 @@ public enum ErrorCode {
     // --- 옵션 (O) ---
     ESSENTIAL_OPTION_MISSING(HttpStatus.BAD_REQUEST, "필수 옵션을 선택해야 합니다."),
     MULTIPLE_OPTION_FORBIDDEN(HttpStatus.BAD_REQUEST, "옵션을 중복 선택할 수 없습니다."),
-    OPTION_SOLD_OUT(HttpStatus.BAD_REQUEST, "품절된 옵션 항목이 포함되어 있습니다.");
+    OPTION_SOLD_OUT(HttpStatus.BAD_REQUEST, "품절된 옵션 항목이 포함되어 있습니다."),
+
+    // --- 결제 (P) ---
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 결제 내역입니다."),
+    INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "결제 금액이 일치하지 않거나 유효하지 않습니다."),
+    INVALID_PAYMENT_METHOD(HttpStatus.BAD_REQUEST, "지원하지 않는 결제 수단입니다. 카드 결제만 가능합니다."),
+    PAYMENT_ALREADY_PROCESSED(HttpStatus.BAD_REQUEST, "이미 완료되었거나 처리 중인 결제입니다."),
+    PAYMENT_CONFIRM_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "토스페이먼츠 승인 요청 중 오류가 발생했습니다."),
+    PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소 요청 중 오류가 발생했습니다."),
+    PAYMENT_GATEWAY_ERROR(HttpStatus.BAD_GATEWAY, "결제 대행사(PG)와의 통신에 실패했습니다.");
+
 
     private final HttpStatus status;
     private final String message;
