@@ -2,10 +2,8 @@ package com.sparta.no1delivery.domain.store.domain;
 
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
@@ -14,6 +12,7 @@ import java.util.List;
 @Getter
 @Table(name = "P_STORE")
 @Access(AccessType.FIELD)
+@SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Store extends BaseUserEntity {
 
@@ -42,5 +41,13 @@ public class Store extends BaseUserEntity {
     @CollectionTable(name = "P_STORE_CATEGORY", joinColumns = @JoinColumn(name = "store_id"))
     @OrderColumn(name = "category_idx")
     private List<StoreCategory> categories;
+
+    @OneToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "store_id")
+    private List<Menu> menus;
 
 }
