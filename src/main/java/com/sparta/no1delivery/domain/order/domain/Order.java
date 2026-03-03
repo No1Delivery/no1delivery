@@ -38,20 +38,11 @@ public class Order extends BaseUserEntity {
     @Column(name = "orderer_name", nullable = false)
     private String ordererName;
 
-    @Column(name = "address", nullable = false)
-    private String address;
+    @Embedded
+    private StoreInfo storeInfo;
 
-    @Column(name = "detail_address")
-    private String detailAddress;
-
-    @Column(name = "store_id", nullable = false)
-    private UUID storeId;
-
-    @Column(name = "store_name", nullable = false)
-    private String storeName;
-
-    @Column(name = "request_memo")
-    private String requestMemo;
+    @Embedded
+    private DeliveryInfo deliveryInfo;
 
     @Column(length = 45)
     private String deletedBy;
@@ -65,16 +56,13 @@ public class Order extends BaseUserEntity {
     private List<OrderItem> orderItems = new ArrayList<>();
 
 
-    //생성 로직
+    // 생성 로직
 
 
     public static Order createOrder(Long ordererId,
                                     String ordererName,
-                                    String address,
-                                    String detailAddress,
-                                    UUID storeId,
-                                    String storeName,
-                                    String requestMemo,
+                                    StoreInfo storeInfo,
+                                    DeliveryInfo deliveryInfo,
                                     List<OrderItem> items) {
 
         if (items == null || items.isEmpty()) {
@@ -85,11 +73,8 @@ public class Order extends BaseUserEntity {
         order.status = OrderStatus.ORDERED;
         order.ordererId = ordererId;
         order.ordererName = ordererName;
-        order.address = address;
-        order.detailAddress = detailAddress;
-        order.storeId = storeId;
-        order.storeName = storeName;
-        order.requestMemo = requestMemo;
+        order.storeInfo = storeInfo;
+        order.deliveryInfo = deliveryInfo;
 
         items.forEach(order::addOrderItem);
         order.calculateAndSetTotalPrice();
@@ -98,7 +83,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    //연관관계 메서드
+    // 연관관계 메서드
 
 
     public void addOrderItem(OrderItem item) {
@@ -107,7 +92,8 @@ public class Order extends BaseUserEntity {
     }
 
 
-    //비즈니스 로직
+
+    // 비즈니스 로직
 
     private void calculateAndSetTotalPrice() {
         this.totalPrice = orderItems.stream()
