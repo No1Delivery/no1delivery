@@ -12,14 +12,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseUserEntity extends BaseEntity {
     @CreatedBy
-    @Column(length=45, updatable = false)
-    protected String createdBy;
+    @Column(updatable = false)
+    protected Long createdBy;
 
     @LastModifiedBy
-    @Column(length=45, insertable = false)
-    protected String updatedBy;
+    @Column(insertable = false)
+    protected Long updatedBy;
 
-    @Column(length = 45)
-    protected String deletedBy;
+    @Column
+    protected Long deletedBy;
 
 }
