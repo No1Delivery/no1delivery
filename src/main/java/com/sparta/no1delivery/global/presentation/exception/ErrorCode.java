@@ -43,7 +43,11 @@ public enum ErrorCode {
     DUPLICATE_SUB_OPTION_NAME(HttpStatus.CONFLICT, "중복된 서브 옵션 이름이 존재합니다."),
     ESSENTIAL_OPTION_MISSING(HttpStatus.BAD_REQUEST, "필수 옵션을 선택해야 합니다."),
     MULTIPLE_OPTION_FORBIDDEN(HttpStatus.BAD_REQUEST, "옵션을 중복 선택할 수 없습니다."),
-    OPTION_SOLD_OUT(HttpStatus.BAD_REQUEST, "품절된 옵션 항목이 포함되어 있습니다.");
+    OPTION_SOLD_OUT(HttpStatus.BAD_REQUEST, "품절된 옵션 항목이 포함되어 있습니다."),
+
+    // --- 카테고리 (C) ---
+    INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "유효하지 않은 카테고리가 포함되어 있습니다.");
+
 
     private final HttpStatus status;
     private final String message;
