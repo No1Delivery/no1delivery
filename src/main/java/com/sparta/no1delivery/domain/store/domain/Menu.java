@@ -70,9 +70,9 @@ public class Menu extends BaseUserEntity {
     }
 
     // 메뉴 삭제
-    public void markDeleted(String username) {
+    public void markDeleted(Long userId) {
         deletedAt = LocalDateTime.now();
-        deletedBy = username;
+        deletedBy = userId;
     }
 
     // 옵션 여러개 등록
