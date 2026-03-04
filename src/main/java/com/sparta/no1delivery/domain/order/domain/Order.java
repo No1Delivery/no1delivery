@@ -45,20 +45,14 @@ public class Order extends BaseUserEntity {
     private DeliveryInfo deliveryInfo;
 
     @Column(length = 45)
-    private String deletedBy;
-
-    @Column
-    private LocalDateTime deletedAt;
+    private String deletedByName;
 
     @OneToMany(mappedBy = "order",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-
     // 생성 로직
-
-
     public static Order createOrder(Long ordererId,
                                     String ordererName,
                                     StoreInfo storeInfo,
@@ -82,18 +76,13 @@ public class Order extends BaseUserEntity {
         return order;
     }
 
-
     // 연관관계 메서드
-
     public void addOrderItem(OrderItem item) {
         orderItems.add(item);
         item.setOrder(this);
     }
 
-
-
     // 비즈니스 로직
-        //총합 계산
     private void calculateAndSetTotalPrice() {
         this.totalPrice = orderItems.stream()
                 .mapToInt(OrderItem::getSubtotalPrice)
@@ -110,7 +99,7 @@ public class Order extends BaseUserEntity {
     }
 
     public void markDeleted(String username) {
-        this.deletedBy = username;
+        this.deletedByName = username;
         this.deletedAt = LocalDateTime.now();
     }
 }
