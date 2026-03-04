@@ -47,7 +47,6 @@ public class User extends BaseUserEntity {
     private LocalDateTime ownerRequestAt;
 
     // User(1) : UserAddress(N)
-    @Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAddress> addresses = new ArrayList<>();
 
