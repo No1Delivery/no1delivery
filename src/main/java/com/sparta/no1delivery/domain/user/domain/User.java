@@ -2,10 +2,10 @@ package com.sparta.no1delivery.domain.user.domain;
 
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Builder.Default;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,10 +15,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Table(name = "p_user")
-
 public class User extends BaseUserEntity {
 
     @Id
@@ -50,9 +47,24 @@ public class User extends BaseUserEntity {
     private LocalDateTime ownerRequestAt;
 
     // User(1) : UserAddress(N)
+    @Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<UserAddress> addresses = new ArrayList<>();
+
+    @Builder
+    private User(String loginId,
+                 String password,
+                 UserRole role,
+                 String nickname,
+                 String businessNumber,
+                 OwnerRequestStatus ownerRequestStatus) {
+        this.loginId = loginId;
+        this.password = password;
+        this.role = role;
+        this.nickname = nickname;
+        this.businessNumber = businessNumber;
+        this.ownerRequestStatus = ownerRequestStatus;
+    }
 
     public void changePassword(String newPassword) {
         this.password = newPassword;
