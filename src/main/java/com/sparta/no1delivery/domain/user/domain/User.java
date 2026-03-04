@@ -18,11 +18,12 @@ import java.util.UUID;
 public class User extends BaseUserEntity {
 
     @Id
+    @GeneratedValue
     @Column(name = "user_id", nullable = false, updatable = false)
     private UUID userId;
 
-    @Column(nullable = false)
-    private Long id; // 로그인용 BIGINT
+    @Column(nullable = false, unique = true)
+    private String loginId; // 로그인용 ID
 
     @Column(nullable = false)
     private String password;
@@ -48,5 +49,21 @@ public class User extends BaseUserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAddress> addresses = new ArrayList<>();
 
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
 
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changeRole(UserRole role) {
+        this.role = role;
+        this.roleUpdatedAt = LocalDateTime.now();
+    }
+
+    public void addAddress(UserAddress address) {
+        addresses.add(address);
+        address.setUser(this);
+    }
 }

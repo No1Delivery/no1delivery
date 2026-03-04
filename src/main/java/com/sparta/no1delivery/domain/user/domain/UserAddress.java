@@ -14,6 +14,7 @@ import java.util.UUID;
 
 public class UserAddress {
     @Id
+    @GeneratedValue
     @Column(name = "address_idx", nullable = false, updatable = false)
     private UUID addressIdx;
 
@@ -31,5 +32,7 @@ public class UserAddress {
 
     private Boolean isDefault;
 
-
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
