@@ -1,6 +1,8 @@
 package com.sparta.no1delivery.domain.user.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,9 +11,10 @@ import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "p_user_address")
-
 public class UserAddress {
     @Id
     @GeneratedValue

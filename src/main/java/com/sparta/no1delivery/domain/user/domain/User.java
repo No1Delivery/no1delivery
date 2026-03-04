@@ -2,6 +2,8 @@ package com.sparta.no1delivery.domain.user.domain;
 
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +15,8 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "p_user")
 
 public class User extends BaseUserEntity {
@@ -47,6 +51,7 @@ public class User extends BaseUserEntity {
 
     // User(1) : UserAddress(N)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<UserAddress> addresses = new ArrayList<>();
 
     public void changePassword(String newPassword) {
