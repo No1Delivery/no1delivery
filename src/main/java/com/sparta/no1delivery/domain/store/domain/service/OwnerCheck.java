@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public interface OwnerCheck {
     boolean isOwner(UUID storeId);
-    Long getOwnerId(); // 매장 주인 로그인 ID
+    Long getOwnerId(); // 매장 주인 UserId
     String getOwnerName(); // 매장 주인명
     UUID getStoreId();
 }

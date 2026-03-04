@@ -12,6 +12,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -94,10 +95,36 @@ public class Store extends BaseUserEntity {
     }
 
     // 가게 정보 수정
+    public void updateInfo(StoreDto.StoreInfoDto dto) {
+        checkAuthority(dto.getRoleCheck(), dto.getOwnerCheck());
 
-    // 가게 상태 수정
+        this.owner = new Owner(owner.getId(), dto.getOwnerName());
+        this.name = dto.getName();
+        this.description = dto.getDescription();
+        this.phone = dto.getPhone();
+        this.address = new StoreAddress(dto.getAddress(), dto.getDetailAddress(), dto.getAddressToCoords());
+
+    }
+
+    // 가게 운영 상태 수정
+    public void changeStatus(RoleCheck roleCheck, OwnerCheck ownerCheck, StoreStatus status) {
+        // 권한 체크
+        checkAuthority(roleCheck, ownerCheck);
+        this.status = status;
+    }
 
     // 가게 삭제
+    public void remove(RoleCheck roleCheck, OwnerCheck ownerCheck) {
+        checkAuthority(roleCheck, ownerCheck);
+
+        this.deletedAt = LocalDateTime.now();
+        this.deletedBy = ownerCheck.getOwnerId();
+
+        // 메뉴 삭제 처리
+        for (Menu menu : menus) {
+            menu.markDeleted(ownerCheck.getOwnerId());
+        }
+    }
 
 
 
@@ -182,13 +209,20 @@ public class Store extends BaseUserEntity {
 
 
     // 가게 영업 여부
+    public boolean isOrderable() {
+        return status == StoreStatus.OPEN;
+    }
 
     // 가게 노출 여부
-
+    public boolean isVisible() {
+        // 페업중인 가게만 노출 안함
+        return status != StoreStatus.DEFUNCT;
+    }
 
     /**
      * 가게 관련 기능은 가게 주인(OWNER), 관리자(MANAGER, MASTER)만 가능
-     * storeId가 null 이라면 신규 등록이므로
+     * 삭제된 가게는 관리자만 접근 가능
+     * storeId가 null 이라면 신규 등록이므로 OWNER 권한만 체크
      */
     public void checkAuthority(RoleCheck roleCheck, OwnerCheck ownerCheck) {
         // 관리자 권한
@@ -196,14 +230,18 @@ public class Store extends BaseUserEntity {
             return;
         }
 
+        // 가게 삭제 체크
+        if (this.deletedAt != null) {
+            throw new CustomException(ErrorCode.STORE_NOT_FOUND);
+        }
+
         // 신규 등록
         if (id == null) {
             if (!roleCheck.hasRole("OWNER")) {
-                throw new CustomException(ErrorCode.UNAUTHORIZED);
+                throw new CustomException(ErrorCode.FORBIDDEN);
             }
-            return;
         } else if (!ownerCheck.isOwner(id.getId())) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.STORE_FORBIDDEN);
         }
     }
 
