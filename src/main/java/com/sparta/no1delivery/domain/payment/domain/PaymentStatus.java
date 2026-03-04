@@ -1,5 +1,8 @@
 package com.sparta.no1delivery.domain.payment.domain;
 
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
+
 public enum PaymentStatus {
     READY, //결제 객체를 생성하면 가지게 되는 초기 상태
     IN_PROGRESS, // 결제 수단 정보와 해당 결제 수단의 소유자가 맞는지 인증을 마친 상태, 결제 승인 API를 호출하면 결제가 완료
@@ -8,6 +11,14 @@ public enum PaymentStatus {
     CANCELLED, // 승인된 결제가 취소된 상태
     PARTIAL_CANCELLED, // 승인된 결제가 일부분 취소가 된 상태
     ABORTED, // 결제 승인이 실패한 상태
-    EXPIRED // 결제 유효 시간 30분이 지나 거래가 취소된 상태, IN_PROGRESS에서 결제 승인 API를 호출하지 않고 있으면 이 상태가 됨.
+    EXPIRED; // 결제 유효 시간 30분이 지나 거래가 취소된 상태, IN_PROGRESS에서 결제 승인 API를 호출하지 않고 있으면 이 상태가 됨.
 
+
+    //도메인 로직 만들기
+    // 중복 결제 방지 도메인 로직
+    public void verifyNotProcessed(){
+        if(this == PaymentStatus.READY || this != PaymentStatus.IN_PROGRESS){
+            throw new CustomException(ErrorCode.PAYMENT_ALREADY_PROCESSED);
+        }
+    }
 }
