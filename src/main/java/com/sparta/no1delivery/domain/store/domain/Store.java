@@ -130,14 +130,75 @@ public class Store extends BaseUserEntity {
 
     //// 메뉴 관련
     // 메뉴 생성
+    public void createMenu(StoreDto.MenuDto dto) {
+        checkAuthority(dto.getRoleCheck(), dto.getOwnerCheck());
+
+        checkMenuNameDuplication(dto.getName(), null);
+
+        menus = Objects.requireNonNullElseGet(menus, ArrayList::new);
+        menus.add(StoreDto.toMenu(id, dto));
+    }
 
     // 메뉴 수정
+    public void updateMenu(MenuId menuId, StoreDto.MenuDto dto) {
+        checkAuthority(dto.getRoleCheck(), dto.getOwnerCheck());
+
+        Menu menu = getMenu(menuId);
+
+        checkMenuNameDuplication(dto.getName(), menuId);
+
+        // 메뉴 기본 정보 수정
+        menu.update(dto.getName(), dto.getDescription(), dto.getPrice());
+
+        // 메뉴 옵션 수정
+        if (dto.getOptions() != null) {
+            List<MenuOption> newOptions = dto.getOptions().stream()
+                    .map(StoreDto::toMenuOption)
+                    .toList();
+
+            // 객체 리스트를 통째로 교체
+            menu.replaceOptions(newOptions);
+        }
+    }
 
     // 메뉴 삭제 (Soft Delete)
+    public void removeMenu(RoleCheck roleCheck, OwnerCheck ownerCheck, MenuId menuId) {
+        checkAuthority(roleCheck, ownerCheck);
 
-    // 메뉴코드 중복 체크
+        Menu menu = getMenu(menuId);
+        menu.markDeleted(ownerCheck.getOwnerId());
+    }
 
-    // 메뉴코드로 상품 조회
+    // 메뉴 조회
+    public Menu getMenu(MenuId menuId) {
+        if (this.menus == null || this.menus.isEmpty()) {
+            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
+        }
+
+        return this.menus.stream()
+                // 삭제된 메뉴 제외
+                .filter(m -> m.getDeletedAt() == null)
+                .filter(m -> m.getId().equals(menuId))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
+    }
+
+    // 메뉴 중복 체크
+    private void checkMenuNameDuplication(String name, MenuId excludeId) {
+        if (this.menus == null) return;
+
+        boolean isDuplicated = this.menus.stream()
+                // 이미 삭제된 메뉴는 이름 같아도 무시
+                .filter(m -> m.getDeletedAt() == null)
+                // 수정 시에는 자기 자신은 검사 제외
+                .filter(m -> !m.getId().equals(excludeId))
+                // 동일한 이름 있는지 확인
+                .anyMatch(m -> m.getName().equals(name));
+
+        if (isDuplicated) {
+            throw new CustomException(ErrorCode.DUPLICATE_MENU_NAME);
+        }
+    }
 
 
     //// 카테고리 관련
@@ -191,6 +252,8 @@ public class Store extends BaseUserEntity {
 
     // 카테고리 내부 생성
     private void addCategories(List<UUID> categoryIds) {
+
+        if (categoryIds == null || categoryIds.isEmpty()) return;
         categories = Objects.requireNonNullElseGet(categories, ArrayList::new);
 
         Set<UUID> existingCategoryIds = categories.stream()
@@ -198,10 +261,10 @@ public class Store extends BaseUserEntity {
                 .collect(Collectors.toSet());
 
         List<StoreCategory> newCategories = categoryIds.stream()
-                        .distinct()
-                        .filter(id -> !existingCategoryIds.contains(id))
-                        .map(StoreCategory::new)
-                        .toList();
+                .distinct()
+                .filter(id -> !existingCategoryIds.contains(id))
+                .map(StoreCategory::new)
+                .toList();
 
         categories.addAll(newCategories);
     }
@@ -246,3 +309,4 @@ public class Store extends BaseUserEntity {
     }
 
 }
+
