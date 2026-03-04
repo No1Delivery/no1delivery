@@ -85,8 +85,18 @@ public class Payment {
         Events.trigger(new PaymentApprovedEvent(paymentInfo.getOrderId()));
     }
 
+    // 결제 취소
+    public void cancel(String paymentLog){
+        this.status.verifyCancelable();
+        this.status = PaymentStatus.CANCELLED;
+        this.paymentLog = "%s\n------------------------------------------------------\n%s".formatted(this.paymentLog, paymentLog);
+    }
 
-    //결제 취소
-
+    //결제 실패
+    public void abort(String paymentLog){
+        this.status.verifyAbortable();
+        status = PaymentStatus.ABORTED;
+        this.paymentLog = "%s\n------------------------------------------------------\n%s".formatted(this.paymentLog, paymentLog);
+    }
 
 }
