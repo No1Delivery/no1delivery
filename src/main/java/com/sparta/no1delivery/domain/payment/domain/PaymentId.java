@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class PaymentId {
 
-    @Column(length = 45, name = "payment_id") //UUID로 id값을 만들기
+    @Column(length = 45, name = "payment_id") //UUID로 id 값을 만들기
     private UUID id;
 
 
