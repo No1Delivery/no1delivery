@@ -1,7 +1,7 @@
 package com.sparta.no1delivery.domain.payment.domain;
 
-import com.sparta.no1delivery.global.presentation.exception.CustomException;
-import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
+import com.sparta.no1delivery.domain.payment.domain.event.PaymentApprovedEvent;
+import com.sparta.no1delivery.global.infrastructure.event.Events;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,34 +26,43 @@ import java.util.UUID;
 @Getter
 @Table(name = "P_Payment")
 public class Payment {
-
-    @EmbeddedId // paymentId 클래스로 id값 받기// 식별자
+    // paymentId 클래스로 id값 받기// 식별자
+    @EmbeddedId
     private PaymentId id;
 
-    @Column(length = 50, name = "payment_key") // paymentKey 토스에서 결제요청을 보내면 해당 주문의 결제 요청이 성공되면 반환받는 key값 담을 공간
+    // paymentKey 토스에서 결제요청을 보내면 해당 주문의 결제 요청이 성공되면 반환받는 key값 담을 공간
+    @Column(length = 50, name = "payment_key")
     private String key;
 
-    @Column(length = 30) // payment 결제 수단 공간
+    // payment 결제 수단 공간
+    @Column(length = 30)
     @Enumerated(EnumType.STRING)
     private PaymentMethod method;
 
-    @Embedded // payment 결제 금액 공간
+    // payment 결제 금액 공간
+    @Embedded
     private PaymentAmount amount;
 
-    @Column(length = 30)// 결제의 상태를 확인하기 위한 필드
+    // 결제의 상태를 확인하기 위한 필드
+    @Column(length = 30)
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
-    @Column(name = "payment_log", columnDefinition = "jsonb") //결제 로그 담는 공간
+    //결제 로그 담는 공간
+    @Column(name = "payment_log", columnDefinition = "jsonb")
     private String paymentLog;
 
-    @Embedded // payment 주문결제상세 내용
+    // payment 주문결제상세 내용
+    @Embedded
     private PaymentOrderInfo paymentInfo;
 
-    public LocalDateTime requestedAt; //결제 요청 시간
+    //결제 요청 시간
+    public LocalDateTime requestedAt;
 
-    private LocalDateTime approvedAt; // 결제 승인 시간
+    // 결제 승인 시간
+    private LocalDateTime approvedAt;
 
+    //생성자 기본 (orderId와 orderName, amount의 값을 받아 새 Payment 객체 인스턴스를 만듬
     @Builder
     public Payment(UUID orderId, String orderName, Long amount){
         this.id = PaymentId.of();
@@ -63,15 +72,21 @@ public class Payment {
         this.amount = new PaymentAmount(amount);
     }
 
-    //도메인 로직 만들기
-    // 중복 결제 방지 도메인 로직
-    public void verifyNotProcessed(){
-        if(this.status != PaymentStatus.READY || this.status != PaymentStatus.IN_PROGRESS){
-            throw new CustomException(ErrorCode.PAYMENT_ALREADY_PROCESSED);
-        }
+    // 결제 승인
+    // 승인이 되려면 paymentKey와 orderId, amount가 필요 / 승인 처리가 되기 위해 상태가 필요/ 처리받는 결과를 담기 위한 log와 시간을 등록
+    public void approve(String key, LocalDateTime approvedAt, String paymentLog,Long approveAmount){
+        this.status.verifyNotProcessed();
+        this.amount.verifyAmount(approveAmount);
+        this.key = key;
+        this.status = PaymentStatus.DONE;
+        this.approvedAt = approvedAt;
+        this.paymentLog = paymentLog;
+
+        Events.trigger(new PaymentApprovedEvent(paymentInfo.getOrderId()));
     }
 
 
+    //결제 취소
 
 
 }
