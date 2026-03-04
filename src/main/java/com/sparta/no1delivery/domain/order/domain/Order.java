@@ -44,9 +44,6 @@ public class Order extends BaseUserEntity {
     @Embedded
     private DeliveryInfo deliveryInfo;
 
-    @Column(length = 45)
-    private String deletedByName;
-
     @OneToMany(mappedBy = "order",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
@@ -98,8 +95,8 @@ public class Order extends BaseUserEntity {
         this.canceledAt = LocalDateTime.now();
     }
 
-    public void markDeleted(String username) {
-        this.deletedByName = username;
+    public void markDeleted(Long userId) {
+        this.deletedBy = userId;
         this.deletedAt = LocalDateTime.now();
     }
 }
