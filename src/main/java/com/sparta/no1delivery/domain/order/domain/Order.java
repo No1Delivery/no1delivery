@@ -44,21 +44,18 @@ public class Order extends BaseUserEntity {
     @Embedded
     private DeliveryInfo deliveryInfo;
 
+    // 부모 클래스(BaseUserEntity)와 충돌하지 않도록 이름 변경
     @Column(length = 45)
-    private String deletedBy;
+    private String deletedByName;
 
-    @Column
-    private LocalDateTime deletedAt;
+    // deletedAt은 부모 필드 그대로 사용
 
     @OneToMany(mappedBy = "order",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-
     // 생성 로직
-
-
     public static Order createOrder(Long ordererId,
                                     String ordererName,
                                     StoreInfo storeInfo,
@@ -82,18 +79,13 @@ public class Order extends BaseUserEntity {
         return order;
     }
 
-
     // 연관관계 메서드
-
     public void addOrderItem(OrderItem item) {
         orderItems.add(item);
         item.setOrder(this);
     }
 
-
-
     // 비즈니스 로직
-        //총합 계산
     private void calculateAndSetTotalPrice() {
         this.totalPrice = orderItems.stream()
                 .mapToInt(OrderItem::getSubtotalPrice)
@@ -110,7 +102,7 @@ public class Order extends BaseUserEntity {
     }
 
     public void markDeleted(String username) {
-        this.deletedBy = username;
-        this.deletedAt = LocalDateTime.now();
+        this.deletedByName = username; // 수정: 새 필드 사용
+        this.deletedAt = LocalDateTime.now(); // 부모 필드 사용
     }
 }
