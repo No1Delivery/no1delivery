@@ -21,6 +21,7 @@ public enum PaymentStatus {
             throw new CustomException(ErrorCode.PAYMENT_ALREADY_PROCESSED);
         }
     }
+
     // 결제 실패 상태 체크 (상태가 이미 결제가 완료되었거나, 취소했거나, 부분 취소가 되었다면 실패가 되면 안됌)
     public void verifyAbortable(){
         if(this == PaymentStatus.DONE || this == PaymentStatus.CANCELLED || this == PaymentStatus.PARTIAL_CANCELLED){
