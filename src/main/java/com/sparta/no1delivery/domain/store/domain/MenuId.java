@@ -16,7 +16,15 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class MenuId implements Serializable{
 
-    private StoreId storeId;
-    private int menuIdx;
+    @Column(length = 45, name="menu_id")
+    private UUID id;
+
+    public static MenuId of() {
+        return MenuId.of(UUID.randomUUID());
+    }
+
+    public static MenuId of(UUID id) {
+        return new MenuId(id);
+    }
 
 }

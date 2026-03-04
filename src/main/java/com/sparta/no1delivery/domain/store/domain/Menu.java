@@ -7,7 +7,6 @@ import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,9 +18,7 @@ import java.util.stream.IntStream;
 @Getter
 @ToString
 @Entity
-@Table(name = "P_MENU", indexes = {
-        @Index(name = "idx_menu_code", columnList = "menuCode")
-})
+@Table(name = "P_MENU")
 @SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Menu extends BaseUserEntity {
@@ -29,8 +26,9 @@ public class Menu extends BaseUserEntity {
     @EmbeddedId
     private MenuId id;
 
-    @Column(length = 45, unique = true, nullable = false)
-    private String menuCode; // 메뉴 관리 코드
+    @Embedded
+    @AttributeOverride(name = "id", column = @Column(name = "store_id", nullable = false))
+    private StoreId storeId;
 
     private String name;
 
@@ -47,17 +45,14 @@ public class Menu extends BaseUserEntity {
     private Price price;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "P_MENU_OPTION", joinColumns = {
-            @JoinColumn(name = "store_id"),
-            @JoinColumn(name = "menu_idx")
-    })
+    @CollectionTable(name = "P_MENU_OPTION", joinColumns = @JoinColumn(name = "menu_id"))
     @OrderColumn(name = "option_idx")
     private List<MenuOption> options;
 
     @Builder
-    protected Menu(StoreId storeId, int menuIdx, String menuCode, String name, String description, int price, List<MenuOption> options) {
-        this.id = new MenuId(storeId, menuIdx);
-        this.menuCode = StringUtils.hasText(menuCode) ? menuCode : UUID.randomUUID().toString();
+    protected Menu(UUID menuId, StoreId storeId, String name, String description, int price, List<MenuOption> options) {
+        this.id = menuId == null ? MenuId.of() : MenuId.of(menuId);
+        this.storeId = storeId;
         this.name = name;
         this.description = description;
         this.price = new Price(price);
@@ -67,6 +62,16 @@ public class Menu extends BaseUserEntity {
         if (options != null) {
             createOptions(options);
         }
+    }
+
+    // 메뉴 수정
+    public void update(String name, String description, int price) {
+        // 도메인 제약 조건 검사 (예: 가격은 0원 이상이어야 함)
+        if (price < 0) throw new CustomException(ErrorCode.INVALID_MENU_PRICE);
+
+        this.name = name;
+        this.description = description;
+        this.price = new Price(price);
     }
 
     // 메뉴 삭제

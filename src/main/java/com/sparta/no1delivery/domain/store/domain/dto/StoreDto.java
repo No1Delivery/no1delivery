@@ -38,6 +38,7 @@ public class StoreDto {
         private OwnerCheck ownerCheck;
         private String menuCode;
         private String name;
+        private String description;
         private int price;
         private List<MenuOptionDto> options;
     }
@@ -72,14 +73,13 @@ public class StoreDto {
     }
 
     // MenuDto -> Menu
-    public static Menu toMenu(StoreId storeId, int productIdx, MenuDto dto) {
+    public static Menu toMenu(StoreId storeId, MenuDto dto) {
         List<MenuOptionDto> optionDtos = dto.getOptions();
         List<MenuOption> options = optionDtos == null ? null : optionDtos.stream().map(StoreDto::toMenuOption).toList();
         return Menu.builder()
                 .storeId(storeId)
-                .menuIdx(productIdx)
-                .menuCode(dto.menuCode)
                 .name(dto.getName())
+                .description(dto.getDescription())
                 .price(dto.getPrice())
                 .options(options)
                 .build();
