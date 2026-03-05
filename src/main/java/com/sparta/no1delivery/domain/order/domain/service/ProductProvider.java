@@ -6,7 +6,6 @@ import com.sparta.no1delivery.domain.order.domain.OrderItem;
 public class ProductProvider {
 
     public OrderItem getProduct(OrderItem item) {
-        // OrderItem 자체를 반환
         return item;
     }
-    }
+}

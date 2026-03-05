@@ -6,8 +6,8 @@ import lombok.Getter;
 import java.util.List;
 import java.util.UUID;
 
-// 주문 조회(Query) 전용 DTO
-//목록 조회 및 조건 기반 조회 시 사용
+// 주문 조회 전용 DTO
+//목록 조회 및 조건 기반 조회 시 사용(검색)
 public class OrderQueryDto {
 
     @Getter

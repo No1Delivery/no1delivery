@@ -45,6 +45,12 @@ public enum ErrorCode {
     MULTIPLE_OPTION_FORBIDDEN(HttpStatus.BAD_REQUEST, "옵션을 중복 선택할 수 없습니다."),
     OPTION_SOLD_OUT(HttpStatus.BAD_REQUEST, "품절된 옵션 항목이 포함되어 있습니다."),
 
+    // --- 주문 (OD) ---
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+    ORDER_ITEM_EMPTY(HttpStatus.BAD_REQUEST, "주문 항목은 최소 1개 이상이어야 합니다."),
+    INVALID_ORDER_ITEM(HttpStatus.BAD_REQUEST, "주문이 불가능한 메뉴가 포함되어 있습니다."),
+    ORDER_ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "이미 취소된 주문입니다."),
+
     // --- 카테고리 (C) ---
     INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "유효하지 않은 카테고리가 포함되어 있습니다.");
 

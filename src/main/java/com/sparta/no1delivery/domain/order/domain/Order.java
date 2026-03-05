@@ -1,10 +1,13 @@
 package com.sparta.no1delivery.domain.order.domain;
 
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "P_Order")
+@SQLRestriction("deleted_at IS NULL")
 public class Order extends BaseUserEntity {
 
     @Id
@@ -44,12 +48,15 @@ public class Order extends BaseUserEntity {
     @Embedded
     private DeliveryInfo deliveryInfo;
 
-    @OneToMany(mappedBy = "order",
+    @OneToMany(
+            mappedBy = "order",
             cascade = CascadeType.ALL,
-            orphanRemoval = true)
+            orphanRemoval = true
+    )
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    // 생성 로직
+
+    // 주문 생성
     public static Order createOrder(Long ordererId,
                                     String ordererName,
                                     StoreInfo storeInfo,
@@ -57,7 +64,7 @@ public class Order extends BaseUserEntity {
                                     List<OrderItem> items) {
 
         if (items == null || items.isEmpty()) {
-            throw new IllegalArgumentException("주문 항목은 최소 1개 이상이어야 합니다.");
+            throw new CustomException(ErrorCode.ORDER_ITEM_EMPTY);
         }
 
         Order order = new Order();
@@ -73,28 +80,30 @@ public class Order extends BaseUserEntity {
         return order;
     }
 
-    // 연관관계 메서드
+    // 연관관계 편의 메서드
     public void addOrderItem(OrderItem item) {
         orderItems.add(item);
         item.setOrder(this);
     }
 
-    // 비즈니스 로직
+    // 총 주문 금액 계산
     private void calculateAndSetTotalPrice() {
         this.totalPrice = orderItems.stream()
                 .mapToInt(OrderItem::getSubtotalPrice)
                 .sum();
     }
 
+    // 주문 취소
     public void cancel() {
         if (this.status == OrderStatus.CANCELLED) {
-            throw new IllegalStateException("이미 취소된 주문입니다.");
+            throw new CustomException(ErrorCode.ORDER_ALREADY_CANCELLED);
         }
 
         this.status = OrderStatus.CANCELLED;
         this.canceledAt = LocalDateTime.now();
     }
 
+    // Soft Delete
     public void markDeleted(Long userId) {
         this.deletedBy = userId;
         this.deletedAt = LocalDateTime.now();
