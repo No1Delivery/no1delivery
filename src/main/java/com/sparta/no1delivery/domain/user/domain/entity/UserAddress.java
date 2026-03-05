@@ -1,5 +1,7 @@
-package com.sparta.no1delivery.domain.user.domain;
+package com.sparta.no1delivery.domain.user.domain.entity;
 
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,10 +44,33 @@ public class UserAddress {
         this.longitude = longitude;
         this.address = address;
         this.detailAddress = detailAddress;
+        this.isDefault = isDefault != null && isDefault;
+    }
+
+    public void updateAddress(String address,
+                              String detailAddress,
+                              BigDecimal latitude,
+                              BigDecimal longitude) {
+
+        if (address == null || address.isBlank()) {
+            throw new CustomException(ErrorCode.MISSING_INPUT_VALUE);
+        }
+
+        this.address = address;
+        this.detailAddress = detailAddress;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public void updateDefault(boolean isDefault) {
         this.isDefault = isDefault;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isDefault() {
+        return this.isDefault;
     }
 }

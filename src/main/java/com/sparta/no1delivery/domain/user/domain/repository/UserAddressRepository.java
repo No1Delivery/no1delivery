@@ -1,5 +1,6 @@
-package com.sparta.no1delivery.domain.user.domain;
+package com.sparta.no1delivery.domain.user.domain.repository;
 
+import com.sparta.no1delivery.domain.user.domain.entity.UserAddress;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

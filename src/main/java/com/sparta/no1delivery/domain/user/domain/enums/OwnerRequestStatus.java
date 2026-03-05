@@ -1,4 +1,4 @@
-package com.sparta.no1delivery.domain.user.domain;
+package com.sparta.no1delivery.domain.user.domain.enums;
 
 public enum OwnerRequestStatus {
 

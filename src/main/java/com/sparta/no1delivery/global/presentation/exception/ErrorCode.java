@@ -26,6 +26,14 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "로그인 정보가 일치하지 않습니다."),
+    INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, "닉네임은 2자 이상 20자 이하여야 합니다."),
+    PASSWORD_TOO_SHORT(HttpStatus.BAD_REQUEST, "비밀번호는 최소 8자 이상이어야 합니다."),
+    PASSWORD_TOO_LONG(HttpStatus.BAD_REQUEST, "비밀번호는 최대 20자 이하여야 합니다."),
+
+    // --- 배송지 (AD) ---
+    ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 배송지를 찾을 수 없습니다."),
+    DEFAULT_ADDRESS_CANNOT_BE_DELETED(HttpStatus.BAD_REQUEST, "기본 배송지는 삭제할 수 없습니다."),
+    ADDRESS_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "배송지는 최대 5개까지 등록할 수 있습니다."),
 
     // --- 권한 신청 (OR) ---
     DUPLICATE_OWNER_REQUEST(HttpStatus.BAD_REQUEST, "이미 처리 중인 신청이 존재합니다."),

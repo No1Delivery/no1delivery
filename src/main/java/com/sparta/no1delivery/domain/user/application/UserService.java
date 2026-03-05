@@ -1,6 +1,12 @@
 package com.sparta.no1delivery.domain.user.application;
 
-import com.sparta.no1delivery.domain.user.domain.*;
+import com.sparta.no1delivery.domain.user.domain.entity.User;
+import com.sparta.no1delivery.domain.user.domain.entity.UserAddress;
+import com.sparta.no1delivery.domain.user.domain.enums.OwnerRequestStatus;
+import com.sparta.no1delivery.domain.user.domain.enums.UserRole;
+import com.sparta.no1delivery.domain.user.domain.repository.UserRepository;
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +25,7 @@ public class UserService {
                        String nickname) {
 
         if (userRepository.existsByLoginId(loginId)) {
-            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
 
         User user = User.builder()
@@ -49,5 +55,11 @@ public class UserService {
                 .build();
 
         user.addAddress(userAddress);
+    }
+
+    @Transactional(readOnly = true)
+    public User getUserByLoginId(String loginId) {
+        return userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
     }
 }
