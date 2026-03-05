@@ -1,7 +1,5 @@
 package com.sparta.no1delivery.domain.payment.infrastructure;
 
-import com.sparta.no1delivery.domain.payment.domain.PaymentApproveResponse;
-import com.sparta.no1delivery.domain.payment.domain.PaymentClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import com.sparta.no1delivery.domain.payment.domain.PaymentClient;
+import com.sparta.no1delivery.domain.payment.domain.PaymentApproveResponse;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -26,7 +26,6 @@ public class TossPaymentClient implements PaymentClient {
         this.secretKey = secretKey; //생성자 주입방식으로 yml파일을 통해 내 시크릿키를 안전하게 가져오기
     }
 
-    // 근데 토스에서 api를 사용해서 우리 시스템에서 결제 되는 방식이
     @Override// payment키와 orderId, amount값을 함께 담아서 토스API에 전달하겠다는 규칙을 구현화 하는 것
     public PaymentApproveResponse requestApprove(String paymentKey, String orderId, Long amount) {
         //토스 API URL 필드를 만들어 넣기 => 이 후 취소나 실패에 동일하게 필요한 것 묶어서 코드화 시키면 좋을듯?

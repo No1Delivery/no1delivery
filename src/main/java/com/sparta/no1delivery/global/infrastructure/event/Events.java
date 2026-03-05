@@ -1,6 +1,5 @@
 package com.sparta.no1delivery.global.infrastructure.event;
 
-import com.sparta.no1delivery.domain.payment.domain.event.PaymentApprovedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 public class Events {
