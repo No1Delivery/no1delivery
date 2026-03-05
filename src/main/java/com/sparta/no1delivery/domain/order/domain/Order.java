@@ -44,12 +44,6 @@ public class Order extends BaseUserEntity {
     @Embedded
     private DeliveryInfo deliveryInfo;
 
-    // 부모 클래스(BaseUserEntity)와 충돌하지 않도록 이름 변경
-    @Column(length = 45)
-    private String deletedByName;
-
-    // deletedAt은 부모 필드 그대로 사용
-
     @OneToMany(mappedBy = "order",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
@@ -101,8 +95,8 @@ public class Order extends BaseUserEntity {
         this.canceledAt = LocalDateTime.now();
     }
 
-    public void markDeleted(String username) {
-        this.deletedByName = username; // 수정: 새 필드 사용
-        this.deletedAt = LocalDateTime.now(); // 부모 필드 사용
+    public void markDeleted(Long userId) {
+        this.deletedBy = userId;
+        this.deletedAt = LocalDateTime.now();
     }
 }
