@@ -48,7 +48,7 @@ public class Store extends BaseUserEntity {
     private StoreAddress address;
 
     @Embedded
-    private Rating rating = new Rating(); // 초기값 지정
+    private Rating rating;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
@@ -83,6 +83,7 @@ public class Store extends BaseUserEntity {
         this.phone = phone;
         this.address = new StoreAddress(address, detailAddress, addressToCoords);
         this.status = StoreStatus.CLOSED;
+        this.rating = new Rating();
 
         // 분류 추가
         createCategory(StoreDto.CategoryDto
