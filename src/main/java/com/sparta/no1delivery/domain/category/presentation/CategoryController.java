@@ -43,7 +43,7 @@ public class CategoryController {
     }
 
 
-    @PatchMapping("/{id}")
+    @PatchMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void changeCategoryNames(
             @RequestBody @Valid List<CategoryRequestDto> request) {
