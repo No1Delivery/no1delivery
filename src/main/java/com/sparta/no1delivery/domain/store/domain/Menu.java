@@ -9,10 +9,8 @@ import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Getter
@@ -85,8 +83,16 @@ public class Menu extends BaseUserEntity {
         if (newOptions == null || newOptions.isEmpty()) return;
         this.options = Objects.requireNonNullElseGet(this.options, ArrayList::new); // 리스트 없으면 생성
 
+        // 기존 이름들과 입력된 새 이름들을 한 번에 비교하기 위한 Set
+        Set<String> currentNames = options.stream()
+                .map(MenuOption::getName)
+                .collect(Collectors.toCollection(HashSet::new));
+
+        // 입력 데이터 내부 중복 + 기존 데이터와의 중복을 동시 체크
         for (MenuOption newOption : newOptions) {
-            validateDuplicateOption(newOption.getName());
+            if (!currentNames.add(newOption.getName())) { // Set에 이미 있으면 false 반환
+                throw new CustomException(ErrorCode.DUPLICATE_OPTION_NAME);
+            }
         }
 
         this.options.addAll(newOptions);
@@ -135,16 +141,6 @@ public class Menu extends BaseUserEntity {
     public void replaceOptions(List<MenuOption> options) {
         truncateOption();
         createOptions(options);
-    }
-
-    // 옵션 중복 체크
-    private void validateDuplicateOption(String name) {
-        boolean isDuplicate = options.stream()
-                .anyMatch(o -> o.getName().equals(name));
-
-        if (isDuplicate) {
-            throw new CustomException(ErrorCode.DUPLICATE_OPTION_NAME);
-        }
     }
 
     // 주문 가능 여부
