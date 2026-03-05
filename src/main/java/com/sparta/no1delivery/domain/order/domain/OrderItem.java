@@ -15,41 +15,43 @@ public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_idx", nullable = false, updatable = false)
+    @Column( nullable = false, updatable = false)
     private UUID orderIdx;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column(name = "menu_id", nullable = false)
+    @Column( nullable = false)
     private UUID menuId;
 
-    @Column(name = "menu_name", nullable = false)
+    @Column( nullable = false)
     private String menuName;
 
-    @Column(name = "menu_option", columnDefinition = "json" ,nullable = true)
+    @Column( columnDefinition = "json" ,nullable = true)
     private String menuOption;
 
     @Column(nullable = false)
     private int quantity;
 
-    @Column(name = "menu_price", nullable = false)
+    @Column( nullable = false)
     private int menuPrice;
 
-    @Column(name = "subtotal_price", nullable = false)
+    @Column( nullable = false)
     private int subtotalPrice;
 
+    // 주문 상품 생성
     public OrderItem(UUID menuId,
                      String menuName,
                      String menuOption,
                      int quantity,
                      int menuPrice) {
 
+        // 수량 검증 (1개 이상)
         if (quantity <= 0) {
             throw new IllegalArgumentException("수량은 1 이상이어야 합니다.");
         }
-
+        // 가격 검증
         if (menuPrice < 0) {
             throw new IllegalArgumentException("가격은 0 이상이어야 합니다.");
         }
@@ -62,7 +64,7 @@ public class OrderItem {
         this.subtotalPrice = menuPrice * quantity;
     }
 
-    // Aggregate 내부에서만 호출되도록 접근 제한
+    // 연관관계 설정 메서드 (Aggregate 내부에서만 호출되도록 접근 제한)
     void setOrder(Order order) {
         this.order = order;
     }

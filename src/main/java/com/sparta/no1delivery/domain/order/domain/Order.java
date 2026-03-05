@@ -24,12 +24,11 @@ public class Order extends BaseUserEntity {
     // 주문 ID (PK)
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_id")
     private UUID orderId;
 
     // 주문 상태
     @Enumerated(EnumType.STRING)
-    @Column(name = "order_status", nullable = false, length = 45)
+    @Column(nullable = false, length = 45)
     private OrderStatus status;
 
     // 주문 취소 시간
@@ -102,7 +101,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 주문 접수
+    // 주문 접수 ORDER_CREATING-> ORDER_ACCEPT
     public void orderAccept() {
 
         if (this.status != OrderStatus.ORDER_CREATING) {
@@ -113,7 +112,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 결제 확인
+    // 결제 확인 ORDER_ACCEPT -> PAYMENT_CONFIRM
     public void paymentConfirm() {
 
         if (this.status != OrderStatus.ORDER_ACCEPT) {
@@ -124,7 +123,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 배달 시작
+    // 배달 시작 PAYMENT_CONFIRM -> DELIVERY
     public void startDelivery() {
 
         if (this.status != OrderStatus.PAYMENT_CONFIRM) {
@@ -135,7 +134,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 배달 완료
+    // 배달 완료 DELIVERY-> DELIVERY_DONE
     public void deliveryDone() {
 
         if (this.status != OrderStatus.DELIVERY) {
@@ -146,7 +145,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 주문 완료
+    // 주문 완료 DELIVERY_DONE-> ORDER_DONE
     public void complete() {
 
         if (this.status != OrderStatus.DELIVERY_DONE) {
@@ -157,29 +156,29 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 주문 취소 (주문 접수 후 5분 이내 취소 가능)
+    // 주문 취소 (주문 생성 후 5분 이내 취소 가능)
     public void cancel() {
-
+        // 이미 취소된 주문인지 확인 (ORDER_CANCEL 상태면 다시 취소 불가)
         if (this.status == OrderStatus.ORDER_CANCEL) {
             throw new CustomException(ErrorCode.ORDER_ALREADY_CANCELLED);
         }
-
+        //주문 접수 상태 ORDER_ACCEPT
         if (this.status == OrderStatus.ORDER_ACCEPT) {
-
+            //주문 생성 후 5분 이내인지 확인
             if (createdAt == null || LocalDateTime.now().isBefore(createdAt.plusMinutes(5))) {
-                this.status = OrderStatus.ORDER_CANCEL;
+                this.status = OrderStatus.ORDER_CANCEL; //취소 처리
                 this.canceledAt = LocalDateTime.now();
                 return;
             }
-
+           //주문 접수 후 5분 지나면 -> 취소 불가
             throw new CustomException(ErrorCode.ORDER_CANCEL_TIME_EXPIRED);
         }
-
+         //결제 완료 상태
         if (this.status == OrderStatus.PAYMENT_CONFIRM) {
-            this.status = OrderStatus.ORDER_REFUND;
+            this.status = OrderStatus.ORDER_REFUND; //환불 상태로 변경
             return;
         }
-
+        // 그 외 DELIVERY, DELIVERY_DONE , ORDER_DONE  상태면 취소 불가
         throw new CustomException(ErrorCode.INVALID_ORDER_STATUS);
     }
 

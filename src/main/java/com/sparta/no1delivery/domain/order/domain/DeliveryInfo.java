@@ -11,10 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DeliveryInfo {
 
-    @Column(name = "address", nullable = false)
+    @Column( nullable = false)
     private String address;
 
-    @Column(name = "detail_address")
     private String detailAddress;
 
     @Column(name = "request_memo")
