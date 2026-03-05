@@ -62,4 +62,14 @@ public class OrderService {
 
         return savedOrder.getOrderId();
     }
+
+    // 주문 취소
+    public void cancelOrder(UUID orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("주문을 찾을 수 없습니다."));
+
+        // 주문 취소 (취소 가능 여부 검증은 Order 엔티티에서 처리)
+        order.cancel();
+    }
 }
