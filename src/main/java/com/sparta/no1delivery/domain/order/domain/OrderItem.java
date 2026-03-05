@@ -28,7 +28,7 @@ public class OrderItem {
     @Column(name = "menu_name", nullable = false)
     private String menuName;
 
-    @Column(name = "menu_option", columnDefinition = "json")
+    @Column(name = "menu_option", columnDefinition = "json" ,nullable = true)
     private String menuOption;
 
     @Column(nullable = false)

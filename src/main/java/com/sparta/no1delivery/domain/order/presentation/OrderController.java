@@ -19,6 +19,9 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderQueryService orderQueryService;
 
+    //TODO: Spring Security 적용 시 userId 제거
+    //TODO: Swagger API 문서 어노테이션 추가
+
     // 주문 생성
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

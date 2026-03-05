@@ -68,7 +68,10 @@ public class OrderQueryService {
         return OrderResponseDto.OrderDetail.builder()
                 .orderId(order.getOrderId())
                 .storeName(order.getStoreInfo().getStoreName())
-                .ordererName(order.getOrdererName())
+
+                // 여기 수정됨
+                .ordererName(order.getOrderer().getName())
+
                 .deliveryAddress(order.getDeliveryInfo().getAddress())
                 .deliveryMemo(order.getDeliveryInfo().getRequestMessage())
                 .totalOrderPrice(order.getTotalPrice())
@@ -76,7 +79,6 @@ public class OrderQueryService {
                 .createdAt(order.getCreatedAt())
                 .items(
                         order.getOrderItems().stream()
-                                // 주문 아이템 DTO 변환
                                 .map(item -> OrderResponseDto.OrderItem.builder()
                                         .itemName(item.getMenuName())
                                         .quantity(item.getQuantity())

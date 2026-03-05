@@ -45,14 +45,14 @@ public class OrderService {
         DeliveryInfo deliveryInfo = new DeliveryInfo(
                 dto.getDeliveryAddress(),
                 dto.getDeliveryAddressDetail(),
-                dto.getDeliveryMemo(),
-                dto.getPhone()
+                dto.getDeliveryMemo()
         );
 
-        // Order 생성
+        // Order 생성 (phone 추가)
         Order order = Order.createOrder(
                 userId,
                 dto.getOrdererName(),
+                dto.getPhone(),
                 storeInfo,
                 deliveryInfo,
                 items
