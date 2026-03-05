@@ -21,9 +21,16 @@ public class PaymentService {
 
     @Transactional
     public void approvePayment(String paymentKey, String orderId, Long amount) {
-        Payment payment =paymentRepository.findByOrderId(UUID.fromString(orderId))
+        Payment payment =paymentRepository.findByPaymentInfoOrderId(UUID.fromString(orderId))
                 .orElseThrow(()-> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
         PaymentApproveResponse response = paymentClient.requestApprove(paymentKey,orderId,amount);
+
+        payment.approve(
+                response.paymentKey(),
+                response.approvedAt(),
+                response.paymentLog(),
+                response.approvedAmount()
+        );
     }
 }
