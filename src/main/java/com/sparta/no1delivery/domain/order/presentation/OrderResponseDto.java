@@ -56,4 +56,13 @@ public class OrderResponseDto {
         private int price;
         private int totalPrice;
     }
+
+    // 주문 상태 조회용
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class OrderStatus {
+        private UUID orderId;
+        private String status;
+    }
 }
