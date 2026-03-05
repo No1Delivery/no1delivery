@@ -246,7 +246,7 @@ public class Store extends BaseUserEntity {
         if (categoryIds == null || categoryIds.isEmpty()) return;
 
         if (!categoryCheck.exists(categoryIds)) {
-            throw new CustomException(ErrorCode.INVALID_CATEGORY);
+            throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
         }
     }
 
