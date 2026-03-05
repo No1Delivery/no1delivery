@@ -24,8 +24,8 @@ public class Review extends BaseEntity {
     private Integer rating;
     private String comment;
 
-    @OneToOne
-    @JoinColumn(name="order_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="order_id", nullable=false, unique=true)
     private Order order;
 
     protected Review() {}
@@ -39,8 +39,9 @@ public class Review extends BaseEntity {
         this.storeName = storeName;
         this.rating = rating;
         this.comment = comment;
-        this.order = order;
+
         validate(order);
+        this.order = order;
     }
 
     public static Review create(Long reviewerId, String reviewerName, UUID storeId, String storeName,
@@ -49,11 +50,17 @@ public class Review extends BaseEntity {
     }
 
     private void validate(Order order) {
+        if (order == null) {
+            throw new ReviewException("주문 정보가 필요합니다.");
+        }
         if (!reviewerId.equals(order.getOrdererId())) {
             throw new ReviewException("주문자만 작성 가능");
         }
         if (order.getStatus() != OrderStatus.DELIVERED) {
             throw new ReviewException("주문 완료 후 작성 가능");
+        }
+        if (rating < 1 || rating > 5) {
+            throw new ReviewException("평점은 1~5 사이여야 합니다.");
         }
     }
 }
