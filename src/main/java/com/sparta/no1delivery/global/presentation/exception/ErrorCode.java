@@ -39,6 +39,8 @@ public enum ErrorCode {
     DUPLICATE_MENU_NAME(HttpStatus.CONFLICT, "동일한 이름의 메뉴가 이미 존재합니다."),
 
     // --- 옵션 (O) ---
+    DUPLICATE_OPTION_NAME(HttpStatus.CONFLICT, "중복된 옵션 이름이 존재합니다."),
+    DUPLICATE_SUB_OPTION_NAME(HttpStatus.CONFLICT, "중복된 서브 옵션 이름이 존재합니다."),
     ESSENTIAL_OPTION_MISSING(HttpStatus.BAD_REQUEST, "필수 옵션을 선택해야 합니다."),
     MULTIPLE_OPTION_FORBIDDEN(HttpStatus.BAD_REQUEST, "옵션을 중복 선택할 수 없습니다."),
     OPTION_SOLD_OUT(HttpStatus.BAD_REQUEST, "품절된 옵션 항목이 포함되어 있습니다."),
