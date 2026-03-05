@@ -9,7 +9,6 @@ import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -26,17 +25,32 @@ public class CategoryService {
     private final CategoryRepository repository;
 
     //카테고리 생성
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void create(UUID id, String name, long displayOrder) {
-        Category category = Category.builder()
-                .categoryId(id)
-                .name(name)
-                .displayOrder(displayOrder)
-                .roleCheck(roleCheck)
-                .build();
+    @Transactional
+    public List<UUID> create(List<CategoryServiceDto.Category> items) {
+        if (items == null || items.isEmpty()) return null;
 
-        repository.save(category);
+        List<Category> categories = items.stream().map(item -> Category.builder()
+                .categoryId(item.getId())
+                .name(item.getName())
+                .displayOrder(item.getDisplayOrder())
+                .roleCheck(roleCheck)
+                .build()).toList();
+
+
+        return repository.saveAll(categories)
+                    .stream()
+                    .map(c -> c.getId().getId())
+                .toList();
     }
+
+    @Transactional
+    public UUID create(UUID id, String name, long displayOrder) {
+        List<CategoryServiceDto.Category> categories = List.of(new CategoryServiceDto.Category(id, name, displayOrder));
+
+        List<UUID> items = create(categories);
+        return items == null || items.isEmpty() ? null : items.get(0);
+    }
+
 
     // 카테고리 전체 조회
     public List<Category> getCategories() {
