@@ -5,20 +5,20 @@ import com.sparta.no1delivery.domain.user.domain.entity.UserAddress;
 import com.sparta.no1delivery.domain.user.domain.enums.OwnerRequestStatus;
 import com.sparta.no1delivery.domain.user.domain.enums.UserRole;
 import com.sparta.no1delivery.domain.user.domain.repository.UserRepository;
+import com.sparta.no1delivery.global.domain.service.AddressToCoords;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
-
+    private final PasswordEncoder passwordEncoder;
     // 회원가입
     public void signUp(String loginId,
                        String password,
@@ -30,7 +30,7 @@ public class UserService {
 
         User user = User.builder()
                 .loginId(loginId)
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .role(UserRole.CUSTOMER)
                 .nickname(nickname)
                 .ownerRequestStatus(OwnerRequestStatus.NONE)
@@ -40,19 +40,12 @@ public class UserService {
     }
     // 주소 추가
     public void addAddress(User user,
-                           BigDecimal latitude,
-                           BigDecimal longitude,
                            String address,
                            String detailAddress,
+                           AddressToCoords addressToCoords,
                            Boolean isDefault) {
 
-        UserAddress userAddress = UserAddress.builder()
-                //.latitude(latitude)
-                //.longitude(longitude)
-                .address(address)
-                .detailAddress(detailAddress)
-                .isDefault(isDefault)
-                .build();
+        UserAddress userAddress = new UserAddress(address, detailAddress, addressToCoords,isDefault);
 
         user.addAddress(userAddress);
     }

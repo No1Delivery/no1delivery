@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
@@ -37,7 +36,7 @@ public class UserAddress {
     private Boolean isDefault;
 
     @Builder
-    private UserAddress(String address,
+    public UserAddress(String address,
                         String detailAddress,
                         AddressToCoords addressToCoords,
                         Boolean isDefault) {
