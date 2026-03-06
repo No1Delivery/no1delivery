@@ -1,6 +1,7 @@
 package com.sparta.no1delivery.domain.order.presentation;
 
 import com.sparta.no1delivery.domain.order.application.dto.OrderServiceDto;
+import com.sparta.no1delivery.domain.order.domain.query.OrderQueryDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -146,5 +147,17 @@ public class OrderRequestDto {
 
         // 주문 상태 필터
         private List<String> orderStatuses;
+
+        // Controller DTO → Query DTO 변환
+        public OrderQueryDto.Search toQuerySearch() {
+            return OrderQueryDto.Search.builder()
+                    .orderIds(this.orderIds)
+                    .ordererName(this.ordererName)
+                    .storeIds(this.storeIds)
+                    .storeName(this.storeName)
+                    .deliveryAddress(this.deliveryAddress)
+                    .orderStatuses(this.orderStatuses)
+                    .build();
+        }
     }
 }

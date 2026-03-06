@@ -51,13 +51,14 @@ public class OrderController {
         return orderQueryService.getOrderDetail(orderId);
     }
 
-    // 내 주문 목록 조회
+    // 내 주문 목록 조회(필터 조회)
     @GetMapping
     public Page<OrderResponseDto.Order> getMyOrders(
             @RequestParam Long userId,
+            OrderRequestDto.Search search,
             Pageable pageable
     ) {
-        return orderQueryService.getUserOrders(userId, pageable);
+        return orderQueryService.getUserOrders(userId, search, pageable);
     }
 
     // 주문 상태 조회
@@ -66,5 +67,14 @@ public class OrderController {
             @PathVariable UUID orderId
     ) {
         return orderQueryService.getOrderStatus(orderId);
+    }
+
+    // 관리자 주문 검색 (필터 조회)
+    @GetMapping("/search")
+    public Page<OrderResponseDto.Order> searchOrders(
+            OrderRequestDto.Search search,
+            Pageable pageable
+    ) {
+        return orderQueryService.searchOrders(search, pageable);
     }
 }
