@@ -47,8 +47,8 @@ public class UserService {
                            Boolean isDefault) {
 
         UserAddress userAddress = UserAddress.builder()
-                .latitude(latitude)
-                .longitude(longitude)
+                //.latitude(latitude)
+                //.longitude(longitude)
                 .address(address)
                 .detailAddress(detailAddress)
                 .isDefault(isDefault)
