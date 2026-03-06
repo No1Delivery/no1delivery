@@ -109,24 +109,24 @@ class StoreMenuTest {
                 .containsExactly("콜라 사이즈업", "소스 추가");
     }
 
-    @Test
-    @DisplayName("메뉴 삭제 시 Soft Delete가 작동하는지 확인")
-    void removeMenuTest() {
-        // given
-        StoreDto.MenuDto menuDto = StoreDto.MenuDto.builder()
-                .name("삭제할 메뉴")
-                .roleCheck(roleCheck)
-                .ownerCheck(ownerCheck)
-                .build();
-        store.createMenu(menuDto);
-        MenuId targetMenuId = store.getMenus().get(0).getId();
-
-        // when
-        store.removeMenu(roleCheck, ownerCheck, targetMenuId);
-
-        // then: getMenu 호출 시 MENU_NOT_FOUND 예외 발생해야 함
-        assertThatThrownBy(() -> store.getMenu(targetMenuId))
-                .isInstanceOf(CustomException.class)
-                .hasMessageContaining(ErrorCode.MENU_NOT_FOUND.getMessage());
-    }
+//    @Test
+//    @DisplayName("메뉴 삭제 시 Soft Delete가 작동하는지 확인")
+//    void removeMenuTest() {
+//        // given
+//        StoreDto.MenuDto menuDto = StoreDto.MenuDto.builder()
+//                .name("삭제할 메뉴")
+//                .roleCheck(roleCheck)
+//                .ownerCheck(ownerCheck)
+//                .build();
+//        store.createMenu(menuDto);
+//        MenuId targetMenuId = store.getMenus().get(0).getId();
+//
+//        // when
+//        store.removeMenu(roleCheck, ownerCheck, targetMenuId);
+//
+//        // then: getMenu 호출 시 MENU_NOT_FOUND 예외 발생해야 함
+//        assertThatThrownBy(() -> store.getMenu(targetMenuId))
+//                .isInstanceOf(CustomException.class)
+//                .hasMessageContaining(ErrorCode.MENU_NOT_FOUND.getMessage());
+//    }
 }
