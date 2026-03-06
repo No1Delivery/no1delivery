@@ -161,6 +161,14 @@ public class Store extends BaseUserEntity {
         }
     }
 
+    // 메뉴 상태 변경
+    public void changeMenuStatus(RoleCheck roleCheck, OwnerCheck ownerCheck, MenuId menuId, MenuStatus menuStatus) {
+        checkAuthority(roleCheck, ownerCheck);
+
+        Menu menu = getMenu(menuId);
+        menu.changeStatus(menuStatus);
+    }
+
     // 메뉴 삭제 (Soft Delete)
     public void removeMenu(RoleCheck roleCheck, OwnerCheck ownerCheck, MenuId menuId, UserDetails userDetails) {
         checkAuthority(roleCheck, ownerCheck);
