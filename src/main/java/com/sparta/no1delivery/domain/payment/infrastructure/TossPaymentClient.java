@@ -25,7 +25,7 @@ public class TossPaymentClient implements PaymentClient {
 
 
     @Override// payment키와 orderId, amount값을 함께 담아서 토스API에 전달하겠다는 규칙을 구현화 하는 것
-    public PaymentApproveResponse requestApprove(String paymentKey, String orderId, Long amount) {
+    public PaymentApproveResponse requestApprove(String paymentKey, String orderId, Long amount,String idempotencyKey) {
         String Url = properties.getBaseUrl() + "/confirm";
 
         Map<String, Object> request = new HashMap<>();
@@ -33,24 +33,25 @@ public class TossPaymentClient implements PaymentClient {
         request.put("orderId", orderId);
         request.put("amount", amount);
 
-        return executeRequest(Url,request);
+        return executeRequest(Url,request,idempotencyKey);
     }
 
     @Override
-    public PaymentApproveResponse requestCancel(String paymentKey, String reason) {
+    public PaymentApproveResponse requestCancel(String paymentKey, String reason, String idempotencyKey) {
         String Url = properties.getBaseUrl() + "/" + paymentKey + "/cancel";
 
         Map<String, Object> request = new HashMap<>();
         request.put("cancelReason", reason);
 
-        return executeRequest(Url,request);
+        return executeRequest(Url,request,idempotencyKey);
     }
 
 
-    private PaymentApproveResponse executeRequest(String url, Map<String, Object> requestBody) {
+    private PaymentApproveResponse executeRequest(String url, Map<String, Object> requestBody,String idempotencyKey) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Basic "+ properties.getEncodeAuth());
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Idempotency-Key", idempotencyKey);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 

@@ -25,7 +25,12 @@ public class PaymentService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
         try {
-            PaymentApproveResponse response = paymentClient.requestApprove(paymentKey, orderId, amount);
+            PaymentApproveResponse response = paymentClient.requestApprove(
+                    paymentKey,
+                    orderId,
+                    amount,
+                    orderId
+            );
 
             payment.approve(
                     response.paymentKey(),
@@ -45,7 +50,11 @@ public class PaymentService {
                 .orElseThrow(()-> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
         try {
-            PaymentApproveResponse response = paymentClient.requestCancel(payment.getKey(), reason);
+            PaymentApproveResponse response = paymentClient.requestCancel(
+                    payment.getKey(),
+                    reason,
+                    "cancel-"+orderId
+            );
 
             payment.cancel(response.paymentLog(), response.approvedAt());
         } catch (Exception ex) {
