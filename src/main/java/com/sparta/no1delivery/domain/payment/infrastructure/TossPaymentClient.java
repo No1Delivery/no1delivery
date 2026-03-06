@@ -27,9 +27,7 @@ public class TossPaymentClient implements PaymentClient {
     @Override// payment키와 orderId, amount값을 함께 담아서 토스API에 전달하겠다는 규칙을 구현화 하는 것
     public PaymentApproveResponse requestApprove(String paymentKey, String orderId, Long amount) {
         String Url = properties.getBaseUrl() + "/confirm";
-        String encodeAuth = properties.getEncodeAuth();
 
-        // 토스 API에 전달할 정보를 하나씩이 아니라 한꺼번에 묶어서 전달하기 위함.
         Map<String, Object> request = new HashMap<>();
         request.put("paymentKey", paymentKey);
         request.put("orderId", orderId);
@@ -41,7 +39,6 @@ public class TossPaymentClient implements PaymentClient {
     @Override
     public PaymentApproveResponse requestCancel(String paymentKey, String reason) {
         String Url = properties.getBaseUrl() + "/" + paymentKey + "/cancel";
-        String encodeAuth = properties.getEncodeAuth();
 
         Map<String, Object> request = new HashMap<>();
         request.put("cancelReason", reason);
