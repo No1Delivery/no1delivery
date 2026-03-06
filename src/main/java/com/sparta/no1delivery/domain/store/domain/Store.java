@@ -6,13 +6,13 @@ import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.AddressToCoords;
 import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -115,15 +115,14 @@ public class Store extends BaseUserEntity {
     }
 
     // 가게 삭제
-    public void remove(RoleCheck roleCheck, OwnerCheck ownerCheck) {
+    public void remove(RoleCheck roleCheck, OwnerCheck ownerCheck, UserDetails userDetails) {
         checkAuthority(roleCheck, ownerCheck);
 
-        this.deletedAt = LocalDateTime.now();
-        this.deletedBy = ownerCheck.getOwnerId();
+        delete(userDetails);
 
         // 메뉴 삭제 처리
         for (Menu menu : menus) {
-            menu.markDeleted(ownerCheck.getOwnerId());
+            menu.remove(userDetails);
         }
     }
 
@@ -163,11 +162,11 @@ public class Store extends BaseUserEntity {
     }
 
     // 메뉴 삭제 (Soft Delete)
-    public void removeMenu(RoleCheck roleCheck, OwnerCheck ownerCheck, MenuId menuId) {
+    public void removeMenu(RoleCheck roleCheck, OwnerCheck ownerCheck, MenuId menuId, UserDetails userDetails) {
         checkAuthority(roleCheck, ownerCheck);
 
         Menu menu = getMenu(menuId);
-        menu.markDeleted(ownerCheck.getOwnerId());
+        menu.remove(userDetails);
     }
 
     // 메뉴 조회

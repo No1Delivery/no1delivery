@@ -1,34 +1,33 @@
-package com.sparta.no1delivery.domain.store.application;
+package com.sparta.no1delivery.domain.store.application.menu;
 
+import com.sparta.no1delivery.domain.store.domain.Menu;
+import com.sparta.no1delivery.domain.store.domain.MenuId;
 import com.sparta.no1delivery.domain.store.domain.Store;
-import com.sparta.no1delivery.domain.store.domain.StoreId;
 import com.sparta.no1delivery.domain.store.domain.StoreRepository;
 import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.UserDetails;
-import com.sparta.no1delivery.global.presentation.exception.CustomException;
-import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class RemoveStoreService {
-
+public class RemoveMenuService {
     private final StoreRepository storeRepository;
     private final RoleCheck roleCheck;
     private final OwnerCheck ownerCheck;
     private final UserDetails userDetails;
 
     @Transactional
-    public void remove(UUID storeId) {
-        Store store = storeRepository.findById(StoreId.of(storeId))
-                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+    public void removeMenu(UUID storeId, UUID menuId) {
+        Store store = MenuServiceHelper.getStore(storeId, storeRepository);
+        store.removeMenu(roleCheck, ownerCheck, MenuId.of(menuId), userDetails);
 
-        store.remove(roleCheck, ownerCheck, userDetails);
+        log.info("Product removed from store {}: {}", storeId, menuId);
     }
-
 }
