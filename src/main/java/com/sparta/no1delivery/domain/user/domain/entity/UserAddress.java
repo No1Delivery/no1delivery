@@ -1,11 +1,13 @@
 package com.sparta.no1delivery.domain.user.domain.entity;
 
+import com.sparta.no1delivery.global.domain.service.AddressToCoords;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -24,9 +26,9 @@ public class UserAddress {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private BigDecimal latitude;
+    private Double latitude;
 
-    private BigDecimal longitude;
+    private Double longitude;
 
     private String address;
 
@@ -35,31 +37,34 @@ public class UserAddress {
     private Boolean isDefault;
 
     @Builder
-    private UserAddress(BigDecimal latitude,
-                        BigDecimal longitude,
-                        String address,
+    private UserAddress(String address,
                         String detailAddress,
+                        AddressToCoords addressToCoords,
                         Boolean isDefault) {
-        this.latitude = latitude;
-        this.longitude = longitude;
         this.address = address;
         this.detailAddress = detailAddress;
+
+        if (!StringUtils.hasText(address) || !StringUtils.hasText(detailAddress)) return;
+        double[] coords = addressToCoords.convert(address);
+        latitude = coords[0];
+        longitude = coords[1];
+
         this.isDefault = isDefault != null && isDefault;
     }
 
     public void updateAddress(String address,
                               String detailAddress,
-                              BigDecimal latitude,
-                              BigDecimal longitude) {
+                              AddressToCoords addressToCoords) {
 
         if (address == null || address.isBlank()) {
             throw new CustomException(ErrorCode.MISSING_INPUT_VALUE);
         }
-
         this.address = address;
         this.detailAddress = detailAddress;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        if (!StringUtils.hasText(address) || !StringUtils.hasText(detailAddress)) return;
+        double[] coords = addressToCoords.convert(address);
+        latitude = coords[0];
+        longitude = coords[1];
     }
 
     public void updateDefault(boolean isDefault) {
