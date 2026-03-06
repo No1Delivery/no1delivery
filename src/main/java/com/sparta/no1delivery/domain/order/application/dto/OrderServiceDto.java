@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public class OrderServiceDto {
 
+    //주문 생성 Service DTO
     @Getter
     @Builder
     public static class Create {
@@ -21,13 +22,33 @@ public class OrderServiceDto {
         private List<Item> items;
     }
 
+    //주문 상세 DTO
     @Getter
     @Builder
     public static class Item {
         private UUID menuId;
         private String menuName;
-        private String menuOption;
         private int quantity;
         private int menuPrice;
+
+        // 선택된 옵션 목록
+        private List<Option> options;
+    }
+
+    // 옵션 그룹 (예: 맵기, 사이즈)
+    @Getter
+    @Builder
+    public static class Option {
+        private String name;
+        private int price;
+        private List<SubOption> subOptions;
+    }
+
+    // 옵션 상세 (예: 매운맛, 보통맛)
+    @Getter
+    @Builder
+    public static class SubOption {
+        private String name;
+        private int price;
     }
 }
