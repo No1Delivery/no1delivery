@@ -21,16 +21,36 @@ public class PaymentService {
 
     @Transactional
     public void approvePayment(String paymentKey, String orderId, Long amount) {
-        Payment payment =paymentRepository.findByPaymentInfoOrderId(UUID.fromString(orderId))
+        Payment payment = paymentRepository.findByPaymentInfoOrderId(UUID.fromString(orderId))
+                .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        try {
+            PaymentApproveResponse response = paymentClient.requestApprove(paymentKey, orderId, amount);
+
+            payment.approve(
+                    response.paymentKey(),
+                    response.approvedAt(),
+                    response.paymentLog(),
+                    response.approvedAmount()
+            );
+        } catch (Exception ex) {
+            payment.abort("결제 승인 중 에러 발생 : "+ ex.getMessage());
+            throw new CustomException(ErrorCode.PAYMENT_CONFIRM_FAILED);
+        }
+    }
+
+    @Transactional
+    public void cancelPayment( String orderId, String reason) {
+        Payment payment = paymentRepository.findByPaymentInfoOrderId(UUID.fromString(orderId))
                 .orElseThrow(()-> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
-        PaymentApproveResponse response = paymentClient.requestApprove(paymentKey,orderId,amount);
+        try {
+            PaymentApproveResponse response = paymentClient.requestCancel(payment.getKey(), reason);
 
-        payment.approve(
-                response.paymentKey(),
-                response.approvedAt(),
-                response.paymentLog(),
-                response.approvedAmount()
-        );
+            payment.cancel(response.paymentLog(), response.approvedAt());
+        } catch (Exception ex) {
+            payment.failCancel("결제 취소 중 에러 발생 : " +ex.getMessage());
+            throw new CustomException(ErrorCode.PAYMENT_CANCEL_FAILED);
+        }
     }
 }

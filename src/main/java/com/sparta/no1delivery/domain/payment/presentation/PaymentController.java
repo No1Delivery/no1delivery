@@ -1,6 +1,7 @@
 package com.sparta.no1delivery.domain.payment.presentation;
 
 import com.sparta.no1delivery.domain.payment.application.PaymentService;
+import com.sparta.no1delivery.domain.payment.presentation.dto.PaymentCancelRequest;
 import com.sparta.no1delivery.domain.payment.presentation.dto.PaymentConfirmRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +24,16 @@ public class PaymentController {
                 request.orderId(),
                 request.amount()
         );
-
         return ResponseEntity.ok().build();
-
     }
 
-
+    @PostMapping("/cancel")
+    public ResponseEntity<Void> cancelPayment(@RequestBody PaymentCancelRequest request){
+        paymentService.cancelPayment(
+                request.orderId(),
+                request.reason()
+        );
+        return ResponseEntity.ok().build();
+    }
 }
 

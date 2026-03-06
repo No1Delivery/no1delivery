@@ -62,6 +62,8 @@ public class Payment {
     // 결제 승인 시간
     private LocalDateTime approvedAt;
 
+    private LocalDateTime canceledAt;
+
     //생성자 기본 (orderId와 orderName, amount의 값을 받아 새 Payment 객체 인스턴스를 만듬
     @Builder
     public Payment(UUID orderId, String orderName, Long amount){
@@ -86,17 +88,22 @@ public class Payment {
     }
 
     // 결제 취소
-    public void cancel(String paymentLog){
+    public void cancel(String paymentLog, LocalDateTime canceledAt){
         this.status.verifyCancelable();
         this.status = PaymentStatus.CANCELLED;
-        this.paymentLog = "%s\n------------------------------------------------------\n%s".formatted(this.paymentLog, paymentLog);
+        this.canceledAt = canceledAt;
+        this.paymentLog = "%s\n[취소 요청 기록]:%s\n------------------------------------------------------".formatted(this.paymentLog, paymentLog);
     }
 
     //결제 실패
     public void abort(String paymentLog){
         this.status.verifyAbortable();
         status = PaymentStatus.ABORTED;
-        this.paymentLog = "%s\n------------------------------------------------------\n%s".formatted(this.paymentLog, paymentLog);
+        this.paymentLog = "%s\n[결제 요청 실패 기록]:%s\n------------------------------------------------------".formatted(this.paymentLog, paymentLog);
+    }
+
+    public void failCancel(String failureLog){
+        this.paymentLog = "%s\n[취소 실패 기록]: %s\n------------------------------------------------------".formatted(this.paymentLog, failureLog);
     }
 
 }
