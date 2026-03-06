@@ -19,7 +19,7 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class OrderQueryService {
 
-    //주문조회
+    // 주문 조회용 Repository
     private final OrderQueryRepository orderQueryRepository;
 
     // 주문 상세 조회
@@ -29,18 +29,19 @@ public class OrderQueryService {
         return toDetailResponse(order);
     }
 
-    // 사용자 주문 목록 조회
+    // 사용자 기준 주문 목록 조회 (페이징)
     public Page<OrderResponseDto.Order> getUserOrders(Long userId, Pageable pageable) {
         return orderQueryRepository.findAllByUser(userId, null, pageable)
                 .map(this::toOrderResponse);
     }
 
-    // 주문 검색 기능
+    // 주문 검색 조회
     public Page<OrderResponseDto.Order> searchOrders(OrderQueryDto.Search search, Pageable pageable) {
         return orderQueryRepository.findAll(search, pageable)
                 .map(this::toOrderResponse);
     }
 
+    // 주문 목록 조회용 DTO 변환
     private OrderResponseDto.Order toOrderResponse(Order order) {
         return OrderResponseDto.Order.builder()
                 .orderId(order.getOrderId())
@@ -51,11 +52,26 @@ public class OrderQueryService {
                 .build();
     }
 
+    // 주문 상태 조회
+    public OrderResponseDto.OrderStatus getOrderStatus(UUID orderId) {
+        Order order = orderQueryRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        return OrderResponseDto.OrderStatus.builder()
+                .orderId(order.getOrderId())
+                .status(order.getStatus().name())
+                .build();
+    }
+
+    // 주문 상세 조회용 DTO 변환
     private OrderResponseDto.OrderDetail toDetailResponse(Order order) {
         return OrderResponseDto.OrderDetail.builder()
                 .orderId(order.getOrderId())
                 .storeName(order.getStoreInfo().getStoreName())
-                .ordererName(order.getOrdererName())
+
+                // 여기 수정됨
+                .ordererName(order.getOrderer().getName())
+
                 .deliveryAddress(order.getDeliveryInfo().getAddress())
                 .deliveryMemo(order.getDeliveryInfo().getRequestMessage())
                 .totalOrderPrice(order.getTotalPrice())

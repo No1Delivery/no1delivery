@@ -11,34 +11,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DeliveryInfo {
 
-    @Column(name = "address", nullable = false)
+    @Column( nullable = false)
     private String address;
 
-    @Column(name = "detail_address")
     private String detailAddress;
 
     @Column(name = "request_memo")
     private String requestMessage;
 
-    @Column(name = "phone", nullable = false, length = 20)
-    private String phone;
-
     public DeliveryInfo(String address,
                         String detailAddress,
-                        String requestMessage,
-                        String phone) {
+                        String requestMessage) {
 
         if (address == null || address.isBlank()) {
             throw new IllegalArgumentException("주소는 필수입니다.");
         }
 
-        if (phone == null || phone.isBlank()) {
-            throw new IllegalArgumentException("연락처는 필수입니다.");
-        }
-
         this.address = address;
         this.detailAddress = detailAddress;
         this.requestMessage = requestMessage;
-        this.phone = phone;
     }
 }

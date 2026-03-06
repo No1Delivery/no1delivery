@@ -1,10 +1,11 @@
 package com.sparta.no1delivery.domain.order.presentation;
 
 import com.sparta.no1delivery.domain.order.application.OrderService;
-import com.sparta.no1delivery.domain.order.application.dto.OrderServiceDto;
 import com.sparta.no1delivery.domain.order.application.query.OrderQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,11 +13,14 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/orders")
+@RequestMapping("/v1/orders")
 public class OrderController {
 
     private final OrderService orderService;
     private final OrderQueryService orderQueryService;
+
+    //TODO: Spring Security 적용 시 userId 제거
+    //TODO: Swagger API 문서 어노테이션 추가
 
     // 주문 생성
     @PostMapping
@@ -25,34 +29,18 @@ public class OrderController {
             @RequestBody @Valid OrderRequestDto request,
             @RequestParam Long userId
     ) {
+        UUID orderId = orderService.createOrder(
+                request.toServiceDto(),
+                userId
+        );
 
-        OrderServiceDto.Create dto = OrderServiceDto.Create.builder()
-                .ordererName(request.getOrdererName())
-                .storeId(request.getStoreId())
-                .storeName(request.getStoreName())
-                .deliveryAddress(request.getDeliveryAddress())
-                .deliveryAddressDetail(request.getDeliveryAddressDetail())
-                .deliveryMemo(request.getDeliveryMemo())
-                .phone(request.getPhone())
-                .items(
-                        request.getItems().stream()
-                                .map(item -> OrderServiceDto.Item.builder()
-                                        .menuId(item.getMenuId())
-                                        .menuName(item.getMenuName())
-                                        .menuOption(item.getMenuOption())
-                                        .quantity(item.getQuantity())
-                                        .menuPrice(item.getMenuPrice())
-                                        .build())
-                                .toList()
-                )
-                .build();
+        return new OrderResponseDto.Create(orderId);
+    }
 
-        UUID orderId = orderService.createOrder(dto, userId);
-
-        return OrderResponseDto.Create.builder()
-                .orderId(orderId)
-                .status("ORDERED")
-                .build();
+    // 주문 취소 (주문 생성 후 5분 이내 가능)
+    @PatchMapping("/{orderId}/cancel")
+    public void cancelOrder(@PathVariable UUID orderId) {
+        orderService.cancelOrder(orderId);
     }
 
     // 주문 상세 조회
@@ -61,5 +49,22 @@ public class OrderController {
             @PathVariable UUID orderId
     ) {
         return orderQueryService.getOrderDetail(orderId);
+    }
+
+    // 내 주문 목록 조회
+    @GetMapping
+    public Page<OrderResponseDto.Order> getMyOrders(
+            @RequestParam Long userId,
+            Pageable pageable
+    ) {
+        return orderQueryService.getUserOrders(userId, pageable);
+    }
+
+    // 주문 상태 조회
+    @GetMapping("/{orderId}/status")
+    public OrderResponseDto.OrderStatus getOrderStatus(
+            @PathVariable UUID orderId
+    ) {
+        return orderQueryService.getOrderStatus(orderId);
     }
 }
