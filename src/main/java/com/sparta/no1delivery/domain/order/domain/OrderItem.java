@@ -53,7 +53,8 @@ public class OrderItem {
                      String menuName,
                      String menuOption,
                      int quantity,
-                     int menuPrice) {
+                     int menuPrice,
+                     int optionPrice) {
 
         // 메뉴 이름 검증 (주문 기록 보호)
         if (menuName == null || menuName.isBlank()) {
@@ -77,7 +78,7 @@ public class OrderItem {
         this.menuPrice = menuPrice;
 
         // 주문 상품 총 가격 계산
-        this.subtotalPrice = menuPrice * quantity;
+        this.subtotalPrice = (menuPrice + optionPrice) * quantity;
     }
 
     // Order와의 연관관계 설정
