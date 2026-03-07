@@ -5,6 +5,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.no1delivery.domain.store.domain.Store;
 import com.sparta.no1delivery.domain.store.domain.StoreId;
@@ -15,9 +16,9 @@ import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
                 .fetch();
 
         // 카운트 쿼리
-        Long total = queryFactory
+        JPAQuery<Long> countQuery = queryFactory
                 .select(store.countDistinct())
                 .from(store)
                 .leftJoin(store.menus, menu)
@@ -79,10 +80,9 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
                         statusFilter(search),
                         keywordContains(search.getKeyword()),
                         distanceWithin(distanceExpression, search)
-                )
-                .fetchOne();
+                );
 
-        return new PageImpl<>(storeList, pageable, total != null ? total : 0L);
+        return PageableExecutionUtils.getPage(storeList, pageable, countQuery::fetchOne);
     }
 
     private BooleanExpression canAccessDefunct() {
