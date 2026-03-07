@@ -2,13 +2,13 @@ package com.sparta.no1delivery.domain.store.domain;
 
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import com.sparta.no1delivery.global.domain.Price;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -16,7 +16,9 @@ import java.util.stream.IntStream;
 @Getter
 @ToString
 @Entity
-@Table(name = "P_MENU")
+@Table(name = "P_MENU", indexes = {
+        @Index(name = "idx_menu_name", columnList = "name")
+})
 @SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Menu extends BaseUserEntity {
@@ -73,9 +75,8 @@ public class Menu extends BaseUserEntity {
     }
 
     // 메뉴 삭제
-    public void markDeleted(Long userId) {
-        deletedAt = LocalDateTime.now();
-        deletedBy = userId;
+    public void remove(UserDetails userDetails) {
+        delete(userDetails);
     }
 
     // 옵션 여러개 등록
