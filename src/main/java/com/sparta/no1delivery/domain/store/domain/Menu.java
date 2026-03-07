@@ -16,7 +16,9 @@ import java.util.stream.IntStream;
 @Getter
 @ToString
 @Entity
-@Table(name = "P_MENU")
+@Table(name = "P_MENU", indexes = {
+        @Index(name = "idx_menu_name", columnList = "name")
+})
 @SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Menu extends BaseUserEntity {

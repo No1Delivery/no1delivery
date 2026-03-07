@@ -19,7 +19,10 @@ import java.util.stream.Collectors;
 @Entity
 @ToString
 @Getter
-@Table(name = "P_STORE")
+@Table(name = "P_STORE", indexes = {
+        @Index(name = "idx_store_address_point", columnList = "point"),
+        @Index(name = "idx_store_name", columnList = "store_name")
+})
 @Access(AccessType.FIELD)
 @SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
