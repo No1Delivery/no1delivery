@@ -18,3 +18,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+payment:
+  toss:
+    secret-key: ${TOSS_SECRET_KEY}
