@@ -1,5 +1,6 @@
 package com.sparta.no1delivery.domain.user.application;
 
+import com.sparta.no1delivery.domain.user.application.dto.OwnerRequestDto;
 import com.sparta.no1delivery.domain.user.domain.entity.User;
 import com.sparta.no1delivery.domain.user.domain.entity.UserAddress;
 import com.sparta.no1delivery.domain.user.domain.enums.OwnerRequestStatus;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,15 +54,14 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
-    //닉네임 변경
+    // 닉네임 변경
     public void changeNickname(BigInteger userId, String nickname) {
 
         User user = getUser(userId);
-
         user.changeNickname(nickname);
     }
 
-    //비밀번호 변경
+    // 비밀번호 변경
     public void changePassword(BigInteger userId, String password) {
 
         User user = getUser(userId);
@@ -68,23 +70,13 @@ public class UserService {
         user.changePassword(encodedPassword);
     }
 
-    //회원 탈퇴
-    public void withdraw(BigInteger userId){
-        User user = getUser(userId);
-
-        //회원 탈퇴 메소드
-    }
-
     // 주소 추가
-    public void addAddress(
-            BigInteger userId,
-            String address,
-            String detailAddress,
-            Boolean isDefault
-    ) {
+    public void addAddress(BigInteger userId,
+                           String address,
+                           String detailAddress,
+                           Boolean isDefault) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        User user = getUser(userId);
 
         UserAddress userAddress = UserAddress.builder()
                 .address(address)
@@ -96,16 +88,13 @@ public class UserService {
         user.addAddress(userAddress);
     }
 
-    //주소 수정
-    public void updateAddress(
-            BigInteger userId,
-            UUID addressId,
-            String address,
-            String detailAddress
-    ) {
+    // 주소 수정
+    public void updateAddress(BigInteger userId,
+                              UUID addressId,
+                              String address,
+                              String detailAddress) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        User user = getUser(userId);
 
         UserAddress userAddress = user.getAddresses()
                 .stream()
@@ -116,15 +105,10 @@ public class UserService {
         userAddress.updateAddress(address, detailAddress, addressToCoords);
     }
 
+    // 주소 삭제
+    public void deleteAddress(BigInteger userId, UUID addressId) {
 
-    //주소 삭제
-    public void deleteAddress(
-            BigInteger userId,
-            UUID addressId
-    ) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        User user = getUser(userId);
 
         UserAddress address = user.getAddresses()
                 .stream()
@@ -135,14 +119,10 @@ public class UserService {
         user.removeAddress(address);
     }
 
-    //기본 배송지 변경
-    public void changeDefaultAddress(
-            BigInteger userId,
-            UUID addressId
-    ) {
+    // 기본 배송지 변경
+    public void changeDefaultAddress(BigInteger userId, UUID addressId) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        User user = getUser(userId);
 
         UserAddress newDefault = user.getAddresses()
                 .stream()
@@ -153,12 +133,24 @@ public class UserService {
         user.changeDefaultAddress(newDefault);
     }
 
+
     //사장 권한 요청
-    public void requestOwnerRole(BigInteger userId, String businessNumber) {
+    public void requestOwnerRole(BigInteger userId, OwnerRequestDto.Request request) {
 
         User user = getUser(userId);
 
-        user.requestOwnerRole(businessNumber);
+        user.requestOwnerRole(request.businessNumber());
+    }
+
+    //사장 신청 목록 조회
+    @Transactional(readOnly = true)
+    public List<OwnerRequestDto.Response> getOwnerRequests() {
+
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> user.getOwnerRequestStatus() == OwnerRequestStatus.PENDING)
+                .map(OwnerRequestDto.Response::from)
+                .collect(Collectors.toList());
     }
 
     //사장 권한 승인
