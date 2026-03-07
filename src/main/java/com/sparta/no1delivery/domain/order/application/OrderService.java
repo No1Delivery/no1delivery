@@ -117,4 +117,63 @@ public class OrderService {
 
         order.cancel();
     }
+
+
+    // 주문 접수
+    public void acceptOrder(UUID orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        order.orderAccept();
+    }
+
+
+    // 배송 시작
+    public void startDelivery(UUID orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        order.startDelivery();
+    }
+
+
+    // 배송 완료
+    public void deliveryDone(UUID orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        order.deliveryDone();
+    }
+
+
+    // 주문 최종 완료
+    public void completeOrder(UUID orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        order.complete();
+    }
+
+    // 조리 시작
+    public void startPreparing(UUID orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        order.startPreparing();
+    }
+
+
+    // 조리 완료
+    public void readyOrder(UUID orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        order.ready();
+    }
 }
