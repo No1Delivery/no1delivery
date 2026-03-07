@@ -2,6 +2,7 @@ package com.sparta.no1delivery.domain.order.presentation;
 
 import com.sparta.no1delivery.domain.order.application.OrderService;
 import com.sparta.no1delivery.domain.order.application.query.OrderQueryService;
+import com.sparta.no1delivery.domain.order.domain.OrderStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,15 @@ public class OrderController {
         orderService.cancelOrder(orderId);
     }
 
+    // 주문 상태 변경 (분기 방식)
+    @PatchMapping("/{orderId}/status")
+    public void changeOrderStatus(
+            @PathVariable UUID orderId,
+            @RequestParam OrderStatus status
+    ) {
+        orderService.changeOrderStatus(orderId, status);
+    }
+
     // 주문 상세 조회
     @GetMapping("/{orderId}")
     public OrderResponseDto.OrderDetail getOrderDetail(
@@ -76,40 +86,5 @@ public class OrderController {
             Pageable pageable
     ) {
         return orderQueryService.searchOrders(search, pageable);
-    }
-    // 주문 접수
-    @PatchMapping("/{orderId}/accept")
-    public void acceptOrder(@PathVariable UUID orderId) {
-        orderService.acceptOrder(orderId);
-    }
-
-    // 조리 시작
-    @PatchMapping("/{orderId}/preparing")
-    public void startPreparing(@PathVariable UUID orderId) {
-        orderService.startPreparing(orderId);
-    }
-
-    // 조리 완료
-    @PatchMapping("/{orderId}/ready")
-    public void readyOrder(@PathVariable UUID orderId) {
-        orderService.readyOrder(orderId);
-    }
-
-    // 배송 시작
-    @PatchMapping("/{orderId}/delivery")
-    public void startDelivery(@PathVariable UUID orderId) {
-        orderService.startDelivery(orderId);
-    }
-
-    // 배송 완료
-    @PatchMapping("/{orderId}/delivery-done")
-    public void deliveryDone(@PathVariable UUID orderId) {
-        orderService.deliveryDone(orderId);
-    }
-
-    // 주문 최종 완료
-    @PatchMapping("/{orderId}/complete")
-    public void completeOrder(@PathVariable UUID orderId) {
-        orderService.completeOrder(orderId);
     }
 }

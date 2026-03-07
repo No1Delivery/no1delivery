@@ -68,7 +68,6 @@ public class OrderService {
     private OrderItem toOrderItem(OrderServiceDto.Item item) {
 
         // 클라이언트에서 전달한 메뉴 가격 검증
-        // 가격이 0 이하인 경우 잘못된 요청으로 판단 (가격 조작 방지)
         if (item.getMenuPrice() <= 0) {
             throw new CustomException(ErrorCode.INVALID_MENU_PRICE);
         }
@@ -77,11 +76,9 @@ public class OrderService {
         List<OrderServiceDto.Option> options =
                 item.getOptions() == null ? Collections.emptyList() : item.getOptions();
 
-        // 옵션을 JSON 문자열로 변환 (주문 시점 옵션 스냅샷 저장)
+        // 옵션 JSON 스냅샷 생성
         String optionJson = convertOptionToJson(options);
 
-        // OrderItem 생성
-        // 옵션 가격 계산과 subtotal 계산은 OrderItem 도메인에서 처리
         return new OrderItem(
                 item.getMenuId(),
                 item.getMenuName(),
@@ -96,7 +93,6 @@ public class OrderService {
     // 옵션 객체 → JSON 변환
     private String convertOptionToJson(List<OrderServiceDto.Option> options) {
 
-        // 옵션이 없으면 null 저장
         if (options == null || options.isEmpty()) {
             return null;
         }
@@ -119,61 +115,27 @@ public class OrderService {
     }
 
 
-    // 주문 접수
-    public void acceptOrder(UUID orderId) {
+    // 주문 상태 변경 (분기 처리)
+    public void changeOrderStatus(UUID orderId, OrderStatus status) {
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
-        order.orderAccept();
-    }
+        switch (status) {
 
+            case ORDER_ACCEPT -> order.orderAccept();
 
-    // 배송 시작
-    public void startDelivery(UUID orderId) {
+            case PREPARING -> order.startPreparing();
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+            case READY -> order.ready();
 
-        order.startDelivery();
-    }
+            case DELIVERY -> order.startDelivery();
 
+            case DELIVERY_DONE -> order.deliveryDone();
 
-    // 배송 완료
-    public void deliveryDone(UUID orderId) {
+            case ORDER_DONE -> order.complete();
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
-
-        order.deliveryDone();
-    }
-
-
-    // 주문 최종 완료
-    public void completeOrder(UUID orderId) {
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
-
-        order.complete();
-    }
-
-    // 조리 시작
-    public void startPreparing(UUID orderId) {
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
-
-        order.startPreparing();
-    }
-
-
-    // 조리 완료
-    public void readyOrder(UUID orderId) {
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
-
-        order.ready();
+            default -> throw new CustomException(ErrorCode.INVALID_ORDER_STATUS);
+        }
     }
 }
