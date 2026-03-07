@@ -30,7 +30,7 @@ public class OrderService {
             throw new CustomException(ErrorCode.ORDER_ITEM_EMPTY);
         }
 
-        // OrderItem 변환 (가독성을 위해 메서드 분리)
+        // DTO → OrderItem 변환
         List<OrderItem> items = dto.getItems().stream()
                 .map(this::toOrderItem)
                 .toList();
@@ -80,17 +80,15 @@ public class OrderService {
         // 옵션을 JSON 문자열로 변환 (주문 시점 옵션 스냅샷 저장)
         String optionJson = convertOptionToJson(options);
 
-        // 옵션 가격 계산
-        int optionPrice = calculateOptionPrice(options);
-
         // OrderItem 생성
+        // 옵션 가격 계산과 subtotal 계산은 OrderItem 도메인에서 처리
         return new OrderItem(
                 item.getMenuId(),
                 item.getMenuName(),
                 optionJson,
                 item.getQuantity(),
                 item.getMenuPrice(),
-                optionPrice
+                options
         );
     }
 
@@ -108,36 +106,6 @@ public class OrderService {
         } catch (JsonProcessingException e) {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
-    }
-
-
-    // 선택된 옵션들의 총 가격 계산
-    // (옵션 그룹 가격 + 하위 옵션 가격)
-    private int calculateOptionPrice(List<OrderServiceDto.Option> options) {
-
-        if (options == null || options.isEmpty()) {
-            return 0;
-        }
-
-        int total = 0;
-
-        for (OrderServiceDto.Option option : options) {
-
-            // 옵션 그룹 가격
-            total += option.getPrice();
-
-            // 하위 옵션 null 방지
-            if (option.getSubOptions() != null) {
-
-                for (OrderServiceDto.SubOption sub : option.getSubOptions()) {
-
-                    // 하위 옵션 가격 추가
-                    total += sub.getPrice();
-                }
-            }
-        }
-
-        return total;
     }
 
 
