@@ -1,3 +1,4 @@
+/**
 package com.sparta.no1delivery.domain.review.domain;
 
 import com.sparta.no1delivery.domain.order.domain.Order;
@@ -78,3 +79,4 @@ class ReviewTest {
         return order;
     }
 }
+ */

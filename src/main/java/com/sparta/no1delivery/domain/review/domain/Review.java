@@ -1,8 +1,5 @@
 package com.sparta.no1delivery.domain.review.domain;
 
-import com.sparta.no1delivery.domain.order.domain.Order;
-import com.sparta.no1delivery.domain.order.domain.OrderStatus;
-import com.sparta.no1delivery.domain.review.domain.exception.InvalidOrderStateForReviewException;
 import com.sparta.no1delivery.domain.review.domain.service.OrderInfoProvider;
 import com.sparta.no1delivery.domain.review.domain.service.ReviewerCheck;
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
