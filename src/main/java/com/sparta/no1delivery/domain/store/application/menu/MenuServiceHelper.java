@@ -43,7 +43,6 @@ public class MenuServiceHelper {
     private static StoreDto.MenuOptionDto toOptionDto(StoreServiceDto.MenuOption optionDto) {
         return StoreDto.MenuOptionDto.builder()
                 .name(optionDto.getName())
-                .price(optionDto.getPrice())
                 .subOptions(toSubOptions(optionDto.getSubOptions()))
                 .isEssential(optionDto.isEssential())
                 .isMultiple(optionDto.isMultiple())
@@ -73,7 +72,6 @@ public class MenuServiceHelper {
     public static MenuOption toMenuOptionEntity(StoreServiceDto.MenuOption dto) {
         return MenuOption.builder()
                 .name(dto.getName())
-                .price(dto.getPrice())
                 .subOptions(toMenuSubOptionEntities(dto.getSubOptions()))
                 .isEssential(dto.isEssential())
                 .isMultiple(dto.isMultiple())

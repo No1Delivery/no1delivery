@@ -47,7 +47,6 @@ public class StoreDto {
     @AllArgsConstructor
     public static class MenuOptionDto {
         private String name;
-        private int price;
         private List<MenuSubOptionDto> subOptions;
         private boolean isMultiple;
         private boolean isEssential;
@@ -94,7 +93,6 @@ public class StoreDto {
         return MenuOption
                 .builder()
                 .name(dto.getName())
-                .price(dto.price)
                 .subOptions(subOptions)
                 .isMultiple(dto.isMultiple)
                 .isEssential(dto.isEssential)
