@@ -1,7 +1,6 @@
 package com.sparta.no1delivery.domain.review.domain;
 
 import com.sparta.no1delivery.domain.review.domain.service.OrderInfoProvider;
-import com.sparta.no1delivery.domain.review.domain.service.ReviewerCheck;
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import jakarta.persistence.*;
