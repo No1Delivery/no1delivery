@@ -2,7 +2,7 @@ package com.sparta.no1delivery.domain.review.domain;
 
 import com.sparta.no1delivery.domain.order.domain.Order;
 import com.sparta.no1delivery.domain.order.domain.OrderStatus;
-import com.sparta.no1delivery.domain.review.domain.exception.ReviewException;
+import com.sparta.no1delivery.domain.review.domain.exception.InvalidOrderStateForReviewException;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -19,7 +19,7 @@ class ReviewTest {
         Order order = createOrder(1L, OrderStatus.ORDERED);
 
         // when & then
-        assertThrows(ReviewException.class, () ->
+        assertThrows(InvalidOrderStateForReviewException.class, () ->
                 Review.create(
                         1L,
                         "홍길동",
@@ -39,7 +39,7 @@ class ReviewTest {
         Order order = createOrder(2L, OrderStatus.DELIVERED);
 
         // when & then
-        assertThrows(ReviewException.class, () ->
+        assertThrows(InvalidOrderStateForReviewException.class, () ->
                 Review.create(
                         1L,
                         "홍길동",
@@ -56,7 +56,7 @@ class ReviewTest {
 
         Order order = createOrder(1L, OrderStatus.DELIVERED);
 
-        assertThrows(ReviewException.class, () ->
+        assertThrows(InvalidOrderStateForReviewException.class, () ->
                 Review.create(
                         1L,
                         "홍길동",
