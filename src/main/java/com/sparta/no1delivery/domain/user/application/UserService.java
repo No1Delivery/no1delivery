@@ -14,6 +14,7 @@ import com.sparta.no1delivery.domain.user.presentation.dto.OwnerRequestDto;
 import com.sparta.no1delivery.domain.user.presentation.dto.UserCompositeDto;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.AddressToCoords;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.infrastructure.security.UserDetailsImpl;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
@@ -111,6 +112,16 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(password);
 
         user.changePassword(encodedPassword);
+    }
+
+    //회원 탈퇴
+    public void deleteUser(Long userId) {
+
+        validateSelf(userId);
+
+        User user = getUser(userId);
+        Long loginUserId = getLoginUserId();
+        user.deleteUser(loginUserId);
     }
 
     //주소 조회

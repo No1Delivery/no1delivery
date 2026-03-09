@@ -67,6 +67,13 @@ public class UserController {
         userService.changePassword(userId, request.password());
     }
 
+    //회원탈퇴
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable Long userId){
+        userService.deleteUser(userId);
+    }
+
+
     //배송지 관련
 // 배송지 등록
     @PostMapping("/{userId}/addresses")

@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Where;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 @ToString
 @Entity
+@Where(clause = "deleted_at IS NULL")
 @Getter
 @NoArgsConstructor
 @Table(name = "p_user")
@@ -74,7 +76,10 @@ public class User extends BaseUserEntity {
         this.ownerRequestStatus = ownerRequestStatus;
     }
 
-    //회원탈퇴 메소드 추가
+    public void deleteUser(Long loginUserId){
+        this.deletedBy = loginUserId;
+        this.deletedAt = java.time.LocalDateTime.now();
+    }
 
     public void changePassword(String encodedPassword) {
 
