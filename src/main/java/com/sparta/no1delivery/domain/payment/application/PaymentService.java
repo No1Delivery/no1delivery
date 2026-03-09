@@ -39,7 +39,7 @@ public class PaymentService {
                     response.approvedAmount()
             );
         } catch (Exception ex) {
-            payment.abort("결제 승인 중 에러 발생 : "+ ex.getMessage());
+            payment.abort(ex.getMessage());
             throw new CustomException(ErrorCode.PAYMENT_CONFIRM_FAILED);
         }
     }
@@ -58,7 +58,7 @@ public class PaymentService {
 
             payment.cancel(response.paymentLog(), response.approvedAt());
         } catch (Exception ex) {
-            payment.failCancel("결제 취소 중 에러 발생 : " +ex.getMessage());
+            payment.failCancel(ex.getMessage());
             throw new CustomException(ErrorCode.PAYMENT_CANCEL_FAILED);
         }
     }
