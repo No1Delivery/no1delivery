@@ -48,7 +48,6 @@ public class StoreServiceDto {
     @Builder
     public static class MenuOption {
         private String name;
-        private int price;
         private boolean isEssential;
         private boolean isMultiple;
         private List<MenuSubOption> subOptions;

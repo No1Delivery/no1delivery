@@ -2,8 +2,11 @@ package com.sparta.no1delivery.global.presentation.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -20,6 +23,24 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(
                         errorCode.getStatus(),
                         errorCode.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
+        String errorMessage = e.getBindingResult().getFieldErrors().stream()
+                        .map(error -> String.format("[%s]: %s", error.getField(), error.getDefaultMessage()))
+                        .collect(Collectors.joining(", "));
+
+        ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
+
+        log.error("Validation failed: {}", errorMessage);
+
+        return ResponseEntity
+                .status(errorCode.getStatus())
+                .body(new ErrorResponse(
+                        errorCode.getStatus(),
+                        errorMessage
                 ));
     }
 

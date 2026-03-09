@@ -4,13 +4,17 @@ import com.sparta.no1delivery.domain.category.application.CategoryService;
 import com.sparta.no1delivery.domain.category.application.dto.CategoryServiceDto;
 import com.sparta.no1delivery.domain.category.presentation.dto.CategoryRequestDto;
 import com.sparta.no1delivery.domain.category.presentation.dto.CategoryResponseDto;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,8 +57,10 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategories(@PathVariable("id") UUID id){
-        categoryService.delete(id);
+    public void deleteCategories
+            (@PathVariable("id") UUID id,
+             @AuthenticationPrincipal UserDetails userDetails) {
+        categoryService.delete(id, userDetails);
     }
 
 }

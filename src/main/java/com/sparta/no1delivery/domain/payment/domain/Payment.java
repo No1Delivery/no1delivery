@@ -1,6 +1,9 @@
 package com.sparta.no1delivery.domain.payment.domain;
 
 import com.sparta.no1delivery.domain.payment.domain.event.PaymentApprovedEvent;
+import com.sparta.no1delivery.domain.payment.domain.event.PaymentCancelFailedEvent;
+import com.sparta.no1delivery.domain.payment.domain.event.PaymentCanceledEvent;
+import com.sparta.no1delivery.domain.payment.domain.event.PaymentFailedEvent;
 import com.sparta.no1delivery.global.infrastructure.event.Events;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -92,7 +95,10 @@ public class Payment {
         this.status.verifyCancelable();
         this.status = PaymentStatus.CANCELLED;
         this.canceledAt = canceledAt;
-        this.paymentLog = "%s\n[취소 요청 기록]:%s\n------------------------------------------------------".formatted(this.paymentLog, paymentLog);
+        this.paymentLog = "%s\n[취소 요청 성공]: %s\n------------------------------------------------------".formatted(this.paymentLog, paymentLog);
+
+        // 주문 도메인에 환불 완료를 알립니다.
+        Events.trigger(new PaymentCanceledEvent(this.paymentInfo.getOrderId(), this.amount.getValue()));
     }
 
     //결제 실패
@@ -100,10 +106,16 @@ public class Payment {
         this.status.verifyAbortable();
         status = PaymentStatus.ABORTED;
         this.paymentLog = "%s\n[결제 요청 실패 기록]:%s\n------------------------------------------------------".formatted(this.paymentLog, paymentLog);
+
+        Events.trigger(new PaymentFailedEvent(this.paymentInfo.getOrderId(),paymentLog));
     }
 
+    // 결제 취소 실패 (PG사 거절 등) [cite: 2026-03-05]
     public void failCancel(String failureLog){
         this.paymentLog = "%s\n[취소 실패 기록]: %s\n------------------------------------------------------".formatted(this.paymentLog, failureLog);
+
+        // [중요 추가] 관리자나 주문 도메인에 취소 실패를 알립니다.
+        Events.trigger(new PaymentCancelFailedEvent(this.paymentInfo.getOrderId(), "CANCEL_ERROR", failureLog));
     }
 
 }

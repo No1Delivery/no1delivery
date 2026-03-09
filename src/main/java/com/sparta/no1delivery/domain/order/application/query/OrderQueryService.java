@@ -22,7 +22,7 @@ public class OrderQueryService {
     // 주문 조회용 Repository
     private final OrderQueryRepository orderQueryRepository;
 
-    //주문 상세 조회
+    // 주문 상세 조회
     public OrderResponseDto.OrderDetail getOrderDetail(UUID orderId) {
 
         Order order = orderQueryRepository.findById(orderId)
@@ -31,7 +31,7 @@ public class OrderQueryService {
         return toDetailResponse(order);
     }
 
-    //사용자 기준 주문 목록 조회 (내 주문)
+    // 사용자 기준 주문 목록 조회 (내 주문)
     public Page<OrderResponseDto.Order> getUserOrders(
             Long userId,
             OrderRequestDto.Search search,
@@ -47,7 +47,23 @@ public class OrderQueryService {
                 .map(this::toOrderResponse);
     }
 
-    //관리자 주문 검색 (필터 조회)
+    // 매장 기준 주문 목록 조회
+    public Page<OrderResponseDto.Order> getStoreOrders(
+            UUID storeId,
+            OrderRequestDto.Search search,
+            Pageable pageable
+    ) {
+
+        return orderQueryRepository
+                .findAllByStore(
+                        storeId,
+                        search != null ? search.toQuerySearch() : null,
+                        pageable
+                )
+                .map(this::toOrderResponse);
+    }
+
+    // 관리자 주문 검색 (전체 주문)
     public Page<OrderResponseDto.Order> searchOrders(
             OrderRequestDto.Search search,
             Pageable pageable
@@ -61,7 +77,7 @@ public class OrderQueryService {
                 .map(this::toOrderResponse);
     }
 
-    //주문 상태 조회
+    // 주문 상태 조회
     public OrderResponseDto.OrderStatus getOrderStatus(UUID orderId) {
 
         Order order = orderQueryRepository.findById(orderId)
@@ -73,7 +89,7 @@ public class OrderQueryService {
                 .build();
     }
 
-    //주문 목록 조회용 DTO 변환
+    // 주문 목록 조회용 DTO 변환
     private OrderResponseDto.Order toOrderResponse(Order order) {
 
         return OrderResponseDto.Order.builder()
@@ -85,7 +101,7 @@ public class OrderQueryService {
                 .build();
     }
 
-    ///주문 상세 조회용 DTO 변환
+    // 주문 상세 조회용 DTO 변환
     private OrderResponseDto.OrderDetail toDetailResponse(Order order) {
 
         return OrderResponseDto.OrderDetail.builder()

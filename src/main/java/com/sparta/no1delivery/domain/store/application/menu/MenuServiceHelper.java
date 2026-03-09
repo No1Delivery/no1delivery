@@ -3,7 +3,7 @@ package com.sparta.no1delivery.domain.store.application.menu;
 import com.sparta.no1delivery.domain.store.application.dto.StoreServiceDto;
 import com.sparta.no1delivery.domain.store.domain.*;
 import com.sparta.no1delivery.domain.store.domain.dto.StoreDto;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
@@ -43,7 +43,6 @@ public class MenuServiceHelper {
     private static StoreDto.MenuOptionDto toOptionDto(StoreServiceDto.MenuOption optionDto) {
         return StoreDto.MenuOptionDto.builder()
                 .name(optionDto.getName())
-                .price(optionDto.getPrice())
                 .subOptions(toSubOptions(optionDto.getSubOptions()))
                 .isEssential(optionDto.isEssential())
                 .isMultiple(optionDto.isMultiple())
@@ -73,7 +72,6 @@ public class MenuServiceHelper {
     public static MenuOption toMenuOptionEntity(StoreServiceDto.MenuOption dto) {
         return MenuOption.builder()
                 .name(dto.getName())
-                .price(dto.getPrice())
                 .subOptions(toMenuSubOptionEntities(dto.getSubOptions()))
                 .isEssential(dto.isEssential())
                 .isMultiple(dto.isMultiple())

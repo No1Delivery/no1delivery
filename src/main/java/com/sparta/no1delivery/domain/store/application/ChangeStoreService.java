@@ -7,7 +7,7 @@ import com.sparta.no1delivery.domain.store.domain.StoreRepository;
 import com.sparta.no1delivery.domain.store.domain.StoreStatus;
 import com.sparta.no1delivery.domain.store.domain.dto.StoreDto;
 import com.sparta.no1delivery.domain.store.domain.service.CategoryCheck;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.AddressToCoords;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
@@ -50,9 +50,7 @@ public class ChangeStoreService {
     @Transactional
     public void changeStoreStatus(UUID storeId, String status) {
         Store store = getStore(storeId);
-
-        StoreStatus newStatus = StoreStatus.from(status);
-        store.changeStatus(roleCheck, ownerCheck, newStatus);
+        store.changeStatus(roleCheck, ownerCheck, StoreStatus.from(status));
     }
 
     // 카테고리 추가
