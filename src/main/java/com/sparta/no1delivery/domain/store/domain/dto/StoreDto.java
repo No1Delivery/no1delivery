@@ -7,7 +7,7 @@ import com.sparta.no1delivery.domain.store.domain.StoreId;
 import com.sparta.no1delivery.domain.store.domain.service.CategoryCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.AddressToCoords;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

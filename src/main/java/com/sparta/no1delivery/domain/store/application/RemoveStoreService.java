@@ -3,7 +3,7 @@ package com.sparta.no1delivery.domain.store.application;
 import com.sparta.no1delivery.domain.store.domain.Store;
 import com.sparta.no1delivery.domain.store.domain.StoreId;
 import com.sparta.no1delivery.domain.store.domain.StoreRepository;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;

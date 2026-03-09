@@ -3,7 +3,7 @@ package com.sparta.no1delivery.domain.store.application.menu;
 import com.sparta.no1delivery.domain.store.application.dto.StoreServiceDto;
 import com.sparta.no1delivery.domain.store.domain.*;
 import com.sparta.no1delivery.domain.store.domain.dto.StoreDto;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;

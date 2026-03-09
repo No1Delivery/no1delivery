@@ -1,10 +1,9 @@
 package com.sparta.no1delivery.domain.store.application.menu;
 
-import com.sparta.no1delivery.domain.store.domain.Menu;
 import com.sparta.no1delivery.domain.store.domain.MenuId;
 import com.sparta.no1delivery.domain.store.domain.Store;
 import com.sparta.no1delivery.domain.store.domain.StoreRepository;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.UserDetails;
 import lombok.RequiredArgsConstructor;
