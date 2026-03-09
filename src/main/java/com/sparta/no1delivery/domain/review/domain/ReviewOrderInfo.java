@@ -1,6 +1,5 @@
 package com.sparta.no1delivery.domain.review.domain;
 
-import com.sparta.no1delivery.domain.store.domain.MenuSubOption;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -21,11 +20,11 @@ public class ReviewOrderInfo {
     private String storeName; // 상점 이름
 
     @Column(name = "order_items", columnDefinition = "jsonb")
-    private List<MenuSubOption> items; // 주문상품 목록
+    private List<ReviewOrderItem> items; // 주문상품 목록
 
     @Builder
     protected ReviewOrderInfo (UUID orderId, UUID storeId, String storeName,
-                               List<MenuSubOption> items) {
+                               List<ReviewOrderItem> items) {
         this.orderId = orderId;
         this.storeId = storeId;
         this.storeName = storeName;
