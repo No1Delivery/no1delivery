@@ -1,6 +1,8 @@
 package com.sparta.no1delivery.domain.order.domain;
 
 import com.sparta.no1delivery.domain.order.application.dto.OrderServiceDto;
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -62,17 +64,17 @@ public class OrderItem {
 
         // 메뉴 이름 검증
         if (menuName == null || menuName.isBlank()) {
-            throw new IllegalArgumentException("메뉴 이름은 필수입니다.");
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
         // 수량 검증
         if (quantity <= 0) {
-            throw new IllegalArgumentException("수량은 1 이상이어야 합니다.");
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
         // 가격 검증
         if (menuPrice < 0) {
-            throw new IllegalArgumentException("가격은 0 이상이어야 합니다.");
+            throw new CustomException(ErrorCode.INVALID_MENU_PRICE);
         }
 
         this.menuId = menuId;
