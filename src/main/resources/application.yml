@@ -18,3 +18,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+# JWT 설정
+jwt:
+  secret: ${JSON_WEB_TOKEN_SECRET}
+  valid-time: ${JSON_WEB_TOKEN_VALID_TIME:3600}
+
+  logging:
+    level:
+      org.hibernate.type: trace
+      org.hibernate.orm.jdbc.bind: trace
