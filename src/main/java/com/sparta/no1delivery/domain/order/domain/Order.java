@@ -101,6 +101,21 @@ public class Order extends BaseUserEntity {
                 .sum();
     }
 
+    // 배송지 변경
+    public void changeDeliveryInfo(String address, String detailAddress, String memo) {
+
+        // 주문 접수 전까지만 변경 가능
+        if (this.status != OrderStatus.ORDER_CREATING) {
+            throw new CustomException(ErrorCode.INVALID_ORDER_STATUS);
+        }
+
+        this.deliveryInfo = new DeliveryInfo(
+                address,
+                detailAddress,
+                memo
+        );
+    }
+
 
     // 주문 접수
     public void orderAccept() {
