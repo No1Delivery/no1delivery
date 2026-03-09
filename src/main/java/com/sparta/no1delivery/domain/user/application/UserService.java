@@ -34,7 +34,6 @@ public class UserService {
     private final PasswordValidator passwordValidator;
     private final TokenGenerator tokenGenerator;
 
-
     // 회원가입
     public void signUp(String loginId,
                        String password,
