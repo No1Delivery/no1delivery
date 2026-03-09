@@ -5,6 +5,7 @@ import com.sparta.no1delivery.domain.order.domain.event.OrderDoneEvent;
 import com.sparta.no1delivery.domain.order.domain.event.OrderPaymentConfirmedEvent;
 import com.sparta.no1delivery.domain.order.domain.event.OrderRefundedEvent;
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
@@ -27,35 +28,27 @@ import java.util.UUID;
 @SQLRestriction("deleted_at IS NULL")
 public class Order extends BaseUserEntity {
 
-    // 주문 ID (PK)
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID orderId;
 
-    // 주문 상태
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 45)
     private OrderStatus status;
 
-    // 주문 취소 시간
     private LocalDateTime canceledAt;
 
-    // 총 주문 금액
     private int totalPrice;
 
-    // 주문자 정보
     @Embedded
     private Orderer orderer;
 
-    // 가게 정보
     @Embedded
     private StoreInfo storeInfo;
 
-    // 배송 정보
     @Embedded
     private DeliveryInfo deliveryInfo;
 
-    // 주문 상품 목록
     @OneToMany(
             mappedBy = "order",
             cascade = CascadeType.ALL,
@@ -63,8 +56,7 @@ public class Order extends BaseUserEntity {
     )
     private List<OrderItem> orderItems = new ArrayList<>();
 
-
-    // ===== 도메인 이벤트 저장 =====
+    // ===== 도메인 이벤트 =====
     @Transient
     private final List<Object> domainEvents = new ArrayList<>();
 
@@ -110,7 +102,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 주문 접수 ORDER_CREATING -> ORDER_ACCEPT
+    // 주문 접수
     public void orderAccept() {
 
         if (this.status != OrderStatus.ORDER_CREATING) {
@@ -119,7 +111,6 @@ public class Order extends BaseUserEntity {
 
         this.status = OrderStatus.ORDER_ACCEPT;
 
-        // 주문 접수 이벤트 발생
         registerEvent(
                 new OrderAcceptedEvent(
                         this.orderId,
@@ -129,7 +120,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 결제 확인 ORDER_ACCEPT -> PAYMENT_CONFIRM
+    // 결제 확인
     public void paymentConfirm() {
 
         if (this.status != OrderStatus.ORDER_ACCEPT) {
@@ -138,12 +129,11 @@ public class Order extends BaseUserEntity {
 
         this.status = OrderStatus.PAYMENT_CONFIRM;
 
-        // 결제 완료 이벤트
         registerEvent(new OrderPaymentConfirmedEvent(this.orderId));
     }
 
 
-    // 조리 시작 PAYMENT_CONFIRM -> PREPARING
+    // 조리 시작
     public void startPreparing() {
 
         if (this.status != OrderStatus.PAYMENT_CONFIRM) {
@@ -154,7 +144,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 조리 완료 PREPARING -> READY
+    // 조리 완료
     public void ready() {
 
         if (this.status != OrderStatus.PREPARING) {
@@ -165,7 +155,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 배송 시작 READY -> DELIVERY
+    // 배송 시작
     public void startDelivery() {
 
         if (this.status != OrderStatus.READY) {
@@ -176,7 +166,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 배송 완료 DELIVERY -> DELIVERY_DONE
+    // 배송 완료
     public void deliveryDone() {
 
         if (this.status != OrderStatus.DELIVERY) {
@@ -187,7 +177,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 주문 완료 DELIVERY_DONE -> ORDER_DONE
+    // 주문 완료
     public void complete() {
 
         if (this.status != OrderStatus.DELIVERY_DONE) {
@@ -196,12 +186,11 @@ public class Order extends BaseUserEntity {
 
         this.status = OrderStatus.ORDER_DONE;
 
-        // 주문 완료 이벤트
         registerEvent(new OrderDoneEvent(this.orderId));
     }
 
 
-    // 주문 취소 (주문 생성 후 5분 이내 취소 가능)
+    // 주문 취소
     public void cancel() {
 
         if (this.status == OrderStatus.ORDER_CANCEL) {
@@ -224,7 +213,6 @@ public class Order extends BaseUserEntity {
 
             this.status = OrderStatus.ORDER_REFUND;
 
-            // 환불 이벤트
             registerEvent(new OrderRefundedEvent(this.orderId));
             return;
         }
@@ -233,7 +221,8 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // ===== 이벤트 등록 =====
+    // 도메인 이벤트
+
     private void registerEvent(Object event) {
         domainEvents.add(event);
     }
@@ -250,9 +239,8 @@ public class Order extends BaseUserEntity {
 
 
     // Soft Delete
-    public void markDeleted(Long userId) {
-        this.deletedBy = userId;
-        this.deletedAt = LocalDateTime.now();
+    public void remove(UserDetails userDetails) {
+        delete(userDetails);
     }
 
 }
