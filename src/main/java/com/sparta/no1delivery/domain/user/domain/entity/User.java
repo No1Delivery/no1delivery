@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class User extends BaseUserEntity {
     @Id
     @GeneratedValue
     @Column(name = "user_id", nullable = false, updatable = false)
-    private UUID userId;
+    private BigInteger userId;
 
     @Column(nullable = false, unique = true)
     private String loginId; // 로그인용 ID
