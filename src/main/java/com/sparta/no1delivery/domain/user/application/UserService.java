@@ -1,6 +1,6 @@
 package com.sparta.no1delivery.domain.user.application;
 
-import com.sparta.no1delivery.domain.user.application.dto.OwnerRequestDto;
+import com.sparta.no1delivery.domain.user.presentation.dto.OwnerRequestDto;
 import com.sparta.no1delivery.domain.user.domain.entity.User;
 import com.sparta.no1delivery.domain.user.domain.entity.UserAddress;
 import com.sparta.no1delivery.domain.user.domain.enums.OwnerRequestStatus;

@@ -1,11 +1,10 @@
 package com.sparta.no1delivery.domain.user.presentation;
 
 import com.sparta.no1delivery.domain.user.application.UserService;
-import com.sparta.no1delivery.domain.user.application.dto.OwnerRequestDto;
+import com.sparta.no1delivery.domain.user.presentation.dto.OwnerRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @RestController
