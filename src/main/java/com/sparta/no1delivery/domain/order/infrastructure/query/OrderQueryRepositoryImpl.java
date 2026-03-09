@@ -89,7 +89,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         QOrder order = QOrder.order;
 
         BooleanBuilder builder = new BooleanBuilder();
-        builder.and(order.ordererId.eq(userId));
+        builder.and(order.orderer.userId.eq(userId));
 
         List<Order> content = queryFactory
                 .selectFrom(order)

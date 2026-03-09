@@ -45,14 +45,14 @@ public class OrderService {
         DeliveryInfo deliveryInfo = new DeliveryInfo(
                 dto.getDeliveryAddress(),
                 dto.getDeliveryAddressDetail(),
-                dto.getDeliveryMemo(),
-                dto.getPhone()
+                dto.getDeliveryMemo()
         );
 
-        // Order 생성
+        // Order 생성 (phone 추가)
         Order order = Order.createOrder(
                 userId,
                 dto.getOrdererName(),
+                dto.getPhone(),
                 storeInfo,
                 deliveryInfo,
                 items
@@ -61,5 +61,15 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         return savedOrder.getOrderId();
+    }
+
+    // 주문 취소
+    public void cancelOrder(UUID orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("주문을 찾을 수 없습니다."));
+
+        // 주문 취소 (취소 가능 여부 검증은 Order 엔티티에서 처리)
+        order.cancel();
     }
 }

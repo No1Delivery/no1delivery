@@ -13,10 +13,10 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StoreInfo {
 
-    @Column(name = "store_id", nullable = false)
+    @Column( nullable = false)
     private UUID storeId;
 
-    @Column(name = "store_name", nullable = false)
+    @Column( nullable = false)
     private String storeName;
 
     public StoreInfo(UUID storeId, String storeName) {

@@ -53,14 +53,14 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
-    // 닉네임 변경
+    //닉네임 변경
     public void changeNickname(Long userId, String nickname) {
 
         User user = getUser(userId);
         user.changeNickname(nickname);
     }
 
-    // 비밀번호 변경
+    //비밀번호 변경
     public void changePassword(Long userId, String password) {
 
         User user = getUser(userId);

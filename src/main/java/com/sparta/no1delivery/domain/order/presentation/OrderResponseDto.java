@@ -1,5 +1,6 @@
 package com.sparta.no1delivery.domain.order.presentation;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,9 +10,18 @@ import java.util.UUID;
 
 public class OrderResponseDto {
 
-    //주문 목록 조회용
+    // 주문 생성 응답
     @Getter
     @Builder
+    @AllArgsConstructor
+    public static class Create {
+        private UUID orderId;
+    }
+
+    // 주문 목록 조회용
+    @Getter
+    @Builder
+    @AllArgsConstructor
     public static class Order {
         private UUID orderId;
         private String storeName;
@@ -20,17 +30,10 @@ public class OrderResponseDto {
         private LocalDateTime createdAt;
     }
 
-    // 주문 생성 응답용
+    // 주문 상세 조회용
     @Getter
     @Builder
-    public static class Create {
-        private UUID orderId;
-        private String status;
-    }
-
-    //주문 상세 조회용
-    @Getter
-    @Builder
+    @AllArgsConstructor
     public static class OrderDetail {
         private UUID orderId;
         private String storeName;
@@ -43,13 +46,23 @@ public class OrderResponseDto {
         private LocalDateTime createdAt;
     }
 
-    // 상세 안에 들어가는 주문 아이템
+    // 주문 상세 안의 아이템
     @Getter
     @Builder
+    @AllArgsConstructor
     public static class OrderItem {
         private String itemName;
         private int quantity;
         private int price;
         private int totalPrice;
+    }
+
+    // 주문 상태 조회용
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class OrderStatus {
+        private UUID orderId;
+        private String status;
     }
 }
