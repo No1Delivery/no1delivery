@@ -36,7 +36,6 @@ public class StoreDto {
     public static class MenuDto {
         private RoleCheck roleCheck;
         private OwnerCheck ownerCheck;
-        private String menuCode;
         private String name;
         private String description;
         private int price;
