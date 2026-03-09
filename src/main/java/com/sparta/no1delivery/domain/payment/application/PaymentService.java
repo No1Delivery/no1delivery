@@ -1,7 +1,7 @@
 package com.sparta.no1delivery.domain.payment.application;
 
 import com.sparta.no1delivery.domain.payment.domain.Payment;
-import com.sparta.no1delivery.domain.payment.domain.PaymentApproveResponse;
+import com.sparta.no1delivery.domain.payment.domain.PaymentAmountDto;
 import com.sparta.no1delivery.domain.payment.domain.PaymentClient;
 import com.sparta.no1delivery.domain.payment.domain.PaymentRepository;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
@@ -25,7 +25,7 @@ public class PaymentService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
         try {
-            PaymentApproveResponse response = paymentClient.requestApprove(
+            PaymentAmountDto response = paymentClient.requestApprove(
                     paymentKey,
                     orderId,
                     amount,
@@ -50,7 +50,7 @@ public class PaymentService {
                 .orElseThrow(()-> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
         try {
-            PaymentApproveResponse response = paymentClient.requestCancel(
+            PaymentAmountDto response = paymentClient.requestCancel(
                     payment.getKey(),
                     reason,
                     "cancel-"+orderId
