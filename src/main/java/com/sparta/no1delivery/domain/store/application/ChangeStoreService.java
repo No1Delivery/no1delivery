@@ -7,7 +7,7 @@ import com.sparta.no1delivery.domain.store.domain.StoreRepository;
 import com.sparta.no1delivery.domain.store.domain.StoreStatus;
 import com.sparta.no1delivery.domain.store.domain.dto.StoreDto;
 import com.sparta.no1delivery.domain.store.domain.service.CategoryCheck;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.AddressToCoords;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;

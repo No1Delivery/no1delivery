@@ -1,4 +1,4 @@
-package com.sparta.no1delivery.domain.store.domain.service;
+package com.sparta.no1delivery.global.domain.service;
 
 import java.util.UUID;
 

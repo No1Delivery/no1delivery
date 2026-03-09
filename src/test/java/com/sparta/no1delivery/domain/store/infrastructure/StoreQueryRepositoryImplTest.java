@@ -3,11 +3,12 @@ package com.sparta.no1delivery.domain.store.infrastructure;
 import com.sparta.no1delivery.domain.store.domain.Store;
 import com.sparta.no1delivery.domain.store.domain.StoreStatus;
 import com.sparta.no1delivery.domain.store.domain.query.dto.StoreQueryDto;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import com.sparta.no1delivery.domain.store.infrastructure.query.StoreQueryRepositoryImpl;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.AddressToCoords;
 import com.sparta.no1delivery.global.infrastructure.persistence.JPAConfig;
+import com.sparta.no1delivery.global.infrastructure.security.SecurityOwnerCheck;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ import static org.mockito.BDDMockito.given;
 @Import({
         JPAConfig.class,
         StoreQueryRepositoryImpl.class,
-        OwnerCheckImpl.class
+        SecurityOwnerCheck.class
 })
 @Transactional
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

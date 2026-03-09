@@ -12,7 +12,7 @@ import com.sparta.no1delivery.domain.store.domain.StoreId;
 import com.sparta.no1delivery.domain.store.domain.StoreStatus;
 import com.sparta.no1delivery.domain.store.domain.query.StoreQueryRepository;
 import com.sparta.no1delivery.domain.store.domain.query.dto.StoreQueryDto;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
