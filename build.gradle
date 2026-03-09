@@ -53,6 +53,8 @@ dependencies {
 	// JTS (Java Topology Suite) - 공간 연산 라이브러리
 	implementation 'org.locationtech.jts:jts-core:1.19.0'
 
+	// swagger 설정
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.0'
 }
 
 tasks.named('test') {

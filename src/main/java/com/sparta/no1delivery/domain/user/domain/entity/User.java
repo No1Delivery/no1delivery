@@ -25,7 +25,7 @@ public class User extends BaseUserEntity {
     @Id
     @GeneratedValue
     @Column(name = "user_id", nullable = false, updatable = false)
-    private BigInteger userId;
+    private Long userId;
 
     @Column(nullable = false, unique = true)
     private String loginId; // 로그인용 ID
