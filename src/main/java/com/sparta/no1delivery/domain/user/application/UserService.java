@@ -1,11 +1,13 @@
 package com.sparta.no1delivery.domain.user.application;
 
+import com.sparta.no1delivery.domain.user.presentation.dto.AddressCompositeDto;
 import com.sparta.no1delivery.domain.user.presentation.dto.OwnerRequestDto;
 import com.sparta.no1delivery.domain.user.domain.entity.User;
 import com.sparta.no1delivery.domain.user.domain.entity.UserAddress;
 import com.sparta.no1delivery.domain.user.domain.enums.OwnerRequestStatus;
 import com.sparta.no1delivery.domain.user.domain.enums.UserRole;
 import com.sparta.no1delivery.domain.user.domain.repository.UserRepository;
+import com.sparta.no1delivery.domain.user.presentation.dto.UserCompositeDto;
 import com.sparta.no1delivery.global.domain.service.AddressToCoords;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
@@ -53,6 +55,15 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public List<UserCompositeDto.SummaryResponse> getUsers() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(UserCompositeDto.SummaryResponse::from)
+                .toList();
+    }
+
     //닉네임 변경
     public void changeNickname(Long userId, String nickname) {
 
@@ -67,6 +78,18 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(password);
 
         user.changePassword(encodedPassword);
+    }
+
+    //주소 조회
+    @Transactional(readOnly = true)
+    public List<AddressCompositeDto.Response> getAddresses(Long userId) {
+
+        User user = getUser(userId);
+
+        return user.getAddresses()
+                .stream()
+                .map(AddressCompositeDto.Response::from)
+                .toList();
     }
 
     // 주소 추가
