@@ -2,6 +2,7 @@ package com.sparta.no1delivery.domain.order.presentation;
 
 import com.sparta.no1delivery.domain.order.application.OrderService;
 import com.sparta.no1delivery.domain.order.application.query.OrderQueryService;
+import com.sparta.no1delivery.domain.order.domain.OrderStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,15 @@ public class OrderController {
         orderService.cancelOrder(orderId);
     }
 
+    // 주문 상태 변경 (분기 방식)
+    @PatchMapping("/{orderId}/status")
+    public void changeOrderStatus(
+            @PathVariable UUID orderId,
+            @RequestParam OrderStatus status
+    ) {
+        orderService.changeOrderStatus(orderId, status);
+    }
+
     // 주문 상세 조회
     @GetMapping("/{orderId}")
     public OrderResponseDto.OrderDetail getOrderDetail(
@@ -51,13 +61,14 @@ public class OrderController {
         return orderQueryService.getOrderDetail(orderId);
     }
 
-    // 내 주문 목록 조회
+    // 내 주문 목록 조회(필터 조회)
     @GetMapping
     public Page<OrderResponseDto.Order> getMyOrders(
             @RequestParam Long userId,
+            OrderRequestDto.Search search,
             Pageable pageable
     ) {
-        return orderQueryService.getUserOrders(userId, pageable);
+        return orderQueryService.getUserOrders(userId, search, pageable);
     }
 
     // 주문 상태 조회
@@ -66,5 +77,14 @@ public class OrderController {
             @PathVariable UUID orderId
     ) {
         return orderQueryService.getOrderStatus(orderId);
+    }
+
+    // 관리자 주문 검색 (필터 조회)
+    @GetMapping("/search")
+    public Page<OrderResponseDto.Order> searchOrders(
+            OrderRequestDto.Search search,
+            Pageable pageable
+    ) {
+        return orderQueryService.searchOrders(search, pageable);
     }
 }

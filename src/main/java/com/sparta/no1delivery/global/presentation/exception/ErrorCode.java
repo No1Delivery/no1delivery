@@ -44,12 +44,14 @@ public enum ErrorCode {
     // --- 가게 (S) ---
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 가게입니다."),
     STORE_FORBIDDEN(HttpStatus.FORBIDDEN, "해당 가게의 관리 권한이 없습니다."),
+    INVALID_STORE_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 가게 상태값입니다."),
 
     // --- 메뉴 (M) ---
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 메뉴입니다."),
     INVALID_MENU_PRICE(HttpStatus.BAD_REQUEST, "메뉴 가격은 0원 이상이어야 합니다."),
     INVALID_OPTION_DATA(HttpStatus.BAD_REQUEST, "옵션 그룹 데이터가 유효하지 않습니다."),
     DUPLICATE_MENU_NAME(HttpStatus.CONFLICT, "동일한 이름의 메뉴가 이미 존재합니다."),
+    INVALID_MENU_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴 상태값입니다."),
 
     // --- 옵션 (O) ---
     DUPLICATE_OPTION_NAME(HttpStatus.CONFLICT, "중복된 옵션 이름이 존재합니다."),
@@ -70,7 +72,17 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다."),
     DUPLICATE_CATEGORY_NAME(HttpStatus.CONFLICT, "이미 존재하는 카테고리 이름입니다."),
     INVALID_DISPLAY_ORDER(HttpStatus.BAD_REQUEST, "유효하지 않은 노출 순서 값입니다."),
-    CATEGORY_HAS_STORES(HttpStatus.BAD_REQUEST, "가게가 연결된 카테고리는 삭제할 수 없습니다.");
+    CATEGORY_HAS_STORES(HttpStatus.BAD_REQUEST, "가게가 연결된 카테고리는 삭제할 수 없습니다."),
+
+    // --- 결제 (P) ---
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 결제 내역입니다."),
+    INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "결제 금액이 일치하지 않거나 유효하지 않습니다."),
+    INVALID_PAYMENT_METHOD(HttpStatus.BAD_REQUEST, "지원하지 않는 결제 수단입니다. 카드 결제만 가능합니다."),
+    PAYMENT_ALREADY_PROCESSED(HttpStatus.BAD_REQUEST, "이미 완료되었거나 처리 중인 결제입니다."),
+    PAYMENT_CONFIRM_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "토스페이먼츠 승인 요청 중 오류가 발생했습니다."),
+    PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소 요청 중 오류가 발생했습니다."),
+    PAYMENT_GATEWAY_ERROR(HttpStatus.BAD_GATEWAY, "결제 대행사(PG)와의 통신에 실패했습니다.");
+
 
     private final HttpStatus status;
     private final String message;
