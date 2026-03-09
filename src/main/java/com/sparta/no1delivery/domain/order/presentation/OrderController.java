@@ -5,8 +5,6 @@ import com.sparta.no1delivery.domain.order.application.query.OrderQueryService;
 import com.sparta.no1delivery.domain.order.domain.OrderStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +26,6 @@ public class OrderController {
 
     // 주문 생성
     @Operation(summary = "주문 생성", description = "사용자가 새로운 주문을 생성합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "주문 생성 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청")
-    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponseDto.Create createOrder(
@@ -80,18 +74,6 @@ public class OrderController {
         return orderQueryService.getOrderDetail(orderId);
     }
 
-    // 내 주문 목록 조회
-    @Operation(summary = "내 주문 목록 조회", description = "사용자의 주문 목록을 조회합니다.")
-    @GetMapping
-    public Page<OrderResponseDto.Order> getMyOrders(
-            @Parameter(description = "사용자 ID")
-            @RequestParam Long userId,
-            OrderRequestDto.Search search,
-            Pageable pageable
-    ) {
-        return orderQueryService.getUserOrders(userId, search, pageable);
-    }
-
     // 주문 상태 조회
     @Operation(summary = "주문 상태 조회", description = "현재 주문 상태를 조회합니다.")
     @GetMapping("/{orderId}/status")
@@ -102,10 +84,33 @@ public class OrderController {
         return orderQueryService.getOrderStatus(orderId);
     }
 
-    // 관리자 주문 검색
-    @Operation(summary = "주문 검색", description = "관리자가 주문을 검색합니다.")
-    @GetMapping("/search")
-    public Page<OrderResponseDto.Order> searchOrders(
+    // 내 주문 목록 조회
+    @Operation(summary = "내 주문 목록 조회", description = "사용자의 주문 목록을 조회합니다.")
+    @GetMapping("/my")
+    public Page<OrderResponseDto.Order> getMyOrders(
+            @Parameter(description = "사용자 ID")
+            @RequestParam Long userId,
+            OrderRequestDto.Search search,
+            Pageable pageable
+    ) {
+        return orderQueryService.getUserOrders(userId, search, pageable);
+    }
+
+    // 매장 주문 목록 조회
+    @Operation(summary = "매장 주문 목록 조회", description = "특정 매장의 주문 목록을 조회합니다.")
+    @GetMapping("/store/{storeId}")
+    public Page<OrderResponseDto.Order> getStoreOrders(
+            @PathVariable UUID storeId,
+            OrderRequestDto.Search search,
+            Pageable pageable
+    ) {
+        return orderQueryService.getStoreOrders(storeId, search, pageable);
+    }
+
+    // 전체 주문 조회 (관리자)
+    @Operation(summary = "전체 주문 목록 조회", description = "관리자가 전체 주문을 조회합니다.")
+    @GetMapping
+    public Page<OrderResponseDto.Order> getOrders(
             OrderRequestDto.Search search,
             Pageable pageable
     ) {
