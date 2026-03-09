@@ -24,11 +24,6 @@ public class MenuOption {
     private List<MenuSubOption> subOptions;
     // 서브옵션 이름 + 가격 JSON (ex: [{"name":"치즈 추가","price":1000}])
 
-    @AttributeOverrides(
-            @AttributeOverride(name = "value", column = @Column(name = "price"))
-    )
-    private Price price;
-
     @Column(name = "is_essential", nullable = false)
     private boolean isEssential; // 필수 선택 여부
 
@@ -36,11 +31,10 @@ public class MenuOption {
     private boolean isMultiple; // 다중 선택 가능 여부
 
     @Builder
-    protected MenuOption(String name, int price, List<MenuSubOption> subOptions, boolean isEssential, boolean isMultiple)  {
+    protected MenuOption(String name, List<MenuSubOption> subOptions, boolean isEssential, boolean isMultiple)  {
         validateDuplicateSuboptions(subOptions);
 
         this.name = name;
-        this.price = new Price(price);
         this.subOptions = subOptions;
         this.isEssential = isEssential;
         this.isMultiple = isMultiple;

@@ -50,9 +50,7 @@ public class ChangeStoreService {
     @Transactional
     public void changeStoreStatus(UUID storeId, String status) {
         Store store = getStore(storeId);
-
-        StoreStatus newStatus = StoreStatus.from(status);
-        store.changeStatus(roleCheck, ownerCheck, newStatus);
+        store.changeStatus(roleCheck, ownerCheck, StoreStatus.from(status));
     }
 
     // 카테고리 추가
