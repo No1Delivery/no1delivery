@@ -32,7 +32,7 @@ public class ReviewContent {
     private void setScore(int score) {
         // 리뷰의 평점은 필수이며 1~5점 사이 선택
         if (score < 1 || score > 5) {
-            throw new ReviewRateOutOfRangeException(score);
+            //throw new ReviewRateOutOfRangeException(score);
         }
 
         this.score = score;

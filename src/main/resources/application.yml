@@ -19,6 +19,10 @@ spring:
       hibernate:
         format_sql: true
 
+payment:
+  toss:
+    secret-key: ${TOSS_SECRET_KEY}
+
 # JWT 설정
 jwt:
   secret: ${JSON_WEB_TOKEN_SECRET}
@@ -28,6 +32,3 @@ jwt:
     level:
       org.hibernate.type: trace
       org.hibernate.orm.jdbc.bind: trace
-payment:
-  toss:
-    secret-key: ${TOSS_SECRET_KEY}
