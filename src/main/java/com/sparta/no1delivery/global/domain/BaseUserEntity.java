@@ -1,10 +1,13 @@
 package com.sparta.no1delivery.global.domain;
 
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Getter
 @MappedSuperclass
@@ -21,5 +24,10 @@ public abstract class BaseUserEntity extends BaseEntity {
 
     @Column
     protected Long deletedBy;
+
+    protected void delete(UserDetails userDetails) {
+        deletedBy = userDetails.getId();
+        deletedAt = LocalDateTime.now();
+    }
 
 }

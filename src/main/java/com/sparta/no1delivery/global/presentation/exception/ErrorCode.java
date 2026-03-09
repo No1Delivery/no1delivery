@@ -44,12 +44,14 @@ public enum ErrorCode {
     // --- 가게 (S) ---
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 가게입니다."),
     STORE_FORBIDDEN(HttpStatus.FORBIDDEN, "해당 가게의 관리 권한이 없습니다."),
+    INVALID_STORE_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 가게 상태값입니다."),
 
     // --- 메뉴 (M) ---
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 메뉴입니다."),
     INVALID_MENU_PRICE(HttpStatus.BAD_REQUEST, "메뉴 가격은 0원 이상이어야 합니다."),
     INVALID_OPTION_DATA(HttpStatus.BAD_REQUEST, "옵션 그룹 데이터가 유효하지 않습니다."),
     DUPLICATE_MENU_NAME(HttpStatus.CONFLICT, "동일한 이름의 메뉴가 이미 존재합니다."),
+    INVALID_MENU_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴 상태값입니다."),
 
     // --- 옵션 (O) ---
     DUPLICATE_OPTION_NAME(HttpStatus.CONFLICT, "중복된 옵션 이름이 존재합니다."),
