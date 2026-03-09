@@ -1,5 +1,9 @@
 package com.sparta.no1delivery.domain.order.domain;
 
+import com.sparta.no1delivery.domain.order.domain.event.OrderAcceptedEvent;
+import com.sparta.no1delivery.domain.order.domain.event.OrderDoneEvent;
+import com.sparta.no1delivery.domain.order.domain.event.OrderPaymentConfirmedEvent;
+import com.sparta.no1delivery.domain.order.domain.event.OrderRefundedEvent;
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
@@ -8,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.domain.AfterDomainEventPublication;
+import org.springframework.data.domain.DomainEvents;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -58,6 +64,11 @@ public class Order extends BaseUserEntity {
     private List<OrderItem> orderItems = new ArrayList<>();
 
 
+    // ===== 도메인 이벤트 저장 =====
+    @Transient
+    private final List<Object> domainEvents = new ArrayList<>();
+
+
     // 주문 생성
     public static Order createOrder(Long ordererId,
                                     String ordererName,
@@ -73,9 +84,7 @@ public class Order extends BaseUserEntity {
         Order order = new Order();
         order.status = OrderStatus.ORDER_CREATING;
 
-        // 주문자 정보 생성
         order.orderer = new Orderer(ordererId, ordererName, phone);
-
         order.storeInfo = storeInfo;
         order.deliveryInfo = deliveryInfo;
 
@@ -101,7 +110,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 주문 접수 ORDER_CREATING-> ORDER_ACCEPT
+    // 주문 접수 ORDER_CREATING -> ORDER_ACCEPT
     public void orderAccept() {
 
         if (this.status != OrderStatus.ORDER_CREATING) {
@@ -109,6 +118,14 @@ public class Order extends BaseUserEntity {
         }
 
         this.status = OrderStatus.ORDER_ACCEPT;
+
+        // 주문 접수 이벤트 발생
+        registerEvent(
+                new OrderAcceptedEvent(
+                        this.orderId,
+                        System.currentTimeMillis()
+                )
+        );
     }
 
 
@@ -120,13 +137,38 @@ public class Order extends BaseUserEntity {
         }
 
         this.status = OrderStatus.PAYMENT_CONFIRM;
+
+        // 결제 완료 이벤트
+        registerEvent(new OrderPaymentConfirmedEvent(this.orderId));
     }
 
 
-    // 배달 시작 PAYMENT_CONFIRM -> DELIVERY
-    public void startDelivery() {
+    // 조리 시작 PAYMENT_CONFIRM -> PREPARING
+    public void startPreparing() {
 
         if (this.status != OrderStatus.PAYMENT_CONFIRM) {
+            throw new CustomException(ErrorCode.INVALID_ORDER_STATUS);
+        }
+
+        this.status = OrderStatus.PREPARING;
+    }
+
+
+    // 조리 완료 PREPARING -> READY
+    public void ready() {
+
+        if (this.status != OrderStatus.PREPARING) {
+            throw new CustomException(ErrorCode.INVALID_ORDER_STATUS);
+        }
+
+        this.status = OrderStatus.READY;
+    }
+
+
+    // 배송 시작 READY -> DELIVERY
+    public void startDelivery() {
+
+        if (this.status != OrderStatus.READY) {
             throw new CustomException(ErrorCode.INVALID_ORDER_STATUS);
         }
 
@@ -134,7 +176,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 배달 완료 DELIVERY-> DELIVERY_DONE
+    // 배송 완료 DELIVERY -> DELIVERY_DONE
     public void deliveryDone() {
 
         if (this.status != OrderStatus.DELIVERY) {
@@ -145,7 +187,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 주문 완료 DELIVERY_DONE-> ORDER_DONE
+    // 주문 완료 DELIVERY_DONE -> ORDER_DONE
     public void complete() {
 
         if (this.status != OrderStatus.DELIVERY_DONE) {
@@ -153,33 +195,57 @@ public class Order extends BaseUserEntity {
         }
 
         this.status = OrderStatus.ORDER_DONE;
+
+        // 주문 완료 이벤트
+        registerEvent(new OrderDoneEvent(this.orderId));
     }
 
 
     // 주문 취소 (주문 생성 후 5분 이내 취소 가능)
     public void cancel() {
-        // 이미 취소된 주문인지 확인 (ORDER_CANCEL 상태면 다시 취소 불가)
+
         if (this.status == OrderStatus.ORDER_CANCEL) {
             throw new CustomException(ErrorCode.ORDER_ALREADY_CANCELLED);
         }
-        //주문 접수 상태 ORDER_ACCEPT
+
         if (this.status == OrderStatus.ORDER_ACCEPT) {
-            //주문 생성 후 5분 이내인지 확인
+
             if (createdAt == null || LocalDateTime.now().isBefore(createdAt.plusMinutes(5))) {
-                this.status = OrderStatus.ORDER_CANCEL; //취소 처리
+
+                this.status = OrderStatus.ORDER_CANCEL;
                 this.canceledAt = LocalDateTime.now();
                 return;
             }
-           //주문 접수 후 5분 지나면 -> 취소 불가
+
             throw new CustomException(ErrorCode.ORDER_CANCEL_TIME_EXPIRED);
         }
-         //결제 완료 상태
+
         if (this.status == OrderStatus.PAYMENT_CONFIRM) {
-            this.status = OrderStatus.ORDER_REFUND; //환불 상태로 변경
+
+            this.status = OrderStatus.ORDER_REFUND;
+
+            // 환불 이벤트
+            registerEvent(new OrderRefundedEvent(this.orderId));
             return;
         }
-        // 그 외 DELIVERY, DELIVERY_DONE , ORDER_DONE  상태면 취소 불가
+
         throw new CustomException(ErrorCode.INVALID_ORDER_STATUS);
+    }
+
+
+    // ===== 이벤트 등록 =====
+    private void registerEvent(Object event) {
+        domainEvents.add(event);
+    }
+
+    @DomainEvents
+    public List<Object> domainEvents() {
+        return domainEvents;
+    }
+
+    @AfterDomainEventPublication
+    public void clearEvents() {
+        domainEvents.clear();
     }
 
 

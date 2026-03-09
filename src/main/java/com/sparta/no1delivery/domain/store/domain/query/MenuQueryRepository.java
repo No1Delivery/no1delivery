@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface MenuQueryRepository {
 
-    Optional<Menu> findById(MenuId id);
-    List<Menu> findAll(StoreId id, MenuQueryDto.Search search);
+    Optional<Menu> findById(StoreId storeId, MenuId menuId);
+    List<Menu> findAll(StoreId storeId, MenuQueryDto.Search search);
 
 }
