@@ -20,7 +20,7 @@ public class ReviewOrderInfo {
     private UUID storeId; // 상점 ID
     private String storeName; // 상점 이름
 
-    @Column(name = "order_id", columnDefinition = "jsonb")
+    @Column(name = "order_items", columnDefinition = "jsonb")
     private List<MenuSubOption> items; // 주문상품 목록
 
     @Builder

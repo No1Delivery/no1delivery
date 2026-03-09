@@ -5,6 +5,7 @@ import com.sparta.no1delivery.domain.category.domain.Category;
 import com.sparta.no1delivery.domain.category.domain.CategoryId;
 import com.sparta.no1delivery.domain.category.domain.CategoryRepository;
 import com.sparta.no1delivery.global.domain.RoleCheck;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final RoleCheck roleCheck;
+    private final UserDetails userDetails;
     private final CategoryRepository repository;
 
     //카테고리 생성
@@ -98,11 +100,11 @@ public class CategoryService {
 
     // 카테고리 삭제
     @Transactional
-    public void delete(UUID id) {
+    public void delete(UUID id, UserDetails userDetails) {
         Category category = repository.findById(CategoryId.of(id))
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
-        repository.delete(category);
+        category.delete(userDetails, roleCheck);
     }
 
 
