@@ -4,6 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.no1delivery.domain.order.application.dto.OrderServiceDto;
 import com.sparta.no1delivery.domain.order.domain.*;
+import com.sparta.no1delivery.domain.order.domain.service.OptionCheck;
+import com.sparta.no1delivery.domain.order.domain.service.OrderCheck;
+import com.sparta.no1delivery.domain.order.domain.service.ProductProvider;
+import com.sparta.no1delivery.domain.store.domain.Menu;
+import com.sparta.no1delivery.domain.store.domain.Store;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.transaction.Transactional;
@@ -22,6 +27,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ObjectMapper objectMapper;
 
+    // 상품 조회 서비스
+    private final ProductProvider productProvider;
+
+    // 메뉴 검증 서비스
+    private final OrderCheck orderCheck;
+
+    // 옵션 검증 서비스
+    private final OptionCheck optionCheck;
+
+
     // 주문 생성
     public UUID createOrder(OrderServiceDto.Create dto, Long userId) {
 
@@ -30,12 +45,38 @@ public class OrderService {
             throw new CustomException(ErrorCode.ORDER_ITEM_EMPTY);
         }
 
-        // DTO → OrderItem 변환
+        // 가게 존재 여부 검증
+        Store store = productProvider.getStore(dto.getStoreId());
+
+        // DTO → OrderItem 변환 + 메뉴/옵션 검증
         List<OrderItem> items = dto.getItems().stream()
-                .map(this::toOrderItem)
+                .map(item -> {
+
+                    // 메뉴 조회
+                    Menu menu = productProvider.getMenu(dto.getStoreId(), item.getMenuId());
+
+                    // 메뉴 검증 (가게 메뉴인지 + 가격 위조 검증)
+                    orderCheck.validateMenu(
+                            menu,
+                            dto.getStoreId(),
+                            item.getMenuPrice()
+                    );
+
+                    // 옵션 검증
+                    if (item.getOptions() != null && !item.getOptions().isEmpty()) {
+
+                        List<String> optionNames = item.getOptions().stream()
+                                .map(OrderServiceDto.Option::getName)
+                                .toList();
+
+                        optionCheck.validate(menu, optionNames);
+                    }
+
+                    return toOrderItem(item);
+                })
                 .toList();
 
-        // Store 정보 생성
+        // Store 정보 스냅샷
         StoreInfo storeInfo = new StoreInfo(
                 dto.getStoreId(),
                 dto.getStoreName()
@@ -115,7 +156,7 @@ public class OrderService {
     }
 
 
-    // 주문 상태 변경 (분기 처리)
+    // 주문 상태 변경
     public void changeOrderStatus(UUID orderId, OrderStatus status) {
 
         Order order = orderRepository.findById(orderId)
