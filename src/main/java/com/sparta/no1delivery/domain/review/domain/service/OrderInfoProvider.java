@@ -5,5 +5,5 @@ import com.sparta.no1delivery.domain.review.domain.ReviewOrderInfo;
 import java.util.UUID;
 
 public interface OrderInfoProvider {
-    ReviewOrderInfo MenuSubOption(UUID orderId);
+    ReviewOrderInfo getOrderInfo(UUID orderId);
 }
