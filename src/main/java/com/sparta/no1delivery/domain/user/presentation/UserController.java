@@ -1,12 +1,13 @@
 package com.sparta.no1delivery.domain.user.presentation;
 
 import com.sparta.no1delivery.domain.user.application.UserService;
-import com.sparta.no1delivery.domain.user.presentation.dto.AddressCompositeDto;
-import com.sparta.no1delivery.domain.user.presentation.dto.OwnerRequestDto;
-import com.sparta.no1delivery.domain.user.presentation.dto.UserCompositeDto;
+import com.sparta.no1delivery.domain.user.application.dto.TokenDto;
+import com.sparta.no1delivery.domain.user.presentation.dto.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +17,21 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+
+    //로그인
+    @PostMapping("/auth/login")
+    public UserResponseDto.Token signIn(@RequestBody @Valid UserRequestDto.SignIn request) {
+        TokenDto.Token token = userService.signIn(request.getLoginId(), request.getPassword());
+
+        return UserResponseDto.Token
+                .builder()
+                .token(token.getToken())
+                .refreshToken(token.getRefreshToken())
+                .tokenExpireTime(token.getTokenExpireTime())
+                .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
+                .build();
+    }
+
     //회원 정보 관련
     // 회원 정보 조회
     @GetMapping("/{userId}")
