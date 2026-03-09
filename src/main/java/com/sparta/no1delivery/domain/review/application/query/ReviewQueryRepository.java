@@ -15,8 +15,5 @@ public class ReviewQueryRepository {
     private final ReviewQueryRepository reviewQueryRepository;
 
     // 리뷰 상세 조회
-    public ReviewDto getReview(UUID reviewId) {
-        return reviewQueryRepository.findById(ReviewId.of(reviewId))
-                .map
-    }
+
 }

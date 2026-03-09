@@ -47,7 +47,7 @@ public class ReviewServiceDto {
                     .storeId(review.getInfo().getStoreId())
                     .storeName(review.getInfo().getStoreName())
                     .subject(review.getContent().getSubject())
-                    .content(review.getContent().getContent())
+                    .content(review.getContent().getComment())
                     .score(review.getContent().getScore())
                     .reviewerName(review.getReviewer().getReviewerName())
                     .createdAt(review.getCreatedAt())
