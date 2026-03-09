@@ -31,6 +31,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                );
+
+        return http.build();
+    }
+
+/**
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(c -> c.configurationSource(corsConfigurationSource()))
                 .csrf(c -> c.disable())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -54,6 +67,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+ */
     @Bean // 사용할 해시 암호화 방식(BCrypt)
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
