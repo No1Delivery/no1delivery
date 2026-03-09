@@ -19,7 +19,7 @@ public class UserCompositeDto {
 
     // 회원정보 상제조회 응답
     public record DetailResponse(
-            long userId,
+            Long userId,
             String loginId,
             String nickname,
             UserRole role,
@@ -40,7 +40,7 @@ public class UserCompositeDto {
 
     // 관리자용 회원 목록 조회 응답
     public record SummaryResponse(
-            long userId,
+            Long userId,
             String loginId,
             String nickname,
             UserRole role
