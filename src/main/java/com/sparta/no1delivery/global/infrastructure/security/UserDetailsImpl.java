@@ -35,6 +35,14 @@ public class UserDetailsImpl implements UserDetails {
         return user == null ? null : user.getLoginId();
     }
 
+    public Long getUserId() {
+        return user == null ? null : user.getUserId();
+    }
+
+    public String getName() {
+        return user == null ? null : user.getNickname();
+    }
+
     /**
      * 계정이 만료가 되지 않았는지 / @ExceptionHandler
      *  false : AccountExpiredException
