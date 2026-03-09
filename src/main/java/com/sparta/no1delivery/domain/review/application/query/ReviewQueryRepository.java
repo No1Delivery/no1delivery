@@ -1,5 +1,6 @@
 package com.sparta.no1delivery.domain.review.application.query;
 
+import com.sparta.no1delivery.domain.review.domain.ReviewId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,5 +15,8 @@ public class ReviewQueryRepository {
     private final ReviewQueryRepository reviewQueryRepository;
 
     // 리뷰 상세 조회
-    public ReviewDto getReview(UUID re)
+    public ReviewDto getReview(UUID reviewId) {
+        return reviewQueryRepository.findById(ReviewId.of(reviewId))
+                .map
+    }
 }
