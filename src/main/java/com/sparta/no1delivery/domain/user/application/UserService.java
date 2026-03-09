@@ -1,5 +1,6 @@
 package com.sparta.no1delivery.domain.user.application;
 
+import com.sparta.no1delivery.domain.user.application.dto.OwnerRequestDto;
 import com.sparta.no1delivery.domain.user.domain.entity.User;
 import com.sparta.no1delivery.domain.user.domain.entity.UserAddress;
 import com.sparta.no1delivery.domain.user.domain.enums.OwnerRequestStatus;
@@ -13,7 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +57,6 @@ public class UserService {
     public void changeNickname(Long userId, String nickname) {
 
         User user = getUser(userId);
-
         user.changeNickname(nickname);
     }
 
@@ -67,23 +69,13 @@ public class UserService {
         user.changePassword(encodedPassword);
     }
 
-    //회원 탈퇴
-    public void withdraw(Long userId){
-        User user = getUser(userId);
-
-        //회원 탈퇴 메소드
-    }
-
     // 주소 추가
-    public void addAddress(
-            Long userId,
-            String address,
-            String detailAddress,
-            Boolean isDefault
-    ) {
+    public void addAddress(Long userId,
+                           String address,
+                           String detailAddress,
+                           Boolean isDefault) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        User user = getUser(userId);
 
         UserAddress userAddress = UserAddress.builder()
                 .address(address)
@@ -95,16 +87,13 @@ public class UserService {
         user.addAddress(userAddress);
     }
 
-    //주소 수정
-    public void updateAddress(
-            Long userId,
-            UUID addressId,
-            String address,
-            String detailAddress
-    ) {
+    // 주소 수정
+    public void updateAddress(Long userId,
+                              UUID addressId,
+                              String address,
+                              String detailAddress) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        User user = getUser(userId);
 
         UserAddress userAddress = user.getAddresses()
                 .stream()
@@ -115,15 +104,10 @@ public class UserService {
         userAddress.updateAddress(address, detailAddress, addressToCoords);
     }
 
+    // 주소 삭제
+    public void deleteAddress(Long userId, UUID addressId) {
 
-    //주소 삭제
-    public void deleteAddress(
-            Long userId,
-            UUID addressId
-    ) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        User user = getUser(userId);
 
         UserAddress address = user.getAddresses()
                 .stream()
@@ -134,14 +118,10 @@ public class UserService {
         user.removeAddress(address);
     }
 
-    //기본 배송지 변경
-    public void changeDefaultAddress(
-            long userId,
-            UUID addressId
-    ) {
+    // 기본 배송지 변경
+    public void changeDefaultAddress(Long userId, UUID addressId) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        User user = getUser(userId);
 
         UserAddress newDefault = user.getAddresses()
                 .stream()
@@ -152,12 +132,24 @@ public class UserService {
         user.changeDefaultAddress(newDefault);
     }
 
+
     //사장 권한 요청
-    public void requestOwnerRole(Long userId, String businessNumber) {
+    public void requestOwnerRole(Long userId, OwnerRequestDto.Request request) {
 
         User user = getUser(userId);
 
-        user.requestOwnerRole(businessNumber);
+        user.requestOwnerRole(request.businessNumber());
+    }
+
+    //사장 신청 목록 조회
+    @Transactional(readOnly = true)
+    public List<OwnerRequestDto.Response> getOwnerRequests() {
+
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> user.getOwnerRequestStatus() == OwnerRequestStatus.PENDING)
+                .map(OwnerRequestDto.Response::from)
+                .collect(Collectors.toList());
     }
 
     //사장 권한 승인
