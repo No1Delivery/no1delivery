@@ -2,12 +2,14 @@ package com.sparta.no1delivery.domain.category.domain;
 
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import com.sparta.no1delivery.global.domain.RoleCheck;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +18,7 @@ import java.util.UUID;
 @ToString
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at IS NULL")
 public class Category extends BaseUserEntity {
 
     @EmbeddedId
@@ -26,11 +29,7 @@ public class Category extends BaseUserEntity {
 
     @Column(name = "display_order", nullable = false)
     private long displayOrder;
-
-    @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
-
-
+    
     @Builder
     public Category(UUID categoryId, String name, long displayOrder ,RoleCheck roleCheck) {
         // 권한 체크
@@ -52,8 +51,8 @@ public class Category extends BaseUserEntity {
         return new Category(id.getId(), name, displayOrder, roleCheck);
     }
 
-    public void delete(RoleCheck roleCheck) {
+    public void delete(UserDetails userDetails, RoleCheck roleCheck) {
         checkPossible(roleCheck);
-        this.isDeleted = true;
+        super.delete(userDetails);
     }
 }
