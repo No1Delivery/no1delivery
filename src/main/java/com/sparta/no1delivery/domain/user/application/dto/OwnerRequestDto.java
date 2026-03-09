@@ -5,7 +5,6 @@ import com.sparta.no1delivery.domain.user.domain.enums.OwnerRequestStatus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -18,7 +17,7 @@ public class OwnerRequestDto {
 
     // Manager → 요청 목록 조회 Response
     public record Response(
-            BigInteger userId,
+            Long userId,
             String loginId,
             String nickname,
             String businessNumber,
