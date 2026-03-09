@@ -81,7 +81,10 @@ public enum ErrorCode {
     PAYMENT_ALREADY_PROCESSED(HttpStatus.BAD_REQUEST, "이미 완료되었거나 처리 중인 결제입니다."),
     PAYMENT_CONFIRM_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "토스페이먼츠 승인 요청 중 오류가 발생했습니다."),
     PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소 요청 중 오류가 발생했습니다."),
-    PAYMENT_GATEWAY_ERROR(HttpStatus.BAD_GATEWAY, "결제 대행사(PG)와의 통신에 실패했습니다.");
+    PAYMENT_GATEWAY_ERROR(HttpStatus.BAD_GATEWAY, "결제 대행사(PG)와의 통신에 실패했습니다."),
+
+    // --- 리뷰 (R) ---
+    REVIEW_RATE_RANGE(HttpStatus.BAD_REQUEST, "리뷰 평점은 1점에서 5점 사이여야 합니다.");
 
 
     private final HttpStatus status;
