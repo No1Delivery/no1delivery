@@ -69,6 +69,8 @@ jobs:
             -e DB_URL=${{ secrets.DB_URL }} \
             -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            -e JSON_WEB_TOKEN_SECRET=${{secrets.JSON_WEB_TOKEN_SECRET }} \
+            -e TOSS_SECRET_KEY=${{secrets.TOSS_SECRET_KEY }} \
             -e DB_DDL_AUTO=update \
             -e KAKAO_API_KEY=${{ secrets.KAKAO_API_KEY }} \
             -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
