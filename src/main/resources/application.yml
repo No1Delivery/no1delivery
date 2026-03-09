@@ -28,3 +28,6 @@ jwt:
     level:
       org.hibernate.type: trace
       org.hibernate.orm.jdbc.bind: trace
+payment:
+  toss:
+    secret-key: ${TOSS_SECRET_KEY}
