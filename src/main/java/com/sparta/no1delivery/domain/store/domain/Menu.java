@@ -100,10 +100,9 @@ public class Menu extends BaseUserEntity {
     }
 
     // 옵션 하나 등록
-    public void createOption(String name, int price, List<MenuSubOption> subOptions, boolean isEssential, boolean isMultiple) {
+    public void createOption(String name, List<MenuSubOption> subOptions, boolean isEssential, boolean isMultiple) {
         MenuOption newOption = MenuOption.builder()
                 .name(name)
-                .price(price)
                 .subOptions(subOptions)
                 .isEssential(isEssential)
                 .isMultiple(isMultiple)
