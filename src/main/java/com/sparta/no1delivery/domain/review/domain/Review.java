@@ -22,7 +22,7 @@ import java.util.UUID;
  * 7. 하나의 주문, 하나의 리뷰를 작성하는 원칙
  */
 
-@Entity
+//@Entity
 @ToString
 @Access(AccessType.FIELD)
 @Getter

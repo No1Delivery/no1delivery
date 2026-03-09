@@ -1,11 +1,17 @@
 package com.sparta.no1delivery.domain.user.application;
 
-import com.sparta.no1delivery.domain.user.application.dto.OwnerRequestDto;
+import com.sparta.no1delivery.domain.user.application.dto.TokenDto;
 import com.sparta.no1delivery.domain.user.domain.entity.User;
 import com.sparta.no1delivery.domain.user.domain.entity.UserAddress;
 import com.sparta.no1delivery.domain.user.domain.enums.OwnerRequestStatus;
 import com.sparta.no1delivery.domain.user.domain.enums.UserRole;
 import com.sparta.no1delivery.domain.user.domain.repository.UserRepository;
+import com.sparta.no1delivery.domain.user.domain.service.PasswordValidator;
+import com.sparta.no1delivery.domain.user.domain.service.TokenGenerator;
+import com.sparta.no1delivery.domain.user.domain.vo.Token;
+import com.sparta.no1delivery.domain.user.presentation.dto.AddressCompositeDto;
+import com.sparta.no1delivery.domain.user.presentation.dto.OwnerRequestDto;
+import com.sparta.no1delivery.domain.user.presentation.dto.UserCompositeDto;
 import com.sparta.no1delivery.global.domain.service.AddressToCoords;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
@@ -25,6 +31,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AddressToCoords addressToCoords;
+    private final PasswordValidator passwordValidator;
+    private final TokenGenerator tokenGenerator;
+
     // 회원가입
     public void signUp(String loginId,
                        String password,
@@ -45,12 +54,34 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public TokenDto.Token signIn(String loginId, String password) {
+        User user = getUserByLoginId(loginId);
+        Token token = user.signIn(password, passwordValidator, tokenGenerator);
+
+        return TokenDto.Token
+                .builder()
+                .token(token.token())
+                .refreshToken(token.refreshToken())
+                .tokenExpireTime(token.tokenExpireTime())
+                .refreshTokenExpireTime(token.refreshTokenExpireTime())
+                .build();
+    }
+
     // user 조회
     @Transactional(readOnly = true)
     public User getUser(Long userId) {
 
         return userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserCompositeDto.SummaryResponse> getUsers() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(UserCompositeDto.SummaryResponse::from)
+                .toList();
     }
 
     //닉네임 변경
@@ -67,6 +98,18 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(password);
 
         user.changePassword(encodedPassword);
+    }
+
+    //주소 조회
+    @Transactional(readOnly = true)
+    public List<AddressCompositeDto.Response> getAddresses(Long userId) {
+
+        User user = getUser(userId);
+
+        return user.getAddresses()
+                .stream()
+                .map(AddressCompositeDto.Response::from)
+                .toList();
     }
 
     // 주소 추가

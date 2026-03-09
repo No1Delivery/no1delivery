@@ -1,8 +1,7 @@
-package com.sparta.no1delivery.domain.store.infrastructure;
+package com.sparta.no1delivery.global.infrastructure.security;
 
-import com.sparta.no1delivery.domain.store.domain.QStore;
 import com.sparta.no1delivery.domain.store.domain.StoreRepository;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +9,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class OwnerCheckImpl implements OwnerCheck {
+public class SecurityOwnerCheck implements OwnerCheck {
 
     private final StoreRepository storeRepository;
 

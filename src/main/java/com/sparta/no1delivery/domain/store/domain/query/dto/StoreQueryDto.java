@@ -22,7 +22,6 @@ public class StoreQueryDto {
     @Builder
     public static class Search {
         private List<UUID> categoryIds;
-        private String storeName;
         private StoreStatus storeStatus;
         private String keyword;
         private Double latitude;
