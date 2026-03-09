@@ -23,7 +23,7 @@ public class UserController {
     // 사장 권한 요청
     @PostMapping("/{userId}/owner-request")
     public void requestOwnerRole(
-            @PathVariable BigInteger userId,
+            @PathVariable Long userId,
             @RequestBody OwnerRequestDto.Request request
     ) {
 
@@ -39,14 +39,14 @@ public class UserController {
 
     // 권한 승인
     @PostMapping("/{userId}/owner-approve")
-    public void approveOwnerRole(@PathVariable BigInteger userId) {
+    public void approveOwnerRole(@PathVariable Long userId) {
 
         userService.approveOwnerRole(userId);
     }
 
     // 권한 거절
     @PostMapping("/{userId}/owner-reject")
-    public void rejectOwnerRole(@PathVariable BigInteger userId) {
+    public void rejectOwnerRole(@PathVariable Long userId) {
 
         userService.rejectOwnerRole(userId);
     }
