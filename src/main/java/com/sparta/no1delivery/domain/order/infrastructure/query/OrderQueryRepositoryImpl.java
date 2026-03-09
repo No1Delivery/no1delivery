@@ -23,8 +23,10 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
+    //주문 단건 조회
     @Override
     public Optional<Order> findById(UUID orderId) {
+
         QOrder order = QOrder.order;
 
         Order result = queryFactory
@@ -35,14 +37,44 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         return Optional.ofNullable(result);
     }
 
+    //관리자 주문 검색 (필터 조회)
     @Override
     public Page<Order> findAll(OrderQueryDto.Search search, Pageable pageable) {
 
         QOrder order = QOrder.order;
         BooleanBuilder builder = new BooleanBuilder();
 
-        if (search != null && search.getOrderIds() != null && !search.getOrderIds().isEmpty()) {
-            builder.and(order.orderId.in(search.getOrderIds()));
+        if (search != null) {
+
+            // 주문 ID 검색
+            if (search.getOrderIds() != null && !search.getOrderIds().isEmpty()) {
+                builder.and(order.orderId.in(search.getOrderIds()));
+            }
+
+            // 주문자 이름 검색
+            if (search.getOrdererName() != null && !search.getOrdererName().isBlank()) {
+                builder.and(order.orderer.name.containsIgnoreCase(search.getOrdererName()));
+            }
+
+            // 매장 ID 검색
+            if (search.getStoreIds() != null && !search.getStoreIds().isEmpty()) {
+                builder.and(order.storeInfo.storeId.in(search.getStoreIds()));
+            }
+
+            // 매장 이름 검색
+            if (search.getStoreName() != null && !search.getStoreName().isBlank()) {
+                builder.and(order.storeInfo.storeName.containsIgnoreCase(search.getStoreName()));
+            }
+
+            // 배송 주소 검색
+            if (search.getDeliveryAddress() != null && !search.getDeliveryAddress().isBlank()) {
+                builder.and(order.deliveryInfo.address.containsIgnoreCase(search.getDeliveryAddress()));
+            }
+
+            // 주문 상태 검색
+            if (search.getOrderStatuses() != null && !search.getOrderStatuses().isEmpty()) {
+                builder.and(order.status.stringValue().in(search.getOrderStatuses()));
+            }
         }
 
         List<Order> content = queryFactory
@@ -60,6 +92,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
+    //특정 매장의 주문 조회
     @Override
     public Page<Order> findAllByStore(UUID storeId, OrderQueryDto.Search search, Pageable pageable) {
 
@@ -83,6 +116,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
+    //특정 사용자의 주문 조회 (내 주문 목록)
     @Override
     public Page<Order> findAllByUser(Long userId, OrderQueryDto.Search search, Pageable pageable) {
 
