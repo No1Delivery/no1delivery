@@ -3,7 +3,7 @@ package com.sparta.no1delivery.domain.store.application.menu;
 import com.sparta.no1delivery.domain.store.application.dto.StoreServiceDto;
 import com.sparta.no1delivery.domain.store.domain.Store;
 import com.sparta.no1delivery.domain.store.domain.StoreRepository;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
