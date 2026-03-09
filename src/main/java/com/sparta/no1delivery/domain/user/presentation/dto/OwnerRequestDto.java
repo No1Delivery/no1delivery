@@ -1,4 +1,4 @@
-package com.sparta.no1delivery.domain.user.application.dto;
+package com.sparta.no1delivery.domain.user.presentation.dto;
 
 import com.sparta.no1delivery.domain.user.domain.entity.User;
 import com.sparta.no1delivery.domain.user.domain.enums.OwnerRequestStatus;
