@@ -36,6 +36,19 @@ public class OrderService {
     // 옵션 검증 서비스
     private final OptionCheck optionCheck;
 
+    // 배송지 변경
+    public void changeDeliveryInfo(
+            UUID orderId,
+            String address,
+            String detailAddress,
+            String memo
+    ) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        order.changeDeliveryInfo(address, detailAddress, memo);
+    }
 
     // 주문 생성
     public UUID createOrder(OrderServiceDto.Create dto, Long userId) {
@@ -178,5 +191,7 @@ public class OrderService {
 
             default -> throw new CustomException(ErrorCode.INVALID_ORDER_STATUS);
         }
+
+
     }
 }

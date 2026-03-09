@@ -22,7 +22,7 @@ spring:
 payment:
   toss:
     secret-key: ${TOSS_SECRET_KEY}
-    
+
 # JWT 설정
 jwt:
   secret: ${JSON_WEB_TOKEN_SECRET}
