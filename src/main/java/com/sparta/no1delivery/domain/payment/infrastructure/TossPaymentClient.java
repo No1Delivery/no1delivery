@@ -1,6 +1,6 @@
 package com.sparta.no1delivery.domain.payment.infrastructure;
 
-import com.sparta.no1delivery.domain.payment.domain.PaymentApproveResponse;
+import com.sparta.no1delivery.domain.payment.domain.PaymentAmountDto;
 import com.sparta.no1delivery.domain.payment.domain.PaymentClient;
 import com.sparta.no1delivery.domain.payment.infrastructure.dto.TossApproveResponse;
 import org.springframework.http.*;
@@ -25,7 +25,7 @@ public class TossPaymentClient implements PaymentClient {
 
 
     @Override// payment키와 orderId, amount값을 함께 담아서 토스API에 전달하겠다는 규칙을 구현화 하는 것
-    public PaymentApproveResponse requestApprove(String paymentKey, String orderId, Long amount,String idempotencyKey) {
+    public PaymentAmountDto requestApprove(String paymentKey, String orderId, Long amount, String idempotencyKey) {
         String Url = properties.getBaseUrl() + "/confirm";
 
         Map<String, Object> request = new HashMap<>();
@@ -37,7 +37,7 @@ public class TossPaymentClient implements PaymentClient {
     }
 
     @Override
-    public PaymentApproveResponse requestCancel(String paymentKey, String reason, String idempotencyKey) {
+    public PaymentAmountDto requestCancel(String paymentKey, String reason, String idempotencyKey) {
         String Url = properties.getBaseUrl() + "/" + paymentKey + "/cancel";
 
         Map<String, Object> request = new HashMap<>();
@@ -47,7 +47,7 @@ public class TossPaymentClient implements PaymentClient {
     }
 
 
-    private PaymentApproveResponse executeRequest(String url, Map<String, Object> requestBody,String idempotencyKey) {
+    private PaymentAmountDto executeRequest(String url, Map<String, Object> requestBody, String idempotencyKey) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Basic "+ properties.getEncodeAuth());
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -62,7 +62,7 @@ public class TossPaymentClient implements PaymentClient {
                 body.approvedAt(),
                 DateTimeFormatter.ISO_OFFSET_DATE_TIME
         );
-        return new PaymentApproveResponse(
+        return new PaymentAmountDto(
                 body.paymentKey(),
                 body.totalAmount(),
                 at,
