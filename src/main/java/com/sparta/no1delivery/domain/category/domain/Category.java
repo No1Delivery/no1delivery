@@ -27,6 +27,9 @@ public class Category extends BaseUserEntity {
     @Column(name = "display_order", nullable = false)
     private long displayOrder;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
 
     @Builder
     public Category(UUID categoryId, String name, long displayOrder ,RoleCheck roleCheck) {
@@ -47,5 +50,10 @@ public class Category extends BaseUserEntity {
 
     public Category change(String name, long displayOrder, RoleCheck roleCheck) {
         return new Category(id.getId(), name, displayOrder, roleCheck);
+    }
+
+    public void delete(RoleCheck roleCheck) {
+        checkPossible(roleCheck);
+        this.isDeleted = true;
     }
 }
