@@ -1,7 +1,5 @@
 package com.sparta.no1delivery.domain.review.domain;
 
-import com.sparta.no1delivery.domain.review.ReviewOrderItem;
-import com.sparta.no1delivery.domain.store.domain.MenuSubOption;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;

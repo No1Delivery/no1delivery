@@ -1,4 +1,4 @@
-package com.sparta.no1delivery.domain.review;
+package com.sparta.no1delivery.domain.review.domain;
 
 public record ReviewOrderItem(
         String itemName,
