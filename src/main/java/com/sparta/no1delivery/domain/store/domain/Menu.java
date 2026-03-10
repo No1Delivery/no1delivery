@@ -45,13 +45,16 @@ public class Menu extends BaseUserEntity {
     private Price price;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "P_MENU_OPTION", joinColumns = @JoinColumn(name = "menu_id"))
-    @OrderColumn(name = "option_idx")
+    @CollectionTable(name = "P_MENU_OPTION",
+            joinColumns = @JoinColumn(
+                    name = "menu_id",
+                    referencedColumnName = "menu_id"
+            )
+    )
     private List<MenuOption> options;
 
     @Builder
     protected Menu(UUID menuId, StoreId storeId, String name, String description, int price, List<MenuOption> options) {
-        this.id = menuId == null ? MenuId.of() : MenuId.of(menuId);
         this.storeId = storeId;
         this.name = name;
         this.description = description;
@@ -62,6 +65,7 @@ public class Menu extends BaseUserEntity {
         if (options != null) {
             createOptions(options);
         }
+        this.id = menuId == null ? MenuId.of() : MenuId.of(menuId);
     }
 
     // 메뉴 수정

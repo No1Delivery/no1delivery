@@ -9,6 +9,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -52,7 +54,8 @@ public class Payment {
     private PaymentStatus status;
 
     //결제 로그 담는 공간
-    @Column(name = "payment_log", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "payment_log")
     private String paymentLog;
 
     // payment 주문결제상세 내용

@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +39,8 @@ public class OrderItem {
     private String menuName;
 
     // 사용자가 선택한 옵션 정보 (JSON 형태로 저장)
-    @Column(columnDefinition = "json", nullable = true)
+    @Column(nullable = true)
+    @JdbcTypeCode(SqlTypes.JSON)
     private String menuOption;
 
     // 주문 수량
