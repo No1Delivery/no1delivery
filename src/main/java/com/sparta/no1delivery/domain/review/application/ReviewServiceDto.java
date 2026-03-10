@@ -13,18 +13,16 @@ public class ReviewServiceDto {
     @Builder
     public static class Create {
         private UUID orderId;
-        private String subject;
-        private String content;
-        private int score;
+        private String comment;
+        private int rating;
     }
 
     @Getter
     @Builder
     public static class Change {
         private UUID reviewId;
-        private String subject;
-        private String content;
-        private int score;
+        private String comment;
+        private int rating;
     }
 
     @Getter
@@ -34,9 +32,8 @@ public class ReviewServiceDto {
         private UUID orderId;
         private UUID storeId;
         private String storeName;
-        private String subject;
-        private String content;
-        private int score;
+        private String comment;
+        private int rating;
         private String reviewerName;
         private LocalDateTime createdAt;
 
@@ -46,9 +43,8 @@ public class ReviewServiceDto {
                     .orderId(review.getInfo().getOrderId())
                     .storeId(review.getInfo().getStoreId())
                     .storeName(review.getInfo().getStoreName())
-                    .subject(review.getContent().getSubject())
-                    .content(review.getContent().getComment())
-                    .score(review.getContent().getScore())
+                    .comment(review.getContent().getComment())
+                    .rating(review.getContent().getScore())
                     .reviewerName(review.getReviewer().getReviewerName())
                     .createdAt(review.getCreatedAt())
                     .build();

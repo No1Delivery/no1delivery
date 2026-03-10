@@ -51,7 +51,7 @@ public class Review extends BaseUserEntity {
     private ReviewContent content; // 리뷰 내용
 
     @Builder
-    public Review(UUID orderId, String subject, String content, int score, OrderInfoProvider orderInfoProvider, RoleCheck roleCheck,
+    public Review(UUID orderId, String comment, int rating, OrderInfoProvider orderInfoProvider, RoleCheck roleCheck,
                   ReviewerCheck reviewerCheck, UserDetails userDetails) {
         // 권한 체크
         checkAuthority(orderId, reviewerCheck, roleCheck);
@@ -66,15 +66,15 @@ public class Review extends BaseUserEntity {
         this.reviewer = new Reviewer(userDetails); // 리뷰 작성자 (로그인 정보에서 자동 완성)
 
         this.info = orderInfo; // 주문 정보
-        this.content = new ReviewContent(subject, content, score); // 리뷰 내용
+        this.content = new ReviewContent(comment, rating); // 리뷰 내용
     }
 
     // 리뷰 수정
-    public void change(String subject, String content, int rating, ReviewerCheck reviewerCheck, RoleCheck roleCheck) {
+    public void change(String content, int rating, ReviewerCheck reviewerCheck, RoleCheck roleCheck) {
         // 권한 체크
         checkAuthority(info.getOrderId(), reviewerCheck, roleCheck);
 
-        this.content = new ReviewContent(subject, content, rating);
+        this.content = new ReviewContent(content, rating);
     }
 
     // 리뷰 삭제 (Soft Delete)

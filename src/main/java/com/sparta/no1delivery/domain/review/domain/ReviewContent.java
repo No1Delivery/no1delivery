@@ -1,6 +1,5 @@
 package com.sparta.no1delivery.domain.review.domain;
 
-import com.sparta.no1delivery.domain.review.domain.exception.ReviewRateOutOfRangeException;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.Column;
@@ -14,9 +13,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReviewContent {
 
-    @Column(nullable = false)
-    private String subject; // 제목
-
     @Lob
     @Column(nullable = false)
     private String comment; // 리뷰 내용
@@ -24,8 +20,8 @@ public class ReviewContent {
     private int score; // 평점
 
     @Builder
-    protected  ReviewContent(String subject, String comment, int score) {
-        this.subject = subject;
+    protected  ReviewContent(String comment, int score) {
+
         this.comment = comment;
 
         setScore(score);

@@ -59,7 +59,7 @@ public class ReviewController {
    }
 
    @Operation(summary = "상점별 리뷰 목록 조회", description = "특정 상점에 달린 리뷰들을 검색 조건에 따라 조회합니다.")
-   @GetMapping("/store/{storeId}")
+   @GetMapping("/{storeId}")
    public Page<ReviewResponseDto> findAllByStore(
            @Parameter(description = "상점 UUID") @PathVariable UUID storeId,
            @ModelAttribute ReviewQueryDto.Search search,
@@ -70,7 +70,7 @@ public class ReviewController {
    }
 
    @Operation(summary = "사용자별 리뷰 목록 조회", description = "내가 작성한 리뷰 목록을 검색 조건에 따라 조회합니다.")
-   @GetMapping("/user/{userId}")
+   @GetMapping("/me")
    public Page<ReviewResponseDto> findAllByUser(
            @Parameter(description = "사용자 Long") @PathVariable Long userId,
            @ModelAttribute ReviewQueryDto.Search search,
@@ -81,7 +81,7 @@ public class ReviewController {
    }
 
    @Operation(summary = "전체 리뷰 조회 (관리자용)", description = "시스템 내의 모든 리뷰를 검색 조건에 따라 조회합니다.")
-   @GetMapping
+   @GetMapping("/admin")
    public Page<ReviewResponseDto> findAll(
            @ModelAttribute ReviewQueryDto.Search search,
            @PageableDefault(size = 10) Pageable pageable) {

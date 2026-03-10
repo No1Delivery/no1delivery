@@ -24,14 +24,11 @@ public class ReviewResponseDto {
     @Schema(description = "상점명")
     private String storeName;
 
-    @Schema(description = "리뷰 제목")
-    private String subject;
-
     @Schema(description = "리뷰 내용")
-    private String content;
+    private String comment;
 
     @Schema(description = "평점")
-    private int score;
+    private int rating;
 
     @Schema(description = "작성자 닉네임")
     private String reviewerName;
@@ -45,9 +42,8 @@ public class ReviewResponseDto {
                 .orderId(dto.getOrderId())
                 .storeId(dto.getStoreId())
                 .storeName(dto.getStoreName())
-                .subject(dto.getSubject())
-                .content(dto.getContent())
-                .score(dto.getScore())
+                .comment(dto.getComment())
+                .rating(dto.getRating())
                 .reviewerName(dto.getReviewerName())
                 .createdAt(dto.getCreatedAt())
                 .build();
