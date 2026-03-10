@@ -9,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.UUID;
-
 @Getter
 @ToString
 @Embeddable
@@ -18,7 +16,7 @@ import java.util.UUID;
 public class Reviewer {
 
     @Column(length = 45, name = "reviewer_id")
-    private UUID id;
+    private Long id;
 
     @Column(length = 45)
     private String reviewerName;

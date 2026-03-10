@@ -29,17 +29,17 @@ public class ReviewerCheckImpl implements ReviewerCheck {
      */
     @Override
     public boolean check(ReviewId reviewId, UUID orderId) {
-        UUID currentUserId = userDetails.getId();
+        Long currentUserId = userDetails.getId();
         return reviewId == null ? isOrderer(orderId, currentUserId) : isReviewer(reviewId, currentUserId);
     }
 
-    private boolean isOrderer(UUID orderId, UUID userId) {
+    private boolean isOrderer(UUID orderId, Long userId) {
         return orderQueryRepository.findById(orderId)
                 .map(order -> order.getOrderer().getUserId().equals(userId))
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
     }
 
-    private boolean isReviewer(ReviewId reviewId, UUID userId) {
+    private boolean isReviewer(ReviewId reviewId, Long userId) {
         return reviewRepository.findById(reviewId)
                 .map(review -> review.getReviewer().getId().equals(userId))
                 .orElseThrow(ReviewNotFoundException::new);
