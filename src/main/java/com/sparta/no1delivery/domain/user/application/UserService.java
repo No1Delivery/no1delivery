@@ -53,6 +53,24 @@ public class UserService {
             throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
 
+        // 비밀번호 길이 검증
+        if(password.length() < 8){
+            throw new CustomException(ErrorCode.PASSWORD_TOO_SHORT);
+        }
+
+        if(password.length() > 20){
+            throw new CustomException(ErrorCode.PASSWORD_TOO_LONG);
+        }
+
+        // 닉네임 검증
+        if (nickname == null || nickname.isBlank()) {
+            throw new CustomException(ErrorCode.MISSING_INPUT_VALUE);
+        }
+
+        if (nickname.length() < 2 || nickname.length() > 20) {
+            throw new CustomException(ErrorCode.INVALID_NICKNAME_LENGTH);
+        }
+
         User user = User.builder()
                 .loginId(loginId)
                 .password(passwordEncoder.encode(password))
