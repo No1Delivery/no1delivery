@@ -16,7 +16,6 @@ import java.util.List;
 public class AiService {
 
     private final AiClient aiClient;
-    private final UserDetails userDetails;
 
     public List<MenuNamingResponse> generateMenuNamings(String features) {
         String system = """
@@ -36,7 +35,6 @@ public class AiService {
                 system,
                 "메뉴 특징: " + features,
                 AiLogType.MENU_NAMING,
-                userDetails.getId(),
                 MenuNamingResponse.class
         );
     }
@@ -58,7 +56,6 @@ public class AiService {
                 system,
                 "가게 특징: " + storeFeatures,
                 AiLogType.STORE_DESCRIPTION,
-                userDetails.getId(),
                 StoreDescriptionResponse.class
         );
     }

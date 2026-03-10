@@ -8,6 +8,7 @@ import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.ResolvableType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class OpenAiClient implements AiClient {
     }
 
     @Override
-    public<T> List<T> generate(String system, String userPrompt, AiLogType type, Long userId, Class<T> clazz) {
+    public<T> List<T> generate(String system, String userPrompt, AiLogType type, Class<T> clazz) {
         try{
             return chatClient.prompt()
                     .system(system)
@@ -34,7 +35,8 @@ public class OpenAiClient implements AiClient {
                             .param("LOG_TYPE", type)
                             .param("USER_ID", userDetails.getId()))
                     .call()
-                    .entity(new ParameterizedTypeReference<>() {});
+                    .entity(ParameterizedTypeReference.forType(
+                            ResolvableType.forClassWithGenerics(List.class, clazz).getType()));
         } catch (Exception e) {
             throw new CustomException(ErrorCode.AI_API_ERROR);
         }

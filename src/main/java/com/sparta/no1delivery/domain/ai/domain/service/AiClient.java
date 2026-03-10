@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface AiClient {
 
-    <T> List<T> generate(String system, String userPrompt, AiLogType type, Long userId, Class<T> clazz);
+    <T> List<T> generate(String system, String userPrompt, AiLogType type, Class<T> clazz);
 }
