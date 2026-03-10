@@ -1,4 +1,9 @@
 package com.sparta.no1delivery.domain.review.domain.service;
 
-public class StoreRatingCalculator {
+import java.util.UUID;
+
+// 매장별 리뷰 평점 평균
+public interface StoreRatingCalculator {
+    double getAverageRating(UUID storeId);
+    Long getReviewCount(UUID storeId);
 }

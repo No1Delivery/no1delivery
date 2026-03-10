@@ -13,16 +13,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PaymentAmount {
 
-    @Column
-    private Long value; // 가격을 저장하기 위한 필드
+    @Column(name = "amount")
+    private long value; // 가격을 저장하기 위한 필드
 
 
-    public PaymentAmount(Long value){ //들어온 값이 유효하다면 값으로 받아서 상자를 조립하는 생성자
+    public PaymentAmount(long value){ //들어온 값이 유효하다면 값으로 받아서 상자를 조립하는 생성자
         validate(value);
         this.value = value;
     }
 
-    private void validate(Long value){ //들어온 값이 0보다 큰지 확인을 위해(유효성 체크) 메서드
+    private void validate(long value){ //들어온 값이 0보다 큰지 확인을 위해(유효성 체크) 메서드
         if (value < 0){
             throw new CustomException(ErrorCode.INVALID_PAYMENT_AMOUNT);
         }

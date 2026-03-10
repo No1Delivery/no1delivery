@@ -79,15 +79,6 @@ public class Store extends BaseUserEntity {
         // 등록 권한 체크
         checkAuthority(roleCheck, ownerCheck);
 
-        this.id = storeId == null ? StoreId.of() : StoreId.of(storeId);
-        this.owner = new Owner(ownerCheck.getOwnerId(), ownerName);
-        this.name = name;
-        this.description = description;
-        this.phone = phone;
-        this.address = new StoreAddress(address, detailAddress, addressToCoords);
-        this.status = StoreStatus.CLOSED;
-        this.rating = new Rating();
-
         // 분류 추가
         createCategory(StoreDto.CategoryDto
                 .builder()
@@ -96,6 +87,15 @@ public class Store extends BaseUserEntity {
                 .categoryCheck(categoryCheck)
                 .categoryIds(categoryIds)
                 .build());
+
+        this.id = storeId == null ? StoreId.of() : StoreId.of(storeId);
+        this.owner = new Owner(ownerCheck.getOwnerId(), ownerName);
+        this.name = name;
+        this.description = description;
+        this.phone = phone;
+        this.address = new StoreAddress(address, detailAddress, addressToCoords);
+        this.status = StoreStatus.CLOSED;
+        this.rating = new Rating();
     }
 
     // 가게 정보 수정
@@ -129,6 +129,11 @@ public class Store extends BaseUserEntity {
         }
     }
 
+    // 가게 리뷰 평점 업데이트
+    public void systemUpdateRating(Double average, Long count) {
+        this.updatedBy = 0L; // SYSTEM
+        this.rating.updateRating(average, count);
+    }
 
 
     //// 메뉴 관련

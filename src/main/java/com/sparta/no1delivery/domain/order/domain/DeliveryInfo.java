@@ -1,5 +1,7 @@
 package com.sparta.no1delivery.domain.order.domain;
 
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -24,7 +26,7 @@ public class DeliveryInfo {
                         String requestMessage) {
 
         if (address == null || address.isBlank()) {
-            throw new IllegalArgumentException("주소는 필수입니다.");
+            throw new CustomException(ErrorCode.MISSING_INPUT_VALUE);
         }
 
         this.address = address;

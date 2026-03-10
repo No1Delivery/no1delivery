@@ -1,5 +1,9 @@
 package com.sparta.no1delivery.domain.user.application;
 
+import com.sparta.no1delivery.domain.store.domain.Owner;
+import com.sparta.no1delivery.domain.store.domain.Store;
+import com.sparta.no1delivery.domain.store.domain.StoreId;
+import com.sparta.no1delivery.domain.store.domain.StoreRepository;
 import com.sparta.no1delivery.domain.user.application.dto.TokenDto;
 import com.sparta.no1delivery.domain.user.domain.entity.User;
 import com.sparta.no1delivery.domain.user.domain.entity.UserAddress;
@@ -12,10 +16,14 @@ import com.sparta.no1delivery.domain.user.domain.vo.Token;
 import com.sparta.no1delivery.domain.user.presentation.dto.AddressCompositeDto;
 import com.sparta.no1delivery.domain.user.presentation.dto.OwnerRequestDto;
 import com.sparta.no1delivery.domain.user.presentation.dto.UserCompositeDto;
+import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.AddressToCoords;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
+import com.sparta.no1delivery.global.infrastructure.security.UserDetailsImpl;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +37,8 @@ import java.util.stream.Collectors;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
+    private final StoreRepository storeRepository;
+    private final RoleCheck roleCheck;
     private final PasswordEncoder passwordEncoder;
     private final AddressToCoords addressToCoords;
     private final PasswordValidator passwordValidator;
@@ -40,7 +50,25 @@ public class UserService {
                        String nickname) {
 
         if (userRepository.existsByLoginId(loginId)) {
-            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+            throw new CustomException(ErrorCode.DUPLICATE_LOGIN_ID);
+        }
+
+        // 비밀번호 길이 검증
+        if(password.length() < 8){
+            throw new CustomException(ErrorCode.PASSWORD_TOO_SHORT);
+        }
+
+        if(password.length() > 20){
+            throw new CustomException(ErrorCode.PASSWORD_TOO_LONG);
+        }
+
+        // 닉네임 검증
+        if (nickname == null || nickname.isBlank()) {
+            throw new CustomException(ErrorCode.MISSING_INPUT_VALUE);
+        }
+
+        if (nickname.length() < 2 || nickname.length() > 20) {
+            throw new CustomException(ErrorCode.INVALID_NICKNAME_LENGTH);
         }
 
         User user = User.builder()
@@ -54,6 +82,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    //로그인
     public TokenDto.Token signIn(String loginId, String password) {
         User user = getUserByLoginId(loginId);
         Token token = user.signIn(password, passwordValidator, tokenGenerator);
@@ -75,8 +104,20 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
+    // user 개인 조회
+    @Transactional(readOnly = true)
+    public UserCompositeDto.DetailResponse getMyUser(Long userId){
+        validateSelf(userId);
+        User user = getUser(userId);
+        return UserCompositeDto.DetailResponse.from(user);
+    }
+
+    //회원 목록 조회 (Manager)
     @Transactional(readOnly = true)
     public List<UserCompositeDto.SummaryResponse> getUsers() {
+
+        if (!roleCheck.hasRole(List.of("MANAGER", "MASTER")))
+            throw new CustomException(ErrorCode.FORBIDDEN);
 
         return userRepository.findAll()
                 .stream()
@@ -84,25 +125,33 @@ public class UserService {
                 .toList();
     }
 
-    //닉네임 변경
-    public void changeNickname(Long userId, String nickname) {
+    // 회원 정보 수정 (닉네임 + 비밀번호)
+    public void updateUser(Long userId, String nickname, String password) {
+
+        if (!roleCheck.hasRole("CUSTOMER"))
+            throw new CustomException(ErrorCode.FORBIDDEN);
+
+        validateSelf(userId);
 
         User user = getUser(userId);
-        user.changeNickname(nickname);
-    }
 
-    //비밀번호 변경
-    public void changePassword(Long userId, String password) {
-
-        User user = getUser(userId);
         String encodedPassword = passwordEncoder.encode(password);
 
-        user.changePassword(encodedPassword);
+        user.updateUserInfo(nickname, encodedPassword);
+    }
+    //회원 탈퇴
+    public void deleteUser(Long userId,UserDetails userDetails) {
+        validateSelf(userId);
+        User user = getUser(userId);
+        user.deleteUser(userDetails);
     }
 
     //주소 조회
     @Transactional(readOnly = true)
     public List<AddressCompositeDto.Response> getAddresses(Long userId) {
+        if (!roleCheck.hasRole("CUSTOMER")) throw new CustomException(ErrorCode.FORBIDDEN);
+
+        validateSelf(userId);
 
         User user = getUser(userId);
 
@@ -117,6 +166,9 @@ public class UserService {
                            String address,
                            String detailAddress,
                            Boolean isDefault) {
+        if (!roleCheck.hasRole("CUSTOMER")) throw new CustomException(ErrorCode.FORBIDDEN);
+
+        validateSelf(userId);
 
         User user = getUser(userId);
 
@@ -135,6 +187,9 @@ public class UserService {
                               UUID addressId,
                               String address,
                               String detailAddress) {
+        if (!roleCheck.hasRole("CUSTOMER")) throw new CustomException(ErrorCode.FORBIDDEN);
+
+        validateSelf(userId);
 
         User user = getUser(userId);
 
@@ -150,6 +205,10 @@ public class UserService {
     // 주소 삭제
     public void deleteAddress(Long userId, UUID addressId) {
 
+        if (!roleCheck.hasRole("CUSTOMER")) throw new CustomException(ErrorCode.FORBIDDEN);
+
+        validateSelf(userId);
+
         User user = getUser(userId);
 
         UserAddress address = user.getAddresses()
@@ -163,6 +222,10 @@ public class UserService {
 
     // 기본 배송지 변경
     public void changeDefaultAddress(Long userId, UUID addressId) {
+
+        if (!roleCheck.hasRole("CUSTOMER")) throw new CustomException(ErrorCode.FORBIDDEN);
+
+        validateSelf(userId);
 
         User user = getUser(userId);
 
@@ -179,6 +242,10 @@ public class UserService {
     //사장 권한 요청
     public void requestOwnerRole(Long userId, OwnerRequestDto.Request request) {
 
+        if(!roleCheck.hasRole("CUSTOMER")) throw new CustomException(ErrorCode.FORBIDDEN);
+
+        validateSelf(userId);
+
         User user = getUser(userId);
 
         user.requestOwnerRole(request.businessNumber());
@@ -187,6 +254,9 @@ public class UserService {
     //사장 신청 목록 조회
     @Transactional(readOnly = true)
     public List<OwnerRequestDto.Response> getOwnerRequests() {
+
+        if (!roleCheck.hasRole(List.of("MANAGER", "MASTER")))
+            throw new CustomException(ErrorCode.FORBIDDEN);
 
         return userRepository.findAll()
                 .stream()
@@ -198,6 +268,8 @@ public class UserService {
     //사장 권한 승인
     public void approveOwnerRole(Long userId) {
 
+        if(!roleCheck.hasRole("MANAGER")) throw new CustomException(ErrorCode.FORBIDDEN);
+
         User user = getUser(userId);
 
         user.approveOwnerRole();
@@ -206,14 +278,19 @@ public class UserService {
     // 사장 권한 거절
     public void rejectOwnerRole(Long userId) {
 
+        if (!roleCheck.hasRole(List.of("MANAGER", "MASTER")))
+            throw new CustomException(ErrorCode.FORBIDDEN);
+
         User user = getUser(userId);
 
         user.rejectOwnerRole();
     }
 
-
     //사장 → 손님 권한 다운그레이드
     public void downgradeToCustomer(Long userId) {
+
+        if (!roleCheck.hasRole(List.of("MANAGER", "MASTER")))
+            throw new CustomException(ErrorCode.FORBIDDEN);
 
         User user = getUser(userId);
 
@@ -223,6 +300,30 @@ public class UserService {
     @Transactional(readOnly = true)
     public User getUserByLoginId(String loginId) {
         return userRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private Long getLoginUserId() {
+
+        Object principal = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        if (principal instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) principal;
+            return userDetails.getUser().getUserId();
+        }
+
+        throw new CustomException(ErrorCode.FORBIDDEN);
+    }
+
+    // 본인 검증 메서드
+    private void validateSelf(Long userId) {
+
+        Long loginUserId = getLoginUserId();
+
+        if (!loginUserId.equals(userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
     }
 }

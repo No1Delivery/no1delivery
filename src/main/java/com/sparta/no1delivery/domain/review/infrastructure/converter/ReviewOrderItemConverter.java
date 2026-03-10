@@ -1,4 +1,47 @@
 package com.sparta.no1delivery.domain.review.infrastructure.converter;
 
-public class ReviewOrderItemConverter {
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.sparta.no1delivery.domain.review.domain.ReviewOrderItem;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
+
+@Slf4j
+@Converter(autoApply = true)
+public class ReviewOrderItemConverter implements AttributeConverter<List<ReviewOrderItem>, String> {
+
+    private static final ObjectMapper om;
+
+    static {
+        om = new ObjectMapper();
+        om.registerModule(new JavaTimeModule());
+    }
+
+    @Override
+    public String convertToDatabaseColumn(List<ReviewOrderItem> items) {
+        try {
+            return items == null ? null : om.writeValueAsString(items);
+        } catch (JsonProcessingException e) {
+            log.error("Converter Error : {}", e.getMessage(), e);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ReviewOrderItem> convertToEntityAttribute(String dbData) {
+        try {
+            return StringUtils.hasText(dbData)
+                    ? om.readValue(dbData, new TypeReference<>() {})
+                    : List.of();
+        } catch (JsonProcessingException e) {
+            log.error("Converter Error : {}", e.getMessage(), e);
+        }
+        return List.of();
+    }
 }

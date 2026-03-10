@@ -1,5 +1,6 @@
 package com.sparta.no1delivery.global.infrastructure.security;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,22 +28,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-
     private final JwtFilter jwtFilter;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                );
-
-        return http.build();
+    @PostConstruct
+    public void setup() {
+        // 비동기 스레드에서도 SecurityContext를 공유하도록 설정
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
-/**
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(c -> c.configurationSource(corsConfigurationSource()))
@@ -62,12 +56,12 @@ public class SecurityConfig {
                     });
                 })
                 .authorizeHttpRequests(c ->
-                        c.requestMatchers("/v1/users/auth/**").permitAll().requestMatchers("/v3/api-docs/**", "/api-docs/**", "/api-docs.html", "/swagger-ui/**").permitAll()
+                        c.requestMatchers("/", "/v1/users/auth/**").permitAll().requestMatchers("/v3/api-docs/**", "/api-docs/**", "/api-docs.html", "/swagger-ui/**").permitAll()
                                 .anyRequest().authenticated());
 
         return http.build();
     }
- */
+
     @Bean // 사용할 해시 암호화 방식(BCrypt)
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,7 +22,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    //주문 단건 조회
+    // 주문 단건 조회
     @Override
     public Optional<Order> findById(UUID orderId) {
 
@@ -37,7 +36,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         return Optional.ofNullable(result);
     }
 
-    //관리자 주문 검색 (필터 조회)
+    // 관리자 주문 검색 (필터 조회)
     @Override
     public Page<Order> findAll(OrderQueryDto.Search search, Pageable pageable) {
 
@@ -77,7 +76,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
             }
         }
 
-        List<Order> content = queryFactory
+        java.util.List<Order> content = queryFactory
                 .selectFrom(order)
                 .where(builder)
                 .offset(pageable.getOffset())
@@ -92,7 +91,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    //특정 매장의 주문 조회
+    // 특정 매장의 주문 조회
     @Override
     public Page<Order> findAllByStore(UUID storeId, OrderQueryDto.Search search, Pageable pageable) {
 
@@ -101,7 +100,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(order.storeInfo.storeId.eq(storeId));
 
-        List<Order> content = queryFactory
+        java.util.List<Order> content = queryFactory
                 .selectFrom(order)
                 .where(builder)
                 .offset(pageable.getOffset())
@@ -116,7 +115,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    //특정 사용자의 주문 조회 (내 주문 목록)
+    // 특정 사용자의 주문 조회 (내 주문 목록)
     @Override
     public Page<Order> findAllByUser(Long userId, OrderQueryDto.Search search, Pageable pageable) {
 
@@ -125,7 +124,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(order.orderer.userId.eq(userId));
 
-        List<Order> content = queryFactory
+        java.util.List<Order> content = queryFactory
                 .selectFrom(order)
                 .where(builder)
                 .offset(pageable.getOffset())
