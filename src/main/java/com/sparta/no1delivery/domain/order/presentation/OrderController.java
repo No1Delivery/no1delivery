@@ -44,17 +44,17 @@ public class OrderController {
     // 배송지 변경
     @Operation(summary = "배송지 변경", description = "주문 접수 전까지만 배송지 정보를 변경할 수 있습니다.")
     @PatchMapping("/{orderId}/delivery-info")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void changeDeliveryInfo(
-            @Parameter(description = "주문 ID")
             @PathVariable UUID orderId,
-            @RequestBody @Valid OrderRequestDto.ChangeDelivery request
+            @RequestBody @Valid OrderRequestDto.ChangeDelivery request,
+            @RequestParam Long userId
     ) {
         orderService.changeDeliveryInfo(
                 orderId,
                 request.getAddress(),
                 request.getDetailAddress(),
-                request.getMemo()
+                request.getMemo(),
+                userId
         );
     }
 
@@ -62,10 +62,10 @@ public class OrderController {
     @Operation(summary = "주문 취소", description = "주문 생성 후 5분 이내에 주문을 취소할 수 있습니다.")
     @PatchMapping("/{orderId}/cancel")
     public void cancelOrder(
-            @Parameter(description = "주문 ID")
-            @PathVariable UUID orderId
+            @PathVariable UUID orderId,
+            @RequestParam Long userId
     ) {
-        orderService.cancelOrder(orderId);
+        orderService.cancelOrder(orderId, userId);
     }
 
     // 주문 상태 변경
