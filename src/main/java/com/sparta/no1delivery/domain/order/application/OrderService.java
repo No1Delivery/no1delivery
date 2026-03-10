@@ -73,8 +73,8 @@ public class OrderService {
 
         Long userId = userDetails.getId();
 
-        //주문 항목 검증
-        if (!roleCheck.hasRole("USER")) {
+        // 주문 항목 검증
+        if (!roleCheck.hasRole("CUSTOMER")) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
