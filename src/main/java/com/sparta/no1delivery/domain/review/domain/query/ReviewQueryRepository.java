@@ -16,7 +16,7 @@ public interface ReviewQueryRepository {
     Page<Review> findAllByStore(UUID storeId, ReviewQueryDto.Search search, Pageable pageable);
 
     // 사용자별 리뷰 목록 조회
-    Page<Review> findAllByUser(UUID userId, ReviewQueryDto.Search search, Pageable pageable);
+    Page<Review> findAllByUser(Long userId, ReviewQueryDto.Search search, Pageable pageable);
 
     // 리뷰 목록 조회
     Page<Review> findAll(ReviewQueryDto.Search search, Pageable pageable);
