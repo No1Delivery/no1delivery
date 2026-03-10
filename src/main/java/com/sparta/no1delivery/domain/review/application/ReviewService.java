@@ -79,6 +79,7 @@ public class ReviewService {
         // 평점 평균 구하기 전 리뷰 먼저 반영
         reviewRepository.flush();
 
-        Events.trigger(new ReviewScoreChangedEvent(storeId, calculator.getAverageRating(storeId)));
+        Events.trigger(new ReviewScoreChangedEvent(storeId, calculator.getReviewCount(storeId),
+                calculator.getAverageRating(storeId)));
     }
 }

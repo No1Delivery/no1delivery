@@ -26,4 +26,17 @@ public class StoreRatingCalculatorImpl implements StoreRatingCalculator {
 
         return avg == null ? 0.0 : avg;
     }
+
+    @Override
+    public Long getReviewCount(UUID storeId) {
+        QReview review = QReview.review;
+
+        Long count = jpaQueryFactory.select(review.count())
+                .from(review)
+                .where(review.info.storeId.eq(storeId)
+                        .and(review.deletedAt.isNull()))
+                .fetchOne();
+
+        return count == null ? 0L : count;
+    }
 }
