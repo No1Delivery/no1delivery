@@ -7,6 +7,9 @@ import com.sparta.no1delivery.domain.order.domain.Order;
 import com.sparta.no1delivery.domain.order.domain.QOrder;
 import com.sparta.no1delivery.domain.order.domain.query.OrderQueryDto;
 import com.sparta.no1delivery.domain.order.domain.query.OrderQueryRepository;
+import com.sparta.no1delivery.global.domain.RoleCheck;
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +25,9 @@ import java.util.UUID;
 public class OrderQueryRepositoryImpl implements OrderQueryRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final RoleCheck roleCheck;
 
-    //주문 단건 조회
+    // 주문 단건 조회
     @Override
     public Optional<Order> findById(UUID orderId) {
 
@@ -37,12 +41,17 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         return Optional.ofNullable(result);
     }
 
-    //관리자 주문 검색 (필터 조회)
+    // 관리자 주문 검색 (필터 조회)
     @Override
     public Page<Order> findAll(OrderQueryDto.Search search, Pageable pageable) {
 
         QOrder order = QOrder.order;
         BooleanBuilder builder = new BooleanBuilder();
+
+        // 관리자 권한 체크
+        if (!roleCheck.hasRole(List.of("MASTER", "MANAGER"))) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
 
         if (search != null) {
 
@@ -92,7 +101,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    //특정 매장의 주문 조회
+    // 특정 매장의 주문 조회
     @Override
     public Page<Order> findAllByStore(UUID storeId, OrderQueryDto.Search search, Pageable pageable) {
 
@@ -116,7 +125,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    //특정 사용자의 주문 조회 (내 주문 목록)
+    // 특정 사용자의 주문 조회 (내 주문 목록)
     @Override
     public Page<Order> findAllByUser(Long userId, OrderQueryDto.Search search, Pageable pageable) {
 
