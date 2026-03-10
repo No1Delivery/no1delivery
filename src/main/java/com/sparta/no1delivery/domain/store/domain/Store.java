@@ -131,6 +131,7 @@ public class Store extends BaseUserEntity {
 
     // 가게 리뷰 평점 업데이트
     public void systemUpdateRating(Double average, Long count) {
+        this.updatedBy = 0L; // SYSTEM
         this.rating.updateRating(average, count);
     }
 
