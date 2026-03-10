@@ -50,7 +50,7 @@ public class UserService {
                        String nickname) {
 
         if (userRepository.existsByLoginId(loginId)) {
-            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+            throw new CustomException(ErrorCode.DUPLICATE_LOGIN_ID);
         }
 
         // 비밀번호 길이 검증
