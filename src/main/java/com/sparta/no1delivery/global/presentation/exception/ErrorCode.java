@@ -29,6 +29,7 @@ public enum ErrorCode {
     INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, "닉네임은 2자 이상 20자 이하여야 합니다."),
     PASSWORD_TOO_SHORT(HttpStatus.BAD_REQUEST, "비밀번호는 최소 8자 이상이어야 합니다."),
     PASSWORD_TOO_LONG(HttpStatus.BAD_REQUEST, "비밀번호는 최대 20자 이하여야 합니다."),
+    PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "아이디 또는 비밀번호가 일치하지 않습니다."),
 
     // --- 배송지 (AD) ---
     ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 배송지를 찾을 수 없습니다."),
@@ -83,9 +84,15 @@ public enum ErrorCode {
     PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소 요청 중 오류가 발생했습니다."),
     PAYMENT_GATEWAY_ERROR(HttpStatus.BAD_GATEWAY, "결제 대행사(PG)와의 통신에 실패했습니다."),
 
-    // --- 리뷰 (R) ---
-    REVIEW_RATE_RANGE(HttpStatus.BAD_REQUEST, "리뷰 평점은 1점에서 5점 사이여야 합니다.");
+    // --- AI 서비스 (AI) ---
+    AI_API_ERROR(HttpStatus.BAD_GATEWAY, "AI 서비스 호출 중 오류가 발생했습니다."),
 
+    // --- 리뷰 (R) ---
+    REVIEW_RATE_RANGE(HttpStatus.BAD_REQUEST, "리뷰 평점은 1점에서 5점 사이여야 합니다."),
+    INVALID_REVIEW_STATE(HttpStatus.BAD_REQUEST, "리뷰 작성이 가능한 주문을 찾을 수 없습니다."),
+    INVALID_REVIEW_UNAUTHORIZED(HttpStatus.BAD_REQUEST, "해당 리뷰를 작성하거나 수정 할 권한이 없습니다."),
+    INVALID_REVIEW_DETAIL_UNAUTHORIZED(HttpStatus.BAD_REQUEST, "해당 주문에 대한 리뷰 권한이 없습니다."),
+    INVALID_REVIEWER_NOT_FOUND(HttpStatus.NOT_FOUND, "유효하지 않은 리뷰 작성자입니다. 다시 로그인 해주세요.");
 
     private final HttpStatus status;
     private final String message;

@@ -1,4 +1,7 @@
 package com.sparta.no1delivery.domain.review.domain.service;
 
-public class StoreRatingCalculator {
+import java.util.UUID;
+
+public interface StoreRatingCalculator {
+    double getAverageRating(UUID storeId);
 }

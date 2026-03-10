@@ -1,4 +1,10 @@
 package com.sparta.no1delivery.domain.review.domain.event;
 
-public class ReviewScoreChangedEvent {
+import java.util.UUID;
+
+public record ReviewScoreChangedEvent(
+        UUID storeId,
+        Long reviewCount,
+        double averageScore
+) {
 }

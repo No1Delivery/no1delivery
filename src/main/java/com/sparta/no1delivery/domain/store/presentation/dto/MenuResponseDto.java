@@ -54,7 +54,6 @@ public record MenuResponseDto(
         public static OptionResponseDto from(MenuOption option) {
             return OptionResponseDto.builder()
                     .name(option.getName())
-                    .price(option.getPrice().getValue())
                     .isEssential(option.isEssential())
                     .isMultiple(option.isMultiple())
                     .subOptions(option.getSubOptions().stream()

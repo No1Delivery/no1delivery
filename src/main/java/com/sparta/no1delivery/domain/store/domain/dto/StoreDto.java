@@ -7,7 +7,7 @@ import com.sparta.no1delivery.domain.store.domain.StoreId;
 import com.sparta.no1delivery.domain.store.domain.service.CategoryCheck;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.AddressToCoords;
-import com.sparta.no1delivery.domain.store.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.OwnerCheck;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,7 +47,6 @@ public class StoreDto {
     @AllArgsConstructor
     public static class MenuOptionDto {
         private String name;
-        private int price;
         private List<MenuSubOptionDto> subOptions;
         private boolean isMultiple;
         private boolean isEssential;
@@ -94,7 +93,6 @@ public class StoreDto {
         return MenuOption
                 .builder()
                 .name(dto.getName())
-                .price(dto.price)
                 .subOptions(subOptions)
                 .isMultiple(dto.isMultiple)
                 .isEssential(dto.isEssential)

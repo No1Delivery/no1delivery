@@ -1,14 +1,18 @@
 package com.sparta.no1delivery.domain.review.domain;
 
+import com.sparta.no1delivery.domain.review.domain.exception.InvalidOrderStateForReviewException;
+import com.sparta.no1delivery.domain.review.domain.exception.ReviewAuthorityException;
 import com.sparta.no1delivery.domain.review.domain.service.OrderInfoProvider;
 import com.sparta.no1delivery.domain.review.domain.service.ReviewerCheck;
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import com.sparta.no1delivery.global.domain.RoleCheck;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
-import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -35,7 +39,7 @@ import java.util.UUID;
 public class Review extends BaseUserEntity {
 
     @EmbeddedId
-    private ReviewId reviewId;
+    private ReviewId id;
 
     @Embedded
     private Reviewer reviewer;
@@ -50,21 +54,35 @@ public class Review extends BaseUserEntity {
     public Review(UUID orderId, String subject, String content, int score, OrderInfoProvider orderInfoProvider, RoleCheck roleCheck,
                   ReviewerCheck reviewerCheck, UserDetails userDetails) {
         // 권한 체크
-
+        checkAuthority(orderId, reviewerCheck, roleCheck);
 
         // 작성 가능한 리뷰인지 체크 - 주문 존재 여부 및 상태 확인(DELIVERED)
+        ReviewOrderInfo orderInfo = orderInfoProvider.getOrderInfo(orderId);
+        if (orderInfo == null) {
+            throw new InvalidOrderStateForReviewException(orderId);
+        }
+
+        this.id = ReviewId.of();
+        this.reviewer = new Reviewer(userDetails); // 리뷰 작성자 (로그인 정보에서 자동 완성)
+
+        this.info = orderInfo; // 주문 정보
+        this.content = new ReviewContent(subject, content, score); // 리뷰 내용
     }
 
     // 리뷰 수정
-    public void change() {
+    public void change(String subject, String content, int rating, ReviewerCheck reviewerCheck, RoleCheck roleCheck) {
         // 권한 체크
+        checkAuthority(info.getOrderId(), reviewerCheck, roleCheck);
 
+        this.content = new ReviewContent(subject, content, rating);
     }
 
     // 리뷰 삭제 (Soft Delete)
-    public void remove() {
+    public void remove(ReviewerCheck reviewerCheck, RoleCheck roleCheck) {
         // 권한 체크
+        checkAuthority(info.getOrderId(), reviewerCheck, roleCheck);
 
+        deletedAt = LocalDateTime.now();
     }
 
     /**
@@ -73,7 +91,17 @@ public class Review extends BaseUserEntity {
      * (주문 번호는 최초 등록 시에만 수정이 되므로 수정일 땐 체크 불필요)
      * 3. 관리자 (MANAGER, MASTER)는 권한 체크 필요없이 항상 가능
      */
-    private void checkAuthority() {
+    private void checkAuthority(UUID orderId, ReviewerCheck reviewerCheck, RoleCheck roleCheck) {
+        if (roleCheck.hasRole(List.of("MASTER", "MANAGER"))) {
+            return;
+        }
 
+        if (!reviewerCheck.check(id, orderId)) {
+            if (id == null) { // 새로 작성한 경우
+                throw new ReviewAuthorityException(orderId);
+            } else {
+                throw new ReviewAuthorityException();
+            }
+        }
     }
 }

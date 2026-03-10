@@ -1,5 +1,7 @@
 package com.sparta.no1delivery.domain.review.domain;
 
+import com.sparta.no1delivery.domain.review.domain.exception.InvalidReviewerException;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -20,5 +22,11 @@ public class Reviewer {
 
     @Column(length = 45)
     private String reviewerName;
+
+    protected Reviewer(UserDetails userDetails) {
+        if (userDetails == null || userDetails.getId() == null) {
+            throw new InvalidReviewerException();
+        }
+    }
 
 }

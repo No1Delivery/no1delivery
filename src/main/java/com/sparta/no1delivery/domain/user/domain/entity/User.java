@@ -2,13 +2,19 @@ package com.sparta.no1delivery.domain.user.domain.entity;
 
 import com.sparta.no1delivery.domain.user.domain.enums.OwnerRequestStatus;
 import com.sparta.no1delivery.domain.user.domain.enums.UserRole;
+import com.sparta.no1delivery.domain.user.domain.service.PasswordValidator;
+import com.sparta.no1delivery.domain.user.domain.service.TokenGenerator;
+import com.sparta.no1delivery.domain.user.domain.vo.Token;
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.Where;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -16,7 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@ToString
 @Entity
+@Where(clause = "deleted_at IS NULL")
 @Getter
 @NoArgsConstructor
 @Table(name = "p_user")
@@ -69,26 +77,14 @@ public class User extends BaseUserEntity {
         this.ownerRequestStatus = ownerRequestStatus;
     }
 
-    //회원탈퇴 메소드 추가
-
-    public void changePassword(String encodedPassword) {
-
-        if (encodedPassword == null || encodedPassword.isBlank()) {
-            throw new CustomException(ErrorCode.MISSING_INPUT_VALUE);
-        }
-
-        if(encodedPassword.length() < 8) {
-            throw new CustomException(ErrorCode.PASSWORD_TOO_SHORT);
-        }
-        if(encodedPassword.length() > 20){
-            throw new CustomException(ErrorCode.PASSWORD_TOO_LONG);
-        }
-
-        this.password = encodedPassword;
+    public void deleteUser(UserDetails userDetails){
+        delete(userDetails);
     }
 
-    public void changeNickname(String nickname) {
+    // 닉네임 + 비밀번호 수정
+    public void updateUserInfo(String nickname, String encodedPassword) {
 
+        // 닉네임 검증
         if (nickname == null || nickname.isBlank()) {
             throw new CustomException(ErrorCode.MISSING_INPUT_VALUE);
         }
@@ -97,13 +93,22 @@ public class User extends BaseUserEntity {
             throw new CustomException(ErrorCode.INVALID_NICKNAME_LENGTH);
         }
 
-        if (this.nickname.equals(nickname)) {
-            return;
+        // 비밀번호 검증
+        if (encodedPassword == null || encodedPassword.isBlank()) {
+            throw new CustomException(ErrorCode.MISSING_INPUT_VALUE);
+        }
+
+        if(encodedPassword.length() < 8) {
+            throw new CustomException(ErrorCode.PASSWORD_TOO_SHORT);
+        }
+
+        if(encodedPassword.length() > 20){
+            throw new CustomException(ErrorCode.PASSWORD_TOO_LONG);
         }
 
         this.nickname = nickname;
+        this.password = encodedPassword;
     }
-
     public void changeRole(UserRole role) {
         this.role = role;
         this.roleUpdatedAt = LocalDateTime.now();
@@ -200,6 +205,20 @@ public class User extends BaseUserEntity {
         }
 
         this.addresses.remove(address);
+    }
+
+    /**
+     * 로그인 처리
+     *  비번이 일치하면 토큰 발행,
+     *  일치하지 않는다면 비밀번호가 일치하지 않는다는 예외를 발생
+     */
+    public Token signIn(String password, PasswordValidator validator, TokenGenerator generator) {
+        if (!validator.validate(loginId, password)) {
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
+        // 비번이 일치한다면 토큰을 발행
+        return generator.generate(loginId);
     }
 
 }
