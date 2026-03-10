@@ -10,7 +10,7 @@ import java.util.UUID;
 public class ReviewServiceDto {
 
     @Getter
-    @Setter
+    @Builder
     public static class Create {
         private UUID orderId;
         private String subject;
@@ -19,7 +19,7 @@ public class ReviewServiceDto {
     }
 
     @Getter
-    @Setter
+    @Builder
     public static class Change {
         private UUID reviewId;
         private String subject;
