@@ -11,6 +11,7 @@ import com.sparta.no1delivery.domain.store.domain.Menu;
 import com.sparta.no1delivery.domain.store.domain.Store;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.OwnerCheck;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.transaction.Transactional;
@@ -44,14 +45,18 @@ public class OrderService {
     // 매장 소유자 검증
     private final OwnerCheck ownerCheck;
 
+    // 로그인 사용자 정보
+    private final UserDetails userDetails;
+
     // 배송지 변경 ( 주문자 본인만 가능)
     public void changeDeliveryInfo(
             UUID orderId,
             String address,
             String detailAddress,
-            String memo,
-            Long userId
+            String memo
     ) {
+
+        Long userId = userDetails.getId();
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
@@ -64,8 +69,11 @@ public class OrderService {
     }
 
     // 주문 생성
-    public UUID createOrder(OrderServiceDto.Create dto, Long userId) {
+    public UUID createOrder(OrderServiceDto.Create dto) {
 
+        Long userId = userDetails.getId();
+
+        //주문 항목 검증
         if (!roleCheck.hasRole("USER")) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
@@ -81,14 +89,17 @@ public class OrderService {
         List<OrderItem> items = dto.getItems().stream()
                 .map(item -> {
 
+                    // 메뉴 조회
                     Menu menu = productProvider.getMenu(dto.getStoreId(), item.getMenuId());
 
+                    // 메뉴 검증 (가게 메뉴인지 + 가격 위조 검증)
                     orderCheck.validateMenu(
                             menu,
                             dto.getStoreId(),
                             item.getMenuPrice()
                     );
 
+                    // 옵션 검증
                     if (item.getOptions() != null && !item.getOptions().isEmpty()) {
 
                         List<String> optionNames = item.getOptions().stream()
@@ -167,13 +178,14 @@ public class OrderService {
     }
 
     // 주문 취소
-    public void cancelOrder(UUID orderId, Long userId) {
+    public void cancelOrder(UUID orderId) {
+
+        Long userId = userDetails.getId();
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
-        // 관리자(MASTER, MANAGER)가 아니면서 주문자도 아닌 경우 차단
-        if (!roleCheck.hasRole(List.of("MASTER", "MANAGER")) //(권한: 주문자 본인 또는 관리자 가능)
+        if (!roleCheck.hasRole(List.of("MASTER", "MANAGER"))
                 && !order.getOrderer().getUserId().equals(userId)) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
@@ -184,7 +196,6 @@ public class OrderService {
     // 주문 상태 변경
     public void changeOrderStatus(UUID orderId, OrderStatus status) {
 
-        // 1. OWNER 역할 확인
         if (!roleCheck.hasRole("OWNER")) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
@@ -192,7 +203,6 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
-        // 2. 본인 매장 주문인지 확인
         if (!ownerCheck.isOwner(order.getStoreInfo().getStoreId())) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }

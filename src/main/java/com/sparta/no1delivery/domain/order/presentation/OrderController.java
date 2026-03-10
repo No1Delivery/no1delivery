@@ -29,13 +29,10 @@ public class OrderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponseDto.Create createOrder(
-            @RequestBody @Valid OrderRequestDto request,
-            @Parameter(description = "주문한 사용자 ID")
-            @RequestParam Long userId
+            @RequestBody @Valid OrderRequestDto request
     ) {
         UUID orderId = orderService.createOrder(
-                request.toServiceDto(),
-                userId
+                request.toServiceDto()
         );
 
         return new OrderResponseDto.Create(orderId);
@@ -46,15 +43,13 @@ public class OrderController {
     @PatchMapping("/{orderId}/delivery-info")
     public void changeDeliveryInfo(
             @PathVariable UUID orderId,
-            @RequestBody @Valid OrderRequestDto.ChangeDelivery request,
-            @RequestParam Long userId
+            @RequestBody @Valid OrderRequestDto.ChangeDelivery request
     ) {
         orderService.changeDeliveryInfo(
                 orderId,
                 request.getAddress(),
                 request.getDetailAddress(),
-                request.getMemo(),
-                userId
+                request.getMemo()
         );
     }
 
@@ -62,10 +57,9 @@ public class OrderController {
     @Operation(summary = "주문 취소", description = "주문 생성 후 5분 이내에 주문을 취소할 수 있습니다.")
     @PatchMapping("/{orderId}/cancel")
     public void cancelOrder(
-            @PathVariable UUID orderId,
-            @RequestParam Long userId
+            @PathVariable UUID orderId
     ) {
-        orderService.cancelOrder(orderId, userId);
+        orderService.cancelOrder(orderId);
     }
 
     // 주문 상태 변경
@@ -105,12 +99,10 @@ public class OrderController {
     @Operation(summary = "내 주문 목록 조회", description = "사용자의 주문 목록을 조회합니다.")
     @GetMapping("/my")
     public Page<OrderResponseDto.Order> getMyOrders(
-            @Parameter(description = "사용자 ID")
-            @RequestParam Long userId,
             OrderRequestDto.Search search,
             Pageable pageable
     ) {
-        return orderQueryService.getUserOrders(userId, search, pageable);
+        return orderQueryService.getUserOrders(search, pageable);
     }
 
     // 매장 주문 목록 조회

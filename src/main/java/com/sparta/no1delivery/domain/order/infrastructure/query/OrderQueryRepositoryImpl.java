@@ -8,6 +8,8 @@ import com.sparta.no1delivery.domain.order.domain.QOrder;
 import com.sparta.no1delivery.domain.order.domain.query.OrderQueryDto;
 import com.sparta.no1delivery.domain.order.domain.query.OrderQueryRepository;
 import com.sparta.no1delivery.global.domain.RoleCheck;
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +50,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
 
         // 관리자 권한 체크
         if (!roleCheck.hasRole(List.of("MASTER", "MANAGER"))) {
-            throw new RuntimeException("관리자만 전체 주문 조회가 가능합니다.");
+            throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
         if (search != null) {
