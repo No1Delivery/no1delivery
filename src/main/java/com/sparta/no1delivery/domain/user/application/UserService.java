@@ -1,5 +1,9 @@
 package com.sparta.no1delivery.domain.user.application;
 
+import com.sparta.no1delivery.domain.store.domain.Owner;
+import com.sparta.no1delivery.domain.store.domain.Store;
+import com.sparta.no1delivery.domain.store.domain.StoreId;
+import com.sparta.no1delivery.domain.store.domain.StoreRepository;
 import com.sparta.no1delivery.domain.user.application.dto.TokenDto;
 import com.sparta.no1delivery.domain.user.domain.entity.User;
 import com.sparta.no1delivery.domain.user.domain.entity.UserAddress;
@@ -33,6 +37,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
+    private final StoreRepository storeRepository;
     private final RoleCheck roleCheck;
     private final PasswordEncoder passwordEncoder;
     private final AddressToCoords addressToCoords;
@@ -73,12 +78,19 @@ public class UserService {
                 .build();
     }
 
-    // user 조회 (개인)
+    // user 조회
     @Transactional(readOnly = true)
     public User getUser(Long userId) {
 
         return userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    // user 개인 조회
+    @Transactional(readOnly = true)
+    public User getMyUser(Long userId){
+        validateSelf(userId);
+        return getUser(userId);
     }
 
     //회원 목록 조회 (Manager)
@@ -115,13 +127,10 @@ public class UserService {
     }
 
     //회원 탈퇴
-    public void deleteUser(Long userId) {
-
+    public void deleteUser(Long userId,UserDetails userDetails) {
         validateSelf(userId);
-
         User user = getUser(userId);
-        Long loginUserId = getLoginUserId();
-        user.deleteUser(loginUserId);
+        user.deleteUser(userDetails);
     }
 
     //주소 조회
@@ -261,7 +270,6 @@ public class UserService {
 
         user.rejectOwnerRole();
     }
-
 
     //사장 → 손님 권한 다운그레이드
     public void downgradeToCustomer(Long userId) {

@@ -3,8 +3,10 @@ package com.sparta.no1delivery.domain.user.presentation;
 import com.sparta.no1delivery.domain.user.application.UserService;
 import com.sparta.no1delivery.domain.user.application.dto.TokenDto;
 import com.sparta.no1delivery.domain.user.presentation.dto.*;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,8 +71,9 @@ public class UserController {
 
     //회원탈퇴
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Long userId){
-        userService.deleteUser(userId);
+    public void deleteUser(@PathVariable Long userId,
+                           @AuthenticationPrincipal UserDetails userDetails){
+        userService.deleteUser(userId,userDetails);
     }
 
 

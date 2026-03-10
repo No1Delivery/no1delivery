@@ -6,6 +6,7 @@ import com.sparta.no1delivery.domain.user.domain.service.PasswordValidator;
 import com.sparta.no1delivery.domain.user.domain.service.TokenGenerator;
 import com.sparta.no1delivery.domain.user.domain.vo.Token;
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
@@ -76,9 +77,8 @@ public class User extends BaseUserEntity {
         this.ownerRequestStatus = ownerRequestStatus;
     }
 
-    public void deleteUser(Long loginUserId){
-        this.deletedBy = loginUserId;
-        this.deletedAt = java.time.LocalDateTime.now();
+    public void deleteUser(UserDetails userDetails){
+        delete(userDetails);
     }
 
     public void changePassword(String encodedPassword) {
