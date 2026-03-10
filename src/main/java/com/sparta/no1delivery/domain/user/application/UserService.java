@@ -288,7 +288,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public User getUserByLoginId(String loginId) {
         return userRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     private Long getLoginUserId() {
@@ -304,6 +304,7 @@ public class UserService {
 
         throw new CustomException(ErrorCode.FORBIDDEN);
     }
+
     // 본인 검증 메서드
     private void validateSelf(Long userId) {
 
