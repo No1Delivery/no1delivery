@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public record ReviewScoreChangedEvent(
         UUID storeId,
+        Long reviewCount,
         double averageScore
 ) {
 }
