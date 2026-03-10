@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
         ErrorCode errorCode = e.getErrorCode();
 
-        log.warn("Business Exception: {}", errorCode.getMessage());
+        log.warn("Business Exception: {}", errorCode.getMessage(), e);
 
         return ResponseEntity
                 .status(errorCode.getStatus())
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
 
         ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
 
-        log.error("Validation failed: {}", errorMessage);
+        log.error("Validation failed: {}", errorMessage, e);
 
         return ResponseEntity
                 .status(errorCode.getStatus())
