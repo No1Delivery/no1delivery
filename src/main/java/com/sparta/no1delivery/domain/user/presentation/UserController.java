@@ -46,9 +46,10 @@ public class UserController {
     //회원 정보 관련
     // 회원 정보 조회
     @GetMapping("/{userId}")
-    public UserCompositeDto.DetailResponse getUser(@PathVariable Long userId) {
-
-        return UserCompositeDto.DetailResponse.from(userService.getUser(userId));
+    public UserCompositeDto.DetailResponse getMyUser(
+            @PathVariable Long userId
+    ) {
+        return userService.getMyUser(userId);
     }
 
     // 회원 목록 조회 (관리자)

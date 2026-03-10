@@ -88,9 +88,10 @@ public class UserService {
 
     // user 개인 조회
     @Transactional(readOnly = true)
-    public User getMyUser(Long userId){
+    public UserCompositeDto.DetailResponse getMyUser(Long userId){
         validateSelf(userId);
-        return getUser(userId);
+        User user = getUser(userId);
+        return UserCompositeDto.DetailResponse.from(user);
     }
 
     //회원 목록 조회 (Manager)
