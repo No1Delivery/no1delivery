@@ -66,8 +66,11 @@ public class UserController {
             @RequestBody UserCompositeDto.UpdateRequest request
     ) {
 
-        userService.changeNickname(userId, request.nickname());
-        userService.changePassword(userId, request.password());
+        userService.updateUser(
+                userId,
+                request.nickname(),
+                request.password()
+        );
     }
 
     //회원탈퇴

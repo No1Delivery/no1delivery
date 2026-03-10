@@ -81,24 +81,10 @@ public class User extends BaseUserEntity {
         delete(userDetails);
     }
 
-    public void changePassword(String encodedPassword) {
+    // 닉네임 + 비밀번호 수정
+    public void updateUserInfo(String nickname, String encodedPassword) {
 
-        if (encodedPassword == null || encodedPassword.isBlank()) {
-            throw new CustomException(ErrorCode.MISSING_INPUT_VALUE);
-        }
-
-        if(encodedPassword.length() < 8) {
-            throw new CustomException(ErrorCode.PASSWORD_TOO_SHORT);
-        }
-        if(encodedPassword.length() > 20){
-            throw new CustomException(ErrorCode.PASSWORD_TOO_LONG);
-        }
-
-        this.password = encodedPassword;
-    }
-
-    public void changeNickname(String nickname) {
-
+        // 닉네임 검증
         if (nickname == null || nickname.isBlank()) {
             throw new CustomException(ErrorCode.MISSING_INPUT_VALUE);
         }
@@ -107,13 +93,22 @@ public class User extends BaseUserEntity {
             throw new CustomException(ErrorCode.INVALID_NICKNAME_LENGTH);
         }
 
-        if (this.nickname.equals(nickname)) {
-            return;
+        // 비밀번호 검증
+        if (encodedPassword == null || encodedPassword.isBlank()) {
+            throw new CustomException(ErrorCode.MISSING_INPUT_VALUE);
+        }
+
+        if(encodedPassword.length() < 8) {
+            throw new CustomException(ErrorCode.PASSWORD_TOO_SHORT);
+        }
+
+        if(encodedPassword.length() > 20){
+            throw new CustomException(ErrorCode.PASSWORD_TOO_LONG);
         }
 
         this.nickname = nickname;
+        this.password = encodedPassword;
     }
-
     public void changeRole(UserRole role) {
         this.role = role;
         this.roleUpdatedAt = LocalDateTime.now();

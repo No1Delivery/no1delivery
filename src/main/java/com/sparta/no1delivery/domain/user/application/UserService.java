@@ -107,26 +107,20 @@ public class UserService {
                 .toList();
     }
 
-    //닉네임 변경
-    public void changeNickname(Long userId, String nickname) {
+    // 회원 정보 수정 (닉네임 + 비밀번호)
+    public void updateUser(Long userId, String nickname, String password) {
+
+        if (!roleCheck.hasRole("CUSTOMER"))
+            throw new CustomException(ErrorCode.FORBIDDEN);
 
         validateSelf(userId);
 
         User user = getUser(userId);
-        user.changeNickname(nickname);
-    }
 
-    //비밀번호 변경
-    public void changePassword(Long userId, String password) {
-
-        validateSelf(userId);
-
-        User user = getUser(userId);
         String encodedPassword = passwordEncoder.encode(password);
 
-        user.changePassword(encodedPassword);
+        user.updateUserInfo(nickname, encodedPassword);
     }
-
     //회원 탈퇴
     public void deleteUser(Long userId,UserDetails userDetails) {
         validateSelf(userId);
