@@ -33,9 +33,8 @@ public class ReviewService {
 
         Review review = Review.builder()
                 .orderId(dto.getOrderId())
-                .subject(dto.getSubject())
-                .content(dto.getContent())
-                .score(dto.getScore())
+                .comment(dto.getComment())
+                .rating(dto.getRating())
                 .orderInfoProvider(orderInfoProvider)
                 .roleCheck(roleCheck)
                 .reviewerCheck(reviewerCheck)
@@ -54,7 +53,7 @@ public class ReviewService {
     @Transactional
     public void change(ReviewServiceDto.Change dto) {
         Review review = getReview(dto.getReviewId());
-        review.change(dto.getSubject(), dto.getContent(), dto.getScore(), reviewerCheck, roleCheck);
+        review.change(dto.getComment(), dto.getRating(), reviewerCheck, roleCheck);
 
         // 이벤트 발행
         triggerEvent(review.getInfo().getStoreId());

@@ -105,14 +105,12 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
         if (option == null) return null;
 
         return switch (option) {
-            case SUBJECT -> review.content.subject.containsIgnoreCase(keyword);
-            case CONTENT -> review.content.comment.containsIgnoreCase(keyword);
+            case SUBJECT, CONTENT -> review.content.comment.containsIgnoreCase(keyword);
+            case SUBJECT_CONTENT -> review.content.comment.containsIgnoreCase(keyword)
+                    .or(review.content.comment.containsIgnoreCase(keyword));
             case REVIEWER -> review.reviewer.reviewerName.containsIgnoreCase(keyword);
             case STORE_NAME -> review.info.storeName.containsIgnoreCase(keyword);
-            case SUBJECT_CONTENT -> review.content.subject.containsIgnoreCase(keyword)
-                    .or(review.content.comment.containsIgnoreCase(keyword));
             case ALL -> review.content.comment.containsIgnoreCase(keyword)
-                    .or(review.content.comment.containsIgnoreCase(keyword))
                     .or(review.reviewer.reviewerName.containsIgnoreCase(keyword))
                     .or(review.info.storeName.containsIgnoreCase(keyword));
         };
