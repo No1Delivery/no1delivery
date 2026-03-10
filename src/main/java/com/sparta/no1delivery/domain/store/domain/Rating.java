@@ -17,25 +17,10 @@ public class Rating {
     private Double average = 0.0;
 
     @Column(name = "review_count")
-    private Integer count = 0;
+    private Long count = 0L;
 
-    public void addRating(double newRating) {
-        this.average = (average * count + newRating) / (count + 1);
-        this.count++;
-    }
-
-    public void updateRating(double oldRating, double newRating) {
-        if (count == null || count == 0) return;
-        this.average = (average * count - oldRating + newRating) / count;
-    }
-
-    public void removeRating(double ratingToRemove) {
-        if (count == null || count <= 1) {
-            this.average = 0.0;
-            this.count = 0;
-        } else {
-            this.average = (average * count - ratingToRemove) / count;
-            this.count--;
-        }
+    public void updateRating(Double average, Long count) {
+        this.average = average;
+        this.count = count;
     }
 }

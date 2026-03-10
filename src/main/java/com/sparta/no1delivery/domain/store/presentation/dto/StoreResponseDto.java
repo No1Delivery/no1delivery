@@ -16,7 +16,7 @@ public record StoreResponseDto(
         String detailAddress,
         StoreStatus status,
         Double rating,
-        Integer reviewCount,
+        Long reviewCount,
         String ownerName
 ) {
     public static StoreResponseDto fromList(Store store) {
