@@ -84,6 +84,10 @@ public enum ErrorCode {
     PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소 요청 중 오류가 발생했습니다."),
     PAYMENT_GATEWAY_ERROR(HttpStatus.BAD_GATEWAY, "결제 대행사(PG)와의 통신에 실패했습니다."),
 
+    // --- AI 서비스 (AI) ---
+    AI_RESPONSE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AI 응답 데이터를 처리하는 중 오류가 발생했습니다."),
+    AI_API_ERROR(HttpStatus.BAD_GATEWAY, "AI 서비스 호출 중 오류가 발생했습니다."),
+
     // --- 리뷰 (R) ---
     REVIEW_RATE_RANGE(HttpStatus.BAD_REQUEST, "리뷰 평점은 1점에서 5점 사이여야 합니다.");
 
