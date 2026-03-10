@@ -56,7 +56,7 @@ public class SecurityConfig {
                     });
                 })
                 .authorizeHttpRequests(c ->
-                        c.requestMatchers("/v1/users/auth/**").permitAll().requestMatchers("/v3/api-docs/**", "/api-docs/**", "/api-docs.html", "/swagger-ui/**").permitAll()
+                        c.requestMatchers("/", "/v1/users/auth/**").permitAll().requestMatchers("/v3/api-docs/**", "/api-docs/**", "/api-docs.html", "/swagger-ui/**").permitAll()
                                 .anyRequest().authenticated());
 
         return http.build();
