@@ -4,13 +4,14 @@ import com.sparta.no1delivery.domain.review.domain.Review;
 import com.sparta.no1delivery.domain.review.domain.ReviewId;
 import com.sparta.no1delivery.domain.review.domain.ReviewRepository;
 import com.sparta.no1delivery.domain.review.domain.event.ReviewScoreChangedEvent;
-import com.sparta.no1delivery.domain.review.domain.exception.ReviewNotFoundException;
 import com.sparta.no1delivery.domain.review.domain.service.OrderInfoProvider;
 import com.sparta.no1delivery.domain.review.domain.service.ReviewerCheck;
 import com.sparta.no1delivery.domain.review.domain.service.StoreRatingCalculator;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.infrastructure.event.Events;
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,7 +71,7 @@ public class ReviewService {
     }
 
     private Review getReview(UUID reviewID) {
-        return reviewRepository.findById(ReviewId.of(reviewID)).orElseThrow(ReviewNotFoundException::new);
+        return reviewRepository.findById(ReviewId.of(reviewID)).orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
     }
 
     // 매장 리뷰 평균 평점 업데이트(이벤트 발행)
