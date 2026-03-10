@@ -1,13 +1,15 @@
 package com.sparta.no1delivery.domain.store.domain;
 
 import com.sparta.no1delivery.domain.store.infrastructure.converter.MenuSubOptionConverter;
-import com.sparta.no1delivery.global.domain.Price;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Embeddable;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Embeddable
@@ -19,7 +21,8 @@ public class MenuOption {
     @Column(name = "option_name")
     private String name;
 
-    @Column(name = "sub_options", columnDefinition = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "sub_options")
     @Convert(converter = MenuSubOptionConverter.class)
     private List<MenuSubOption> subOptions;
     // 서브옵션 이름 + 가격 JSON (ex: [{"name":"치즈 추가","price":1000}])
