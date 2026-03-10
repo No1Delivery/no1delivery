@@ -3,8 +3,10 @@ package com.sparta.no1delivery.domain.user.presentation;
 import com.sparta.no1delivery.domain.user.application.UserService;
 import com.sparta.no1delivery.domain.user.application.dto.TokenDto;
 import com.sparta.no1delivery.domain.user.presentation.dto.*;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,9 +46,10 @@ public class UserController {
     //회원 정보 관련
     // 회원 정보 조회
     @GetMapping("/{userId}")
-    public UserCompositeDto.DetailResponse getUser(@PathVariable Long userId) {
-
-        return UserCompositeDto.DetailResponse.from(userService.getUser(userId));
+    public UserCompositeDto.DetailResponse getMyUser(
+            @PathVariable Long userId
+    ) {
+        return userService.getMyUser(userId);
     }
 
     // 회원 목록 조회 (관리자)
@@ -63,9 +66,20 @@ public class UserController {
             @RequestBody UserCompositeDto.UpdateRequest request
     ) {
 
-        userService.changeNickname(userId, request.nickname());
-        userService.changePassword(userId, request.password());
+        userService.updateUser(
+                userId,
+                request.nickname(),
+                request.password()
+        );
     }
+
+    //회원탈퇴
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable Long userId,
+                           @AuthenticationPrincipal UserDetails userDetails){
+        userService.deleteUser(userId,userDetails);
+    }
+
 
     //배송지 관련
 // 배송지 등록
