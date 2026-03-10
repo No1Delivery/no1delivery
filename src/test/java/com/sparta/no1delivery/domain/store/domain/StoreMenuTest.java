@@ -1,8 +1,5 @@
-package com.sparta.no1delivery.store.domain;
+package com.sparta.no1delivery.domain.store.domain;
 
-import com.sparta.no1delivery.domain.store.domain.Menu;
-import com.sparta.no1delivery.domain.store.domain.MenuId;
-import com.sparta.no1delivery.domain.store.domain.Store;
 import com.sparta.no1delivery.domain.store.domain.dto.StoreDto;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.OwnerCheck;

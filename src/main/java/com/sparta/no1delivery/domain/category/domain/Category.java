@@ -8,6 +8,7 @@ import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -19,6 +20,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at IS NULL")
+@Table(name = "p_category")
 public class Category extends BaseUserEntity {
 
     @EmbeddedId
