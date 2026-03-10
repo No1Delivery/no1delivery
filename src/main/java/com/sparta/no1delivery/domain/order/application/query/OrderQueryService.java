@@ -4,6 +4,7 @@ import com.sparta.no1delivery.domain.order.domain.Order;
 import com.sparta.no1delivery.domain.order.domain.query.OrderQueryRepository;
 import com.sparta.no1delivery.domain.order.presentation.OrderRequestDto;
 import com.sparta.no1delivery.domain.order.presentation.OrderResponseDto;
+import com.sparta.no1delivery.global.domain.service.UserDetails;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,9 @@ public class OrderQueryService {
     // 주문 조회용 Repository
     private final OrderQueryRepository orderQueryRepository;
 
+    // 로그인 사용자 정보
+    private final UserDetails userDetails;
+
     // 주문 상세 조회
     public OrderResponseDto.OrderDetail getOrderDetail(UUID orderId) {
 
@@ -33,10 +37,11 @@ public class OrderQueryService {
 
     // 사용자 기준 주문 목록 조회 (내 주문)
     public Page<OrderResponseDto.Order> getUserOrders(
-            Long userId,
             OrderRequestDto.Search search,
             Pageable pageable
     ) {
+
+        Long userId = userDetails.getId();
 
         return orderQueryRepository
                 .findAllByUser(

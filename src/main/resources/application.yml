@@ -1,9 +1,10 @@
+server:
+  port: 3000
+  forward-headers-strategy: native # 프록시 서버 헤더를 신뢰하도록 설정
+
 spring:
   application:
     name: no1delivery
-
-  config:
-    import: optional:file:.env[.properties]
 
   datasource:
     url: ${DB_URL}
@@ -18,6 +19,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
 
 payment:
   toss:
