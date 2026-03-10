@@ -88,8 +88,11 @@ public enum ErrorCode {
     AI_API_ERROR(HttpStatus.BAD_GATEWAY, "AI 서비스 호출 중 오류가 발생했습니다."),
 
     // --- 리뷰 (R) ---
-    REVIEW_RATE_RANGE(HttpStatus.BAD_REQUEST, "리뷰 평점은 1점에서 5점 사이여야 합니다.");
-
+    REVIEW_RATE_RANGE(HttpStatus.BAD_REQUEST, "리뷰 평점은 1점에서 5점 사이여야 합니다."),
+    INVALID_REVIEW_STATE(HttpStatus.BAD_REQUEST, "리뷰 작성이 가능한 주문을 찾을 수 없습니다."),
+    INVALID_REVIEW_UNAUTHORIZED(HttpStatus.BAD_REQUEST, "해당 리뷰를 작성하거나 수정 할 권한이 없습니다."),
+    INVALID_REVIEW_DETAIL_UNAUTHORIZED(HttpStatus.BAD_REQUEST, "해당 주문에 대한 리뷰 권한이 없습니다."),
+    INVALID_REVIEWER_NOT_FOUND(HttpStatus.NOT_FOUND, "유효하지 않은 리뷰 작성자입니다. 다시 로그인 해주세요.");
 
     private final HttpStatus status;
     private final String message;
