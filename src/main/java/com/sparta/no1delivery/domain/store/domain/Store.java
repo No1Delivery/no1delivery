@@ -129,6 +129,10 @@ public class Store extends BaseUserEntity {
         }
     }
 
+    // 가게 리뷰 평점 업데이트
+    public void systemUpdateRating(Double average, Long count) {
+        this.rating.updateRating(average, count);
+    }
 
 
     //// 메뉴 관련
