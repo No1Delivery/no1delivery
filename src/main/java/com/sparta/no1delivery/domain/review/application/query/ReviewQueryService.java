@@ -2,9 +2,10 @@ package com.sparta.no1delivery.domain.review.application.query;
 
 import com.sparta.no1delivery.domain.review.application.ReviewServiceDto;
 import com.sparta.no1delivery.domain.review.domain.ReviewId;
-import com.sparta.no1delivery.domain.review.domain.exception.ReviewNotFoundException;
 import com.sparta.no1delivery.domain.review.domain.query.ReviewQueryDto;
 import com.sparta.no1delivery.domain.review.domain.query.ReviewQueryRepository;
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public class ReviewQueryService {
     public ReviewServiceDto.ReviewDto getReview(UUID reviewId) {
         return reviewQueryRepository.findById(ReviewId.of(reviewId))
                 .map(ReviewDto::from)
-                .orElseThrow(ReviewNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
     }
 
     // 목록 조회
