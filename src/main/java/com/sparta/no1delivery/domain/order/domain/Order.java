@@ -129,6 +129,8 @@ public class Order extends BaseUserEntity {
         registerEvent(
                 new OrderAcceptedEvent(
                         this.orderId,
+                        this.orderer.getName(),
+                        (long) this.totalPrice,
                         System.currentTimeMillis()
                 )
         );
