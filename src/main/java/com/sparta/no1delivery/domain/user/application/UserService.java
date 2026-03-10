@@ -97,7 +97,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<UserCompositeDto.SummaryResponse> getUsers() {
 
-        if(!roleCheck.hasRole("MANAGER"))
+        if (!roleCheck.hasRole(List.of("MANAGER", "MASTER")))
             throw new CustomException(ErrorCode.FORBIDDEN);
 
         return userRepository.findAll()
@@ -242,7 +242,8 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<OwnerRequestDto.Response> getOwnerRequests() {
 
-        if(!roleCheck.hasRole("MANAGER")) throw new CustomException(ErrorCode.FORBIDDEN);
+        if (!roleCheck.hasRole(List.of("MANAGER", "MASTER")))
+            throw new CustomException(ErrorCode.FORBIDDEN);
 
         return userRepository.findAll()
                 .stream()
@@ -264,7 +265,8 @@ public class UserService {
     // 사장 권한 거절
     public void rejectOwnerRole(Long userId) {
 
-        if(!roleCheck.hasRole("MANAGER")) throw new CustomException(ErrorCode.FORBIDDEN);
+        if (!roleCheck.hasRole(List.of("MANAGER", "MASTER")))
+            throw new CustomException(ErrorCode.FORBIDDEN);
 
         User user = getUser(userId);
 
@@ -274,7 +276,8 @@ public class UserService {
     //사장 → 손님 권한 다운그레이드
     public void downgradeToCustomer(Long userId) {
 
-        if(!roleCheck.hasRole("MANAGER")) throw new CustomException(ErrorCode.FORBIDDEN);
+        if (!roleCheck.hasRole(List.of("MANAGER", "MASTER")))
+            throw new CustomException(ErrorCode.FORBIDDEN);
 
         User user = getUser(userId);
 
