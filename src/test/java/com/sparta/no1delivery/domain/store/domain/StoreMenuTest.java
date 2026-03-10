@@ -1,8 +1,5 @@
-package com.sparta.no1delivery.store.domain;
+package com.sparta.no1delivery.domain.store.domain;
 
-import com.sparta.no1delivery.domain.store.domain.Menu;
-import com.sparta.no1delivery.domain.store.domain.MenuId;
-import com.sparta.no1delivery.domain.store.domain.Store;
 import com.sparta.no1delivery.domain.store.domain.dto.StoreDto;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.OwnerCheck;
@@ -77,7 +74,7 @@ class StoreMenuTest {
     @DisplayName("메뉴 수정 시 옵션이 통째로 교체되는지 확인")
     void updateMenuOptionsTest() {
         // given: 초기 메뉴 생성 (옵션 1개)
-        StoreDto.MenuOptionDto option1 = new StoreDto.MenuOptionDto("무 추가", 500, null, false, false);
+        StoreDto.MenuOptionDto option1 = new StoreDto.MenuOptionDto("무 추가", null, false, false);
         StoreDto.MenuDto initialDto = StoreDto.MenuDto.builder()
                 .name("치킨")
                 .price(18000)
@@ -89,8 +86,8 @@ class StoreMenuTest {
         MenuId targetMenuId = store.getMenus().get(0).getId();
 
         // when: 새로운 옵션으로 수정 (옵션 2개)
-        StoreDto.MenuOptionDto newOpt1 = new StoreDto.MenuOptionDto("콜라 사이즈업", 1000, null, false, false);
-        StoreDto.MenuOptionDto newOpt2 = new StoreDto.MenuOptionDto("소스 추가", 500, null, false, false);
+        StoreDto.MenuOptionDto newOpt1 = new StoreDto.MenuOptionDto("콜라 사이즈업", null, false, false);
+        StoreDto.MenuOptionDto newOpt2 = new StoreDto.MenuOptionDto("소스 추가", null, false, false);
         StoreDto.MenuDto updateDto = StoreDto.MenuDto.builder()
                 .name("치킨")
                 .price(19000)
