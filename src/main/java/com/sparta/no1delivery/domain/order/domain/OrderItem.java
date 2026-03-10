@@ -1,6 +1,5 @@
 package com.sparta.no1delivery.domain.order.domain;
 
-import com.sparta.no1delivery.domain.order.application.dto.OrderServiceDto;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
@@ -16,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "P_ORDER_ITEM")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA 기본 생성자
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderItem {
 
     // 주문 상품 PK
@@ -38,10 +37,10 @@ public class OrderItem {
     @Column(nullable = false)
     private String menuName;
 
-    // 사용자가 선택한 옵션 정보 (JSON 형태로 저장)
-    @Column(nullable = true)
+    // 선택된 옵션 정보 (JSON 저장)
     @JdbcTypeCode(SqlTypes.JSON)
-    private String menuOption;
+    @Column(name = "options", columnDefinition = "jsonb")
+    private List<SelectedOption> selectedOptions;
 
     // 주문 수량
     @Column(nullable = false)
@@ -51,51 +50,44 @@ public class OrderItem {
     @Column(nullable = false)
     private int menuPrice;
 
-    // 해당 주문 상품의 총 가격
-    // (메뉴 가격 + 옵션 가격) * 수량
+    // 주문 상품 총 가격
     @Column(nullable = false)
     private int subtotalPrice;
 
 
-    // OrderItem 생성 (도메인 책임)
+    // OrderItem 생성
     public OrderItem(UUID menuId,
                      String menuName,
-                     String menuOption,
+                     List<SelectedOption> selectedOptions,
                      int quantity,
-                     int menuPrice,
-                     List<OrderServiceDto.Option> options) {
+                     int menuPrice) {
 
-        // 메뉴 이름 검증
         if (menuName == null || menuName.isBlank()) {
             throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
-        // 수량 검증
         if (quantity <= 0) {
             throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
-        // 가격 검증
         if (menuPrice < 0) {
             throw new CustomException(ErrorCode.INVALID_MENU_PRICE);
         }
 
         this.menuId = menuId;
         this.menuName = menuName;
-        this.menuOption = menuOption;
+        this.selectedOptions = selectedOptions;
         this.quantity = quantity;
         this.menuPrice = menuPrice;
 
-        // 옵션 가격 계산 (도메인 책임)
-        int optionPrice = calculateOptionPrice(options);
+        int optionPrice = calculateOptionPrice(selectedOptions);
 
-        // 주문 상품 총 가격 계산
         this.subtotalPrice = (menuPrice + optionPrice) * quantity;
     }
 
 
     // 옵션 가격 계산
-    private int calculateOptionPrice(List<OrderServiceDto.Option> options) {
+    private int calculateOptionPrice(List<SelectedOption> options) {
 
         if (options == null || options.isEmpty()) {
             return 0;
@@ -103,24 +95,21 @@ public class OrderItem {
 
         int total = 0;
 
-        for (OrderServiceDto.Option option : options) {
+        for (SelectedOption option : options) {
 
-            // 옵션 그룹 가격
-            total += option.getPrice();
+            int subTotal = option.getSubOptions() == null ? 0 :
+                    option.getSubOptions().stream()
+                            .mapToInt(SelectedOption.SelectedSubOption::getAddPrice)
+                            .sum();
 
-            // 하위 옵션 가격
-            if (option.getSubOptions() != null) {
-                for (OrderServiceDto.SubOption sub : option.getSubOptions()) {
-                    total += sub.getPrice();
-                }
-            }
+            total += option.getOptionPrice() + subTotal;
         }
 
         return total;
     }
 
 
-    // Order와의 연관관계 설정
+    // Order 연관관계 설정
     void setOrder(Order order) {
         this.order = order;
     }

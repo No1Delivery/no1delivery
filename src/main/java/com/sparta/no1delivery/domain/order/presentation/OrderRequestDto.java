@@ -18,6 +18,7 @@ public class OrderRequestDto {
     // 매장 정보
     @NotNull(message = "매장 ID는 필수입니다.")
     private UUID storeId;
+
     private String storeName;
     private String storeAddress;
     private String storeTel;
@@ -25,18 +26,20 @@ public class OrderRequestDto {
     // 배송 정보
     @NotBlank(message = "배송 주소는 필수입니다.")
     private String deliveryAddress;
+
     private String deliveryAddressDetail;
     private String deliveryMemo;
 
     @NotBlank(message = "연락처는 필수입니다.")
     private String phone;
 
-    // 주문 상품 목록 (최소 1개 이상)
+    // 주문 상품 목록
     @Valid
     @NotEmpty(message = "최소 1개 이상의 상품을 주문해야 합니다.")
     private List<OrderItemRequest> items;
 
-    // Controller → Service 계층으로 전달할 DTO 변환
+
+    // Controller → Service DTO 변환
     public OrderServiceDto.Create toServiceDto() {
 
         return OrderServiceDto.Create.builder()
@@ -59,7 +62,6 @@ public class OrderRequestDto {
                                                         item.getOptions().stream()
                                                                 .map(option -> OrderServiceDto.Option.builder()
                                                                         .name(option.getName())
-                                                                        .price(option.getPrice())
                                                                         .subOptions(
                                                                                 option.getSubOptions() == null ? List.of() :
                                                                                         option.getSubOptions().stream()
@@ -78,7 +80,8 @@ public class OrderRequestDto {
                 .build();
     }
 
-    // 주문 상품 정보 (메뉴 + 수량 + 옵션 선택)
+
+    // 주문 상품
     @Getter
     public static class OrderItemRequest {
 
@@ -97,21 +100,20 @@ public class OrderRequestDto {
         private List<Option> options;
     }
 
-    // 옵션 그룹 (예: 맵기, 사이즈)
+
+    // 옵션 그룹
     @Getter
     public static class Option {
 
         @NotBlank(message = "옵션 이름은 필수입니다.")
         private String name;
 
-        @Min(value = 0, message = "옵션 가격은 0 이상이어야 합니다.")
-        private int price;
-
         @Valid
         private List<SubOption> subOptions;
     }
 
-    // 옵션 상세 항목 (예: 보통맛, 매운맛)
+
+    // 옵션 상세
     @Getter
     public static class SubOption {
 
@@ -122,7 +124,8 @@ public class OrderRequestDto {
         private int price;
     }
 
-    // 주문 검색 필터 DTO
+
+    // 주문 검색 필터
     @Getter
     public static class Search {
 
@@ -148,7 +151,8 @@ public class OrderRequestDto {
         }
     }
 
-    // 배송지 변경 DTO
+
+    // 배송지 변경
     @Getter
     public static class ChangeDelivery {
 
