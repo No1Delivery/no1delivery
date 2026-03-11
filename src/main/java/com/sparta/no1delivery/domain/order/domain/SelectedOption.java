@@ -3,12 +3,14 @@ package com.sparta.no1delivery.domain.order.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class SelectedOption {
 
     // 옵션 그룹 이름 (예: 사이즈, 토핑)
@@ -23,6 +25,7 @@ public class SelectedOption {
     @Getter
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class SelectedSubOption {
 
         // 하위 옵션 이름 (예: L, 치즈추가)
