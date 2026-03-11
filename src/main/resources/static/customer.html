@@ -124,7 +124,7 @@
             };
             if (method !== 'GET') options.body = document.getElementById('body').value;
 
-            const response = await fetch("http://localhost:3000" + urlValue, options);
+            const response = await fetch(urlValue, options);
             const data = await response.json().catch(() => ({}));
 
             statusArea.innerText = `RESPONSE - STATUS: ${response.status}`;
