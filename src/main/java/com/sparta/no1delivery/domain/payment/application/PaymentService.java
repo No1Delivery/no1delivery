@@ -1,9 +1,9 @@
 package com.sparta.no1delivery.domain.payment.application;
 
 import com.sparta.no1delivery.domain.payment.domain.Payment;
-import com.sparta.no1delivery.domain.payment.domain.PaymentAmountDto;
 import com.sparta.no1delivery.domain.payment.domain.PaymentClient;
 import com.sparta.no1delivery.domain.payment.domain.PaymentRepository;
+import com.sparta.no1delivery.domain.payment.infrastructure.dto.TossApproveResponse;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class PaymentService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
         try {
-            PaymentAmountDto response = paymentClient.requestApprove(
+            TossApproveResponse response = paymentClient.requestApprove(
                     paymentKey,
                     orderId,
                     amount,
@@ -33,10 +33,10 @@ public class PaymentService {
             );
 
             payment.approve(
-                    response.paymentKey(),
+                    response.key(),
                     response.approvedAt(),
                     response.paymentLog(),
-                    response.approvedAmount()
+                    (long) response.approvedAmount()
             );
         } catch (Exception ex) {
             payment.abort(ex.getMessage());
@@ -50,7 +50,7 @@ public class PaymentService {
                 .orElseThrow(()-> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
         try {
-            PaymentAmountDto response = paymentClient.requestCancel(
+            TossApproveResponse response = paymentClient.requestCancel(
                     payment.getKey(),
                     reason,
                     "cancel-"+orderId

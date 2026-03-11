@@ -1,6 +1,8 @@
 package com.sparta.no1delivery.domain.payment.domain;
 
+import com.sparta.no1delivery.domain.payment.infrastructure.dto.TossApproveResponse;
+
 public interface PaymentClient {
-    PaymentAmountDto requestApprove(String paymentKey, String orderId, Long amount, String idempotencyKey);
-    PaymentAmountDto requestCancel(String paymentKey, String reason, String idempotencyKey);
+    TossApproveResponse requestApprove(String paymentKey, String orderId, Long amount, String idempotencyKey);
+    TossApproveResponse requestCancel(String paymentKey, String reason, String idempotencyKey);
 }
