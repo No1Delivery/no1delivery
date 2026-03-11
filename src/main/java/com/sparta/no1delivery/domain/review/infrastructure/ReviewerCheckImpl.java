@@ -3,7 +3,6 @@ package com.sparta.no1delivery.domain.review.infrastructure;
 import com.sparta.no1delivery.domain.order.domain.query.OrderQueryRepository;
 import com.sparta.no1delivery.domain.review.domain.ReviewId;
 import com.sparta.no1delivery.domain.review.domain.ReviewRepository;
-import com.sparta.no1delivery.domain.review.domain.exception.ReviewNotFoundException;
 import com.sparta.no1delivery.domain.review.domain.service.OrderInfoProvider;
 import com.sparta.no1delivery.domain.review.domain.service.ReviewerCheck;
 import com.sparta.no1delivery.global.domain.service.UserDetails;
@@ -42,6 +41,6 @@ public class ReviewerCheckImpl implements ReviewerCheck {
     private boolean isReviewer(ReviewId reviewId, Long userId) {
         return reviewRepository.findById(reviewId)
                 .map(review -> review.getReviewer().getId().equals(userId))
-                .orElseThrow(ReviewNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
     }
 }

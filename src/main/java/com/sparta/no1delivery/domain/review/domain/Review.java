@@ -1,12 +1,11 @@
 package com.sparta.no1delivery.domain.review.domain;
-
-import com.sparta.no1delivery.domain.review.domain.exception.InvalidOrderStateForReviewException;
-import com.sparta.no1delivery.domain.review.domain.exception.ReviewAuthorityException;
 import com.sparta.no1delivery.domain.review.domain.service.OrderInfoProvider;
 import com.sparta.no1delivery.domain.review.domain.service.ReviewerCheck;
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import com.sparta.no1delivery.global.domain.RoleCheck;
 import com.sparta.no1delivery.global.domain.service.UserDetails;
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
@@ -59,7 +58,7 @@ public class Review extends BaseUserEntity {
         // 작성 가능한 리뷰인지 체크 - 주문 존재 여부 및 상태 확인(DELIVERED)
         ReviewOrderInfo orderInfo = orderInfoProvider.getOrderInfo(orderId);
         if (orderInfo == null) {
-            throw new InvalidOrderStateForReviewException(orderId);
+            throw new CustomException(ErrorCode.INVALID_REVIEW_STATE);
         }
 
         this.id = ReviewId.of();
@@ -98,9 +97,9 @@ public class Review extends BaseUserEntity {
 
         if (!reviewerCheck.check(id, orderId)) {
             if (id == null) { // 새로 작성한 경우
-                throw new ReviewAuthorityException(orderId);
+                throw new CustomException(ErrorCode.INVALID_REVIEW_UNAUTHORIZED);
             } else {
-                throw new ReviewAuthorityException();
+                throw new CustomException(ErrorCode.INVALID_REVIEW_DETAIL_UNAUTHORIZED);
             }
         }
     }

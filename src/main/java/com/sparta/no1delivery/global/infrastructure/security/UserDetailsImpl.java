@@ -24,6 +24,9 @@ public class UserDetailsImpl implements UserDetails {
                     List.of() :
                     List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().toString()));
     }
+    public Long getId(){
+        return user == null ? 0L : user.getUserId();
+    }
 
     @Override
     public String getPassword() {

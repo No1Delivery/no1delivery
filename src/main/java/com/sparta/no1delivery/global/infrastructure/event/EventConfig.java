@@ -18,6 +18,7 @@ import java.util.concurrent.Executor;
 @Configuration
 public class EventConfig implements AsyncConfigurer {
 
+    @Autowired
     private ApplicationEventPublisher publisher;
 
     @Bean

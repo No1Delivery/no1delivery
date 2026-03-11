@@ -3,6 +3,8 @@ package com.sparta.no1delivery.domain.review.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +21,8 @@ public class ReviewOrderInfo {
     private UUID storeId; // 상점 ID
     private String storeName; // 상점 이름
 
-    @Column(name = "order_items", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "order_items")
     private List<ReviewOrderItem> items; // 주문상품 목록
 
     @Builder

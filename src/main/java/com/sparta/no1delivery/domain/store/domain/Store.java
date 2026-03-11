@@ -66,7 +66,7 @@ public class Store extends BaseUserEntity {
     private List<StoreCategory> categories;
 
     @OneToMany(
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
