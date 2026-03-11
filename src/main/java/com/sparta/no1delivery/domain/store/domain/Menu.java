@@ -51,6 +51,7 @@ public class Menu extends BaseUserEntity {
                     referencedColumnName = "menu_id"
             )
     )
+    @OrderColumn(name = "option_idx")
     private List<MenuOption> options;
 
     @Builder
