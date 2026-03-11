@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 
 import java.util.List;
@@ -40,6 +42,7 @@ public class OrderItem {
     // 선택된 옵션 정보 (JSON 저장)
     @Convert(converter = SelectedOptionConverter.class)
     @Column(name = "options", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<SelectedOption> selectedOptions;
 
     // 주문 수량
