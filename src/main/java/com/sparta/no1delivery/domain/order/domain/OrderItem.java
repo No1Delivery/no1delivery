@@ -1,13 +1,13 @@
 package com.sparta.no1delivery.domain.order.domain;
 
+import com.sparta.no1delivery.domain.order.infrastructure.converter.SelectedOptionConverter;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +38,7 @@ public class OrderItem {
     private String menuName;
 
     // 선택된 옵션 정보 (JSON 저장)
-    @JdbcTypeCode(SqlTypes.JSON)
+    @Convert(converter = SelectedOptionConverter.class)
     @Column(name = "options", columnDefinition = "jsonb")
     private List<SelectedOption> selectedOptions;
 
