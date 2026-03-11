@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -63,7 +64,7 @@ public class ReviewController {
    @GetMapping("/store/{storeId}")
    public Page<ReviewResponseDto> findAllByStore(
            @Parameter(description = "상점 UUID") @PathVariable UUID storeId,
-           @ModelAttribute ReviewQueryDto.Search search,
+           @ParameterObject ReviewQueryDto.Search search,
            @PageableDefault(size = 10) Pageable pageable) {
 
       return reviewQueryService.getReviewsByStore(storeId, search, pageable)
@@ -74,8 +75,8 @@ public class ReviewController {
    @GetMapping("/user/{userId}")
    public Page<ReviewResponseDto> findAllByUser(
            @Parameter(description = "사용자 Long") @PathVariable Long userId,
-           @ModelAttribute ReviewQueryDto.Search search,
-           @PageableDefault(size = 10) Pageable pageable) {
+           @ParameterObject ReviewQueryDto.Search search,
+           @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
 
       return reviewQueryService.getReviewsByUser(userId, search, pageable)
               .map(ReviewResponseDto::from);
@@ -85,8 +86,8 @@ public class ReviewController {
    @PreAuthorize("hasAnyRole('MANAGER', 'MASTER')")
    @GetMapping
    public Page<ReviewResponseDto> findAll(
-           @ModelAttribute ReviewQueryDto.Search search,
-           @PageableDefault(size = 10) Pageable pageable) {
+           @ParameterObject ReviewQueryDto.Search search,
+           @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
 
       return reviewQueryService.getAllReviews(search, pageable)
               .map(ReviewResponseDto::from);
