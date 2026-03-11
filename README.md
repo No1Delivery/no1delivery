@@ -7,44 +7,17 @@ DDD(Domain-Driven Design) 아키텍처를 채택한 배달 플랫폼 백엔드 �
 
 본 프로젝트는 고객, 가게 사장, 관리자가 상호작용하는 배달 주문 관리 시스템을 구축합니다.
 
-객체지향 설계와 **도메인 모델 중심 개발(Domain Driven Design)**을 통해
+객체지향 설계와 도메인 모델 중심 개발(Domain Driven Design)을 통해
 복잡한 배달 비즈니스 로직을 명확하게 분리하고 확장성 있는 시스템을 지향합니다.
 
 또한 Spring AI 기반 메뉴 설명 자동 생성 기능을 통해
 가게 사장님이 메뉴 설명을 쉽게 작성할 수 있도록 지원합니다.
 
-## ⚙️ Key Features
+## 👥 팀원 역할 분담
 
-도메인 주도 설계(DDD)를 바탕으로 각 도메인별 핵심 비즈니스 로직을 다음과 같이 구현하였습니다.
-
-### 👤 User & Auth (회원 및 인증)
-| Category | Feature | Description |
-| :--- | :--- | :--- |
-| **Auth** | `JWT Authentication` | Spring Security와 JWT를 활용한 토큰 기반 인증 및 인가 |
-| **RBAC** | `Role Management` | **CUSTOMER, OWNER, MANAGER, MASTER** 권한별 접근 제어 |
-| **Profile** | `Address Management` | 사용자 배송 주소지 등록, 수정 및 관리 |
-
-### 🏪 Store & Menu (가게 및 메뉴)
-| Category | Feature | Description |
-| :--- | :--- | :--- |
-| **Store** | `Store Management` | 가게 등록, 정보 수정 및 운영 상태 관리 |
-| **Category** | `Food Categories` | 음식 카테고리 관리 (MANAGER/MASTER 권한) |
-| **Menu** | `Menu CRUD` | 메뉴 등록/수정/삭제 및 품절 대비 숨김 처리 기능 |
-| **AI** | `AI Description` | **Spring AI(OpenAI)**를 활용한 메뉴 설명 자동 생성 기능 |
-
-### 📦 Order & Payment (주문 및 결제)
-| Category | Feature | Description |
-| :--- | :--- | :--- |
-| **Order** | `Order Flow` | 주문 생성, 상태 변경(접수/배달중/완료) 프로세스 관리 |
-| **Policy** | `Order Cancellation` | 데이터 정합성을 고려하여 주문 생성 후 **5분 이내** 취소 가능 |
-| **Payment** | `Payment Integration` | 결제 내역 저장 및 주문 데이터와의 연동 처리 |
-
-### ⭐ Review & AI (리뷰 및 부가 기능)
-| Category | Feature | Description |
-| :--- | :--- | :--- |
-| **Review** | `Review System` | 주문 기반 리뷰 작성 및 평점 관리 |
-| **Rating** | `Store Rating` | 리뷰 평점을 실시간으로 가게 평균 별점에 반영 |
-| **Logging** | `AI Request Logs` | AI 서비스 호출 이력 및 응답 데이터 로그 저장 |
+| [김도현](https://github.com/kimdh32022) | [김관형](https://github.com/kwanhyoungkim) | [조여진](https://github.com/guineacodes) | [조하은](https://github.com/haeun228) | [한소연](https://github.com/soyeonnan) | [김두리](https://github.com/DDoori) |
+|:------------------------------------:|:---------------------------------------:|:-------------------------------------:|:----------------------------------:|:-----------------------------------:|:--------------------------------:|
+|     결제(Payment), <br/>배포(CI/CD)      |             카테고리(Category)              |               주문(Order)               |       가게(Store), <br/>AI 연동        |             리뷰(Review)              |       회원(User), <br/>인증/인가       |
 
 ## 🛠 Technology Stack
 
@@ -65,7 +38,7 @@ DDD(Domain-Driven Design) 아키텍처를 채택한 배달 플랫폼 백엔드 �
 | **AI** | `Spring AI` | OpenAI 연동을 통한 지능형 서비스 구현 |
 | **Docs** | `Swagger (Springdoc)` | API 명세 자동화 및 테스트 도구 제공 |
 
-> **API Documentation URL:** `/swagger-ui/index.html`
+
 
 ---
 
@@ -101,10 +74,12 @@ DDD(Domain-Driven Design) 아키텍처를 채택한 배달 플랫폼 백엔드 �
 | `Spring Security Test` | 보안 컨텍스트 테스트 지원 |
 | `H2 Database` | 테스트용 In-Memory DB 환경 제공 |
 
-### 🏗 DDD 기반 프로젝트 구조
+## 🏗 DDD 기반 프로젝트 구조
 
-이 프로젝트는 **계층형 아키텍처(Layered Architecture)**와
-Domain Driven Design을 결합하여 도메인 중심 구조로 설계되었습니다.
+이 프로젝트는 **계층형 아키텍처**(**Layered Architecture**)와 **Domain Driven Design**(**DDD**)을 결합하여 도메인 중심 구조로 설계되었습니다.
+
+주요 도메인은 총 7가지로 나누어져 있으며, 각 도메인은 특정 비즈니스 영역을 책임집니다:  
+**AI, Category, Store, Order, Payment, Review, User**
 
 ### 📂 Project Structure
 ```src/main/java/com/sparta/no1delivery/
@@ -114,36 +89,36 @@ Domain Driven Design을 결합하여 도메인 중심 구조로 설계되었습�
 │   │   ├── domain             # AiLog, AiLogRepository, AiLogType, AiClient
 │   │   ├── infrastructure     # AiLogAdvisor, OpenAiClient
 │   │   └── presentation       # AiController, AiRequest, AiResponse DTOs
-│
+│   │
 │   ├── category
 │   │   ├── application        # CategoryService, CategoryServiceDto
 │   │   ├── domain             # Category, CategoryId, CategoryRepository
 │   │   └── presentation       # CategoryController
-│
+│   │
 │   ├── store
 │   │   ├── application        # StoreService, MenuService, QueryService
-│   │   ├── domain             # Store, Menu, Owner, StoreRepository
+│   │   ├── domain             # Store, Menu, StoreRepository
 │   │   ├── infrastructure     # StoreQueryRepositoryImpl
 │   │   └── presentation       # StoreController, MenuController
-│
+│   │
 │   ├── order
 │   │   ├── application        # OrderService
 │   │   ├── domain             # Order, OrderItem, DeliveryInfo
 │   │   ├── infrastructure     # OrderQueryRepositoryImpl
 │   │   └── presentation       # OrderController
-│
+│   │
 │   ├── payment
 │   │   ├── application        # PaymentService
 │   │   ├── domain             # Payment, PaymentRepository
 │   │   ├── infrastructure     # TossPaymentClient
 │   │   └── presentation       # PaymentController
-│
+│   │
 │   ├── review
 │   │   ├── application        # ReviewService
 │   │   ├── domain             # Review, ReviewRepository
 │   │   ├── infrastructure     # ReviewQueryRepositoryImpl
 │   │   └── presentation       # ReviewController
-│
+│   │
 │   └── user
 │       ├── application        # UserService, TokenService
 │       ├── domain             # User, UserRepository
@@ -151,47 +126,122 @@ Domain Driven Design을 결합하여 도메인 중심 구조로 설계되었습�
 │       └── presentation       # UserController
 │
 └── global
-├── domain
-│   ├── service            # AddressToCoords, OwnerCheck
-│   └── common             # BaseEntity, RoleCheck
-│
-├── infrastructure
-│   ├── api                # KakaoAddressToCoords
-│   ├── security           # JwtFilter, SecurityConfig
-│   └── event              # EventConfig
-│
-└── presentation
-└── exception          # GlobalExceptionHandler
+    ├── domain                # AddressToCoords, OwnerCheck, BaseEntity, RoleCheck
+    ├── infrastructure        # Kakao API, JwtFilter, SecurityConfig, EventConfig
+    └── presentation          # GlobalExceptionHandler
 ```
-## 🧠 설계 특징
-### 🧩 Aggregate Root 중심 설계
 
-각 도메인의 중심 객체(Order, Store 등)를 통해서만 하위 엔티티에 접근하여
-데이터 일관성을 유지합니다.
+### 🗂 데이터베이스 설계 / ERD
+- 데이터베이스 설계는 7가지 도메인 기준으로 이루어짐
+- 도메인 간 의존 관계를 제거하여 독립적인 테이블 구조 유지
+  
+  ![No1Delivery Database Design](./docs/erd.png)
 
-### 🏛 Rich Domain Model
+## ⚙️ 주요 기능
 
-엔티티 내부에서 비즈니스 로직을 수행하는
-**풍부한 도메인 모델(Rich Domain Model)**을 지향합니다.
+도메인 주도 설계(DDD)를 바탕으로 각 도메인별 핵심 비즈니스 로직을 다음과 같이 구현하였습니다.
 
-### 🔔 도메인 이벤트 활용
+### 👤 User (회원)
+| 기능 | 설명 |
+| :--- | :--- |
+| 사용자 관리 | 회원가입, 정보 수정, 탈퇴 등 |
+| 인증/인가 | JWT 기반 로그인, 역할(Role) 관리 |
+| 배송지 관리 | 사용자 주소 등록/수정/삭제 |
 
-주문 완료 후 결제 처리 등은
-도메인 이벤트 기반으로 처리하여 도메인 간 결합도를 낮추었습니다.
+### 🏪 Store (가게)
+| 기능 | 설명 |
+| :--- | :--- |
+| 가게 관리 | 가게 등록, 정보 수정, 운영 상태 관리 |
+| 메뉴 관리 | 메뉴 등록/수정/삭제, 품절 처리 기능 |
 
-### 🔌 인프라 추상화
+### 📦 Order (주문)
+| 기능 | 설명 |
+| :--- | :--- |
+| 주문 처리 | 주문 생성, 상태 변경(접수/배달중/완료) |
+| 주문 취소 | 생성 후 5분 이내 주문 취소 가능 |
 
-Infrastructure 계층을 통해 외부 시스템(DB, API)을 분리하여
-도메인 로직이 인프라에 의존하지 않도록 설계했습니다.
+### 💳 Payment (결제)
+| 기능 | 설명 |
+| :--- | :--- |
+| 결제 처리 | 결제 내역 저장 및 주문 데이터와 연동 |
+| Toss 연동 | Toss 결제 시스템과 연계 |
 
-## ⚡ 설치 및 실행 방법
-1️⃣ 저장소 복제
-git clone https://github.com/No1Delivery/no1delivery.git
+### ⭐ Review (리뷰)
+| 기능 | 설명 |
+| :--- | :--- |
+| 리뷰 작성 | 주문 기반 리뷰 작성 및 평점 관리 |
+| 가게 평점 | 리뷰 평점을 실시간 가게 평균 별점에 반영 |
 
-2️⃣ 환경 변수 설정
-src/main/resources/application.yml
+### 🗂 Category (카테고리)
+| 기능 | 설명 |
+| :--- | :--- |
+| 음식 카테고리 관리 | 카테고리 생성, 수정, 삭제 및 관리 |
+| 권한 기반 접근 | MANAGER/MASTER 권한별 카테고리 관리 |
 
-DB 및 외부 API 설정을 추가합니다.
+### 🤖 AI
+| 기능 | 설명 |
+| :--- | :--- |
+| 메뉴 이름 & 설명 생성 | Spring AI(OpenAI)를 활용하여 메뉴 이름과 메뉴 설명 자동 생성 |
+| 가게 설명 생성 | AI를 통해 가게 소개/설명 자동 생성 |
+| AI 호출 로그 관리 | AI 요청 이력 및 응답 데이터 로그 저장 |
 
-3️⃣ 애플리케이션 실행
-./gradlew bootRun
+## ⚙️ 설치 및 실행 방법
+### 1️⃣ 레포지토리 복제
+
+    git clone https://github.com/No1Delivery/no1delivery.git
+
+### 2️⃣ 환경 변수 설정
+
+프로젝트 루트 경로에 `.env` 파일 생성
+    
+```
+# PostgreSQL 설정
+DB_URL=jdbc:postgresql://localhost:5432/<DB_NAME>
+DB_NAME=<DB_NAME>
+DB_USERNAME=<DB_USERNAME>
+DB_PASSWORD=<DB_PASSWORD>
+
+# 카카오 API
+KAKAO_API_KEY=<YOUR_KAKAO_API_KEY>
+
+# JWT 시크릿
+JSON_WEB_TOKEN_SECRET=<YOUR_JWT_SECRET>
+
+# OpenAI API
+OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
+
+# Toss 결제 시크릿 키
+TOSS_SECRET_KEY=<YOUR_TOSS_SECRET_KEY>
+```
+- `< >` 부분을 본인의 값으로 교체해야 함
+
+### 3️⃣ DB 구축
+
+1. `docker-compose`로 PostgreSQL + PostGIS + pgRouting 컨테이너 실행
+    - 프로젝트 루트 경로에서 명령어 실행
+        ```
+        docker compose -f ./docker/pgrouting/docker-compose.yml --env-file .env up -d
+        ```
+    - ⚠️ 이미 포트 `5432`에서 PostgreSQL이 실행 중이라면, 중지하거나 포트 변경 후 실행
+
+2. DB 접속 후 `PostGIS` & `pgrouting` 익스텐션 활성화
+    ```
+    CREATE EXTENSION IF NOT EXISTS postgis;
+    CREATE EXTENSION IF NOT EXISTS pgrouting;
+    ```
+3. Spring Boot 서버 실행해 테이블 생성
+    ```
+   ./gradlew bootRun --args='--spring.profiles.active=dev'
+   ```
+4. `GIST` 인덱스 추가 (공간 검색 최적화)
+    ```
+    DROP INDEX IF EXISTS idx_store_address_point;
+    CREATE INDEX idx_store_address_point ON P_STORE USING GIST (point);
+   ```
+
+## 📄 API 명세서
+
+- Swagger UI를 통해 모든 API 엔드포인트를 확인하고 테스트할 수 있습니다.
+- URL: [http://localhost:3000/swagger-ui/index.html](http://localhost:3000/swagger-ui/index.html)
+
+> ⚠️ 서버 실행 후 Swagger UI 접속 가능
