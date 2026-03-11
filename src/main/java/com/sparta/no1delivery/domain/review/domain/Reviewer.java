@@ -22,9 +22,12 @@ public class Reviewer {
     private String reviewerName;
 
     protected Reviewer(UserDetails userDetails) {
+
         if (userDetails == null || userDetails.getId() == null) {
             throw new CustomException(ErrorCode.INVALID_REVIEWER_NOT_FOUND);
         }
+        this.id = userDetails.getId();
+        this.reviewerName = userDetails.getName();
     }
 
 }
