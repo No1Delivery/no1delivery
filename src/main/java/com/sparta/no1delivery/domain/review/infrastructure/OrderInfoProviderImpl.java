@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.UUID;
 
+import static com.sparta.no1delivery.domain.order.domain.OrderStatus.ORDER_DONE;
+
 @Component
 @RequiredArgsConstructor
 public class OrderInfoProviderImpl implements OrderInfoProvider {
@@ -31,7 +33,7 @@ public class OrderInfoProviderImpl implements OrderInfoProvider {
     // 주문 완료 상태 (DELIVERED)이 아니라면 리뷰 작성 불가
     private boolean isReviewable(Order order) {
         List<OrderItem> items = order.getOrderItems();
-        return items != null && !items.isEmpty() && order.getStatus() == OrderStatus.ORDER_DONE;
+        return items != null && !items.isEmpty() && order.getStatus() == ORDER_DONE;
     }
 
     private ReviewOrderInfo convertToReviewOrderInfo(Order order) {
