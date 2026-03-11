@@ -1,7 +1,5 @@
 package com.sparta.no1delivery.domain.order.application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.no1delivery.domain.order.application.dto.OrderServiceDto;
 import com.sparta.no1delivery.domain.order.domain.*;
 import com.sparta.no1delivery.domain.order.domain.service.OptionCheck;
@@ -28,27 +26,17 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final ObjectMapper objectMapper;
 
-    // 상품 조회 서비스
     private final ProductProvider productProvider;
-
-    // 메뉴 검증 서비스
     private final OrderCheck orderCheck;
-
-    // 옵션 검증 서비스
     private final OptionCheck optionCheck;
 
-    // role 권한 체크
     private final RoleCheck roleCheck;
-
-    // 매장 소유자 검증
     private final OwnerCheck ownerCheck;
-
-    // 로그인 사용자 정보
     private final UserDetails userDetails;
 
-    // 배송지 변경 ( 주문자 본인만 가능)
+
+    // 배송지 변경
     public void changeDeliveryInfo(
             UUID orderId,
             String address,
@@ -68,12 +56,12 @@ public class OrderService {
         order.changeDeliveryInfo(address, detailAddress, memo);
     }
 
+
     // 주문 생성
     public UUID createOrder(OrderServiceDto.Create dto) {
 
         Long userId = userDetails.getId();
 
-        // 주문 항목 검증
         if (!roleCheck.hasRole("CUSTOMER")) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
@@ -82,24 +70,19 @@ public class OrderService {
             throw new CustomException(ErrorCode.ORDER_ITEM_EMPTY);
         }
 
-        // 가게 존재 여부 검증
         Store store = productProvider.getStore(dto.getStoreId());
 
-        // DTO → OrderItem 변환 + 메뉴/옵션 검증
         List<OrderItem> items = dto.getItems().stream()
                 .map(item -> {
 
-                    // 메뉴 조회
                     Menu menu = productProvider.getMenu(dto.getStoreId(), item.getMenuId());
 
-                    // 메뉴 검증 (가게 메뉴인지 + 가격 위조 검증)
                     orderCheck.validateMenu(
                             menu,
                             dto.getStoreId(),
                             item.getMenuPrice()
                     );
 
-                    // 옵션 검증
                     if (item.getOptions() != null && !item.getOptions().isEmpty()) {
 
                         List<String> optionNames = item.getOptions().stream()
@@ -113,20 +96,18 @@ public class OrderService {
                 })
                 .toList();
 
-        // Store 정보 스냅샷
+
         StoreInfo storeInfo = new StoreInfo(
                 dto.getStoreId(),
                 dto.getStoreName()
         );
 
-        // Delivery 정보 생성
         DeliveryInfo deliveryInfo = new DeliveryInfo(
                 dto.getDeliveryAddress(),
                 dto.getDeliveryAddressDetail(),
                 dto.getDeliveryMemo()
         );
 
-        // Order 생성
         Order order = Order.createOrder(
                 userId,
                 dto.getOrdererName(),
@@ -138,10 +119,14 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
+        savedOrder.orderAccept();
+        orderRepository.flush();
+
         return savedOrder.getOrderId();
     }
 
-    // DTO Item → OrderItem 변환
+
+    // DTO → OrderItem
     private OrderItem toOrderItem(OrderServiceDto.Item item) {
 
         if (item.getMenuPrice() <= 0) {
@@ -151,31 +136,47 @@ public class OrderService {
         List<OrderServiceDto.Option> options =
                 item.getOptions() == null ? Collections.emptyList() : item.getOptions();
 
-        String optionJson = convertOptionToJson(options);
+        List<SelectedOption> selectedOptions = convertToSelectedOptions(options);
 
         return new OrderItem(
                 item.getMenuId(),
                 item.getMenuName(),
-                optionJson,
+                selectedOptions,
                 item.getQuantity(),
-                item.getMenuPrice(),
-                options
+                item.getMenuPrice()
         );
     }
 
-    // 옵션 객체 → JSON 변환
-    private String convertOptionToJson(List<OrderServiceDto.Option> options) {
+
+    // DTO Option → SelectedOption
+    private List<SelectedOption> convertToSelectedOptions(List<OrderServiceDto.Option> options) {
 
         if (options == null || options.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
 
-        try {
-            return objectMapper.writeValueAsString(options);
-        } catch (JsonProcessingException e) {
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        return options.stream()
+                .map(option -> {
+
+                    List<SelectedOption.SelectedSubOption> subOptions =
+                            option.getSubOptions() == null
+                                    ? Collections.emptyList()
+                                    : option.getSubOptions().stream()
+                                    .map(sub -> SelectedOption.SelectedSubOption.builder()
+                                            .name(sub.getName())
+                                            .addPrice(sub.getPrice())
+                                            .build())
+                                    .toList();
+
+                    return SelectedOption.builder()
+                            .optionName(option.getName())
+                            .optionPrice(0)   // 여기 수정됨
+                            .subOptions(subOptions)
+                            .build();
+                })
+                .toList();
     }
+
 
     // 주문 취소
     public void cancelOrder(UUID orderId) {
@@ -192,6 +193,7 @@ public class OrderService {
 
         order.cancel();
     }
+
 
     // 주문 상태 변경
     public void changeOrderStatus(UUID orderId, OrderStatus status) {

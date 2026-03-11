@@ -79,6 +79,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         java.util.List<Order> content = queryFactory
                 .selectFrom(order)
                 .where(builder)
+                .orderBy(order.createdAt.desc())   // 최신순 정렬 추가
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -103,6 +104,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         java.util.List<Order> content = queryFactory
                 .selectFrom(order)
                 .where(builder)
+                .orderBy(order.createdAt.desc())   // 최신순 정렬 추가
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -127,6 +129,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         java.util.List<Order> content = queryFactory
                 .selectFrom(order)
                 .where(builder)
+                .orderBy(order.createdAt.desc())   // 최신순 정렬 추가
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

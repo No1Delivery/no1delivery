@@ -6,6 +6,7 @@ import com.sparta.no1delivery.domain.order.domain.event.OrderPaymentConfirmedEve
 import com.sparta.no1delivery.domain.order.domain.event.OrderRefundedEvent;
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import com.sparta.no1delivery.global.domain.service.UserDetails;
+import com.sparta.no1delivery.global.infrastructure.event.Events;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
@@ -87,7 +88,7 @@ public class Order extends BaseUserEntity {
     }
 
 
-    // 연관관계 편의 메서드
+    // 연관 관계 편의 메서드
     public void addOrderItem(OrderItem item) {
         orderItems.add(item);
         item.setOrder(this);
@@ -104,7 +105,7 @@ public class Order extends BaseUserEntity {
     // 배송지 변경
     public void changeDeliveryInfo(String address, String detailAddress, String memo) {
 
-        // 주문 접수 전까지만 변경 가능
+        // 주문 접수 전 까지만 변경 가능
         if (this.status != OrderStatus.ORDER_CREATING) {
             throw new CustomException(ErrorCode.INVALID_ORDER_STATUS);
         }
@@ -239,23 +240,12 @@ public class Order extends BaseUserEntity {
 
 
     // 도메인 이벤트
-
     private void registerEvent(Object event) {
-        domainEvents.add(event);
-    }
-
-    @DomainEvents
-    public List<Object> domainEvents() {
-        return domainEvents;
-    }
-
-    @AfterDomainEventPublication
-    public void clearEvents() {
-        domainEvents.clear();
+        Events.trigger(event);
     }
 
 
-    // Soft Delete
+    //S o f t Delete
     public void remove(UserDetails userDetails) {
         delete(userDetails);
     }
