@@ -4,6 +4,7 @@ import com.sparta.no1delivery.domain.order.domain.Order;
 import com.sparta.no1delivery.domain.order.domain.OrderRepository;
 import com.sparta.no1delivery.domain.order.domain.event.OrderPaymentConfirmedEvent;
 import com.sparta.no1delivery.domain.payment.domain.event.PaymentApprovedEvent;
+import com.sparta.no1delivery.domain.payment.domain.event.PaymentCanceledEvent;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +49,21 @@ public class PaymentApprovedEventHandler {
 
         // 조리 시작 상태로 변경
         order.startPreparing();
+    }
+
+    @Transactional
+    @EventListener
+    public void handle(PaymentCanceledEvent event) {
+
+        UUID orderId = event.orderId();
+
+        log.info("결제 취소 이벤트 수신 orderId={}", orderId);
+
+        // 주문 조회
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        // 조리 시작 상태로 변경
+        order.cancel();
     }
 }

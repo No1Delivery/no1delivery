@@ -57,9 +57,10 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(c ->
                         c.requestMatchers("/", "/v1/users/auth/**").permitAll()
+                                .requestMatchers("/v1/payments/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/api-docs/**", "/api-docs.html", "/swagger-ui/**").permitAll()
                                 // 아래 경로들을 추가해서 정적 파일들을 무조건 허용해줍니다.
-                                .requestMatchers("/*.html", "/static/**", "/favicon.ico", "/error").permitAll()
+                                .requestMatchers("/*.html","/demo/**", "/static/**", "/favicon.ico", "/error").permitAll()
                                 .anyRequest().authenticated());
 
         return http.build();

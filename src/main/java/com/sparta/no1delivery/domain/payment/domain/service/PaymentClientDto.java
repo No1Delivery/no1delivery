@@ -1,4 +1,4 @@
-package com.sparta.no1delivery.domain.payment.infrastructure.dto;
+package com.sparta.no1delivery.domain.payment.domain.service;
 
 import com.sparta.no1delivery.domain.payment.domain.PaymentStatus;
 import lombok.Builder;
@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record TossApproveResponse(
+public record PaymentClientDto(
         boolean success,
         String reason,
         String key,
