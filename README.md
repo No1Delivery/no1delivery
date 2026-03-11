@@ -134,8 +134,9 @@ DDD(Domain-Driven Design) 아키텍처를 채택한 배달 플랫폼 백엔드 �
 ### 🗂 데이터베이스 설계 / ERD
 - 데이터베이스 설계는 7가지 도메인 기준으로 이루어짐
 - 도메인 간 의존 관계를 제거하여 독립적인 테이블 구조 유지
-  
-  ![No1Delivery Database Design](./docs/erd.png)
+  <img width="1976" height="912" alt="delivery (2)" src="https://github.com/user-attachments/assets/5e0445d8-78ce-4a15-afc4-ee5e72ec570f" />
+
+
 
 ## ⚙️ 주요 기능
 
