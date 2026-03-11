@@ -119,6 +119,9 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
+        savedOrder.orderAccept();
+        orderRepository.flush();
+
         return savedOrder.getOrderId();
     }
 

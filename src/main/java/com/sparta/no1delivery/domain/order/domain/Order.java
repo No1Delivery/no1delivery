@@ -6,6 +6,7 @@ import com.sparta.no1delivery.domain.order.domain.event.OrderPaymentConfirmedEve
 import com.sparta.no1delivery.domain.order.domain.event.OrderRefundedEvent;
 import com.sparta.no1delivery.global.domain.BaseUserEntity;
 import com.sparta.no1delivery.global.domain.service.UserDetails;
+import com.sparta.no1delivery.global.infrastructure.event.Events;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
@@ -239,19 +240,8 @@ public class Order extends BaseUserEntity {
 
 
     // 도메인 이벤트
-
     private void registerEvent(Object event) {
-        domainEvents.add(event);
-    }
-
-    @DomainEvents
-    public List<Object> domainEvents() {
-        return domainEvents;
-    }
-
-    @AfterDomainEventPublication
-    public void clearEvents() {
-        domainEvents.clear();
+        Events.trigger(event);
     }
 
 
