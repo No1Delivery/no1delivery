@@ -45,26 +45,32 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
 
         if (search != null) {
 
+            // 주문 ID 검색
             if (search.getOrderIds() != null && !search.getOrderIds().isEmpty()) {
                 builder.and(order.orderId.in(search.getOrderIds()));
             }
 
+            // 주문자 이름 검색
             if (search.getOrdererName() != null && !search.getOrdererName().isBlank()) {
                 builder.and(order.orderer.name.containsIgnoreCase(search.getOrdererName()));
             }
 
+            // 매장 ID 검색
             if (search.getStoreIds() != null && !search.getStoreIds().isEmpty()) {
                 builder.and(order.storeInfo.storeId.in(search.getStoreIds()));
             }
 
+            // 매장 이름 검색
             if (search.getStoreName() != null && !search.getStoreName().isBlank()) {
                 builder.and(order.storeInfo.storeName.containsIgnoreCase(search.getStoreName()));
             }
 
+            // 배송 주소 검색
             if (search.getDeliveryAddress() != null && !search.getDeliveryAddress().isBlank()) {
                 builder.and(order.deliveryInfo.address.containsIgnoreCase(search.getDeliveryAddress()));
             }
 
+            // 주문 상태 검색
             if (search.getOrderStatuses() != null && !search.getOrderStatuses().isEmpty()) {
                 builder.and(order.status.stringValue().in(search.getOrderStatuses()));
             }

@@ -33,7 +33,7 @@ public class OrderRequestDto {
     @NotBlank(message = "연락처는 필수입니다.")
     private String phone;
 
-    // 주문 상품 목록
+    // 주문 상품 목록(최소 1개 이상)
     @Valid
     @NotEmpty(message = "최소 1개 이상의 상품을 주문해야 합니다.")
     private List<OrderItemRequest> items;
@@ -80,8 +80,7 @@ public class OrderRequestDto {
                 .build();
     }
 
-
-    // 주문 상품
+    // 주문 상품 정보 (메뉴 + 수량 + 옵션 선택)
     @Getter
     public static class OrderItemRequest {
 
@@ -125,7 +124,7 @@ public class OrderRequestDto {
     }
 
 
-    // 주문 검색 필터
+    // 주문 검색 필터DTO
     @Getter
     public static class Search {
 
@@ -151,8 +150,7 @@ public class OrderRequestDto {
         }
     }
 
-
-    // 배송지 변경
+    // 배송지 변경 DTO
     @Getter
     public static class ChangeDelivery {
 

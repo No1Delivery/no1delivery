@@ -62,14 +62,17 @@ public class OrderItem {
                      int quantity,
                      int menuPrice) {
 
+        // 메뉴 이름 검증
         if (menuName == null || menuName.isBlank()) {
             throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
+        // 수량 검증
         if (quantity <= 0) {
             throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
+        // 가격 검증
         if (menuPrice < 0) {
             throw new CustomException(ErrorCode.INVALID_MENU_PRICE);
         }
@@ -80,8 +83,10 @@ public class OrderItem {
         this.quantity = quantity;
         this.menuPrice = menuPrice;
 
+        // 옵션 가격 계산
         int optionPrice = calculateOptionPrice(selectedOptions);
 
+        // 주문 상품 총 가격 계산
         this.subtotalPrice = (menuPrice + optionPrice) * quantity;
     }
 
