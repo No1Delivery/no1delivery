@@ -83,6 +83,7 @@ public enum ErrorCode {
     PAYMENT_CONFIRM_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "토스페이먼츠 승인 요청 중 오류가 발생했습니다."),
     PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 취소 요청 중 오류가 발생했습니다."),
     PAYMENT_GATEWAY_ERROR(HttpStatus.BAD_GATEWAY, "결제 대행사(PG)와의 통신에 실패했습니다."),
+    REQUIRED_PAYMENT_KEY(HttpStatus.BAD_REQUEST, "결제 키는 필수 입니다."),
 
     // --- AI 서비스 (AI) ---
     AI_API_ERROR(HttpStatus.BAD_GATEWAY, "AI 서비스 호출 중 오류가 발생했습니다."),
@@ -94,6 +95,7 @@ public enum ErrorCode {
     INVALID_REVIEW_DETAIL_UNAUTHORIZED(HttpStatus.BAD_REQUEST, "해당 주문에 대한 리뷰 권한이 없습니다."),
     INVALID_REVIEWER_NOT_FOUND(HttpStatus.NOT_FOUND, "유효하지 않은 리뷰 작성자입니다. 다시 로그인 해주세요."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다.");
+
 
     private final HttpStatus status;
     private final String message;

@@ -31,7 +31,7 @@ public class PaymentEventListener {
     @Transactional
     public void handleOrderCancelEvent(OrderRefundedEvent event) {
         paymentService.cancelPayment(
-                event.orderId().toString(),
+                event.orderId(),
                 "주문 취소로 인한 자동 결제 취소"
         );
     }

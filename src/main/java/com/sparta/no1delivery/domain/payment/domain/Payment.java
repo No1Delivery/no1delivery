@@ -4,15 +4,23 @@ import com.sparta.no1delivery.domain.payment.domain.event.PaymentApprovedEvent;
 import com.sparta.no1delivery.domain.payment.domain.event.PaymentCancelFailedEvent;
 import com.sparta.no1delivery.domain.payment.domain.event.PaymentCanceledEvent;
 import com.sparta.no1delivery.domain.payment.domain.event.PaymentFailedEvent;
+import com.sparta.no1delivery.domain.payment.domain.exception.PaymentApproveFailureException;
+import com.sparta.no1delivery.domain.payment.domain.service.PaymentClientDto;
+import com.sparta.no1delivery.domain.payment.domain.service.PaymentClient;
 import com.sparta.no1delivery.global.infrastructure.event.Events;
+import com.sparta.no1delivery.global.presentation.exception.CustomException;
+import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -56,7 +64,7 @@ public class Payment {
     //결제 로그 담는 공간
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "payment_log")
-    private String paymentLog;
+    private List<PaymentLog> logs = new ArrayList<>();
 
     // payment 주문결제상세 내용
     @Embedded
@@ -82,43 +90,70 @@ public class Payment {
 
     // 결제 승인
     // 승인이 되려면 paymentKey와 orderId, amount가 필요 / 승인 처리가 되기 위해 상태가 필요/ 처리받는 결과를 담기 위한 log와 시간을 등록
-    public void approve(String key, LocalDateTime approvedAt, String paymentLog,Long approveAmount){
+    public void approve(String key, PaymentClient paymentClient){
+
         this.status.verifyNotProcessed();
-        this.amount.verifyAmount(approveAmount);
-        this.key = key;
+        if (!StringUtils.hasText(key)) {
+            throw new CustomException(ErrorCode.REQUIRED_PAYMENT_KEY);
+        }
+
+        // 결제 승인 요청
+        PaymentClientDto result = paymentClient.requestApprove(key, paymentInfo.getOrderId(), amount.getValue());
+        if (!result.success()) {
+            this.abort(result.reason());
+            throw new PaymentApproveFailureException(result.reason());
+        }
+
+        this.key = result.key();
+        this.logs.add(new PaymentLog(LocalDateTime.now(), result.paymentLog()));
+
+        // 결제 금액 위변조 체크
+        if (amount.getValue() != result.approvedAmount()) { // 변조가 된 경우는 결제 취소
+            paymentClient.requestCancel(id, key, "실결제 금액과 최초 등록 금액 불일치");
+            throw new CustomException(ErrorCode.INVALID_PAYMENT_AMOUNT);
+        }
+
+        this.approvedAt = result.approvedAt() == null ? LocalDateTime.now() : result.approvedAt();
         this.status = PaymentStatus.DONE;
-        this.approvedAt = approvedAt;
-        this.paymentLog = paymentLog;
 
         Events.trigger(new PaymentApprovedEvent(paymentInfo.getOrderId()));
     }
 
     // 결제 취소
-    public void cancel(String paymentLog, LocalDateTime canceledAt){
+    public void cancel(String reason, PaymentClient paymentClient){
+        if (this.status == PaymentStatus.CANCELLED) {
+            return;
+        }
+
         this.status.verifyCancelable();
+
+        PaymentClientDto result = paymentClient.requestCancel(this.id, this.key, reason);
+        if (!result.success()) {
+            this.failCancel(result.reason());
+            throw new CustomException(ErrorCode.PAYMENT_CANCEL_FAILED);
+        }
+
         this.status = PaymentStatus.CANCELLED;
-        this.canceledAt = canceledAt;
-        this.paymentLog = "%s\n[취소 요청 성공]: %s\n------------------------------------------------------".formatted(this.paymentLog, paymentLog);
+        this.logs.add(new PaymentLog(LocalDateTime.now(), result.paymentLog()));
+        this.canceledAt = LocalDateTime.now();
 
         // 주문 도메인에 환불 완료를 알립니다.
         Events.trigger(new PaymentCanceledEvent(this.paymentInfo.getOrderId(), this.amount.getValue()));
     }
 
     //결제 실패
-    public void abort(String paymentLog){
+    public void abort(String reason){
         this.status.verifyAbortable();
         status = PaymentStatus.ABORTED;
-        this.paymentLog = "%s\n[결제 요청 실패 기록]:%s\n------------------------------------------------------".formatted(this.paymentLog, paymentLog);
 
-        Events.trigger(new PaymentFailedEvent(this.paymentInfo.getOrderId(),paymentLog));
+        Events.trigger(new PaymentFailedEvent(this.paymentInfo.getOrderId(), reason));
     }
 
     // 결제 취소 실패 (PG사 거절 등) [cite: 2026-03-05]
-    public void failCancel(String failureLog){
-        this.paymentLog = "%s\n[취소 실패 기록]: %s\n------------------------------------------------------".formatted(this.paymentLog, failureLog);
+    public void failCancel(String reason){
 
         // [중요 추가] 관리자나 주문 도메인에 취소 실패를 알립니다.
-        Events.trigger(new PaymentCancelFailedEvent(this.paymentInfo.getOrderId(), "CANCEL_ERROR", failureLog));
+        Events.trigger(new PaymentCancelFailedEvent(this.paymentInfo.getOrderId(), "CANCEL_ERROR", reason));
     }
 
 }

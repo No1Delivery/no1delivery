@@ -28,10 +28,10 @@ public class PaymentAmount {
         }
     }
 
-    // 위변조 도메인 로직
-    public void verifyAmount(Long requestamount){
-        if(this.value != requestamount ){
-            throw new CustomException(ErrorCode.INVALID_PAYMENT_AMOUNT);
-        }
-    }
+//    // 위변조 도메인 로직
+//    public void verifyAmount(Long requestamount){
+//        if(this.value != requestamount ){
+//            throw new CustomException(ErrorCode.INVALID_PAYMENT_AMOUNT);
+//        }
+//    }
 }

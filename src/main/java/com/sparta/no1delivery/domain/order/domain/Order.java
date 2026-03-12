@@ -14,8 +14,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
-import org.springframework.data.domain.AfterDomainEventPublication;
-import org.springframework.data.domain.DomainEvents;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -130,7 +128,7 @@ public class Order extends BaseUserEntity {
         registerEvent(
                 new OrderAcceptedEvent(
                         this.orderId,
-                        this.orderer.getName(),
+                        this.storeInfo.getStoreName(),
                         (long) this.totalPrice,
                         System.currentTimeMillis()
                 )

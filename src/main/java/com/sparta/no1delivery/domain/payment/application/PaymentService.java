@@ -1,8 +1,7 @@
 package com.sparta.no1delivery.domain.payment.application;
 
 import com.sparta.no1delivery.domain.payment.domain.Payment;
-import com.sparta.no1delivery.domain.payment.domain.PaymentAmountDto;
-import com.sparta.no1delivery.domain.payment.domain.PaymentClient;
+import com.sparta.no1delivery.domain.payment.domain.service.PaymentClient;
 import com.sparta.no1delivery.domain.payment.domain.PaymentRepository;
 import com.sparta.no1delivery.global.presentation.exception.CustomException;
 import com.sparta.no1delivery.global.presentation.exception.ErrorCode;
@@ -20,46 +19,19 @@ public class PaymentService {
     private final PaymentClient paymentClient;
 
     @Transactional
-    public void approvePayment(String paymentKey, String orderId, Long amount) {
-        Payment payment = paymentRepository.findByPaymentInfoOrderId(UUID.fromString(orderId))
+    public void approvePayment(String paymentKey, UUID orderId) {
+        Payment payment = paymentRepository.findByPaymentInfoOrderId(orderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
-        try {
-            PaymentAmountDto response = paymentClient.requestApprove(
-                    paymentKey,
-                    orderId,
-                    amount,
-                    orderId
-            );
+        payment.approve(paymentKey, paymentClient);
 
-            payment.approve(
-                    response.paymentKey(),
-                    response.approvedAt(),
-                    response.paymentLog(),
-                    response.approvedAmount()
-            );
-        } catch (Exception ex) {
-            payment.abort(ex.getMessage());
-            throw new CustomException(ErrorCode.PAYMENT_CONFIRM_FAILED);
-        }
     }
 
     @Transactional
-    public void cancelPayment( String orderId, String reason) {
-        Payment payment = paymentRepository.findByPaymentInfoOrderId(UUID.fromString(orderId))
+    public void cancelPayment( UUID orderId, String reason) {
+        Payment payment = paymentRepository.findByPaymentInfoOrderId(orderId)
                 .orElseThrow(()-> new CustomException(ErrorCode.PAYMENT_NOT_FOUND));
 
-        try {
-            PaymentAmountDto response = paymentClient.requestCancel(
-                    payment.getKey(),
-                    reason,
-                    "cancel-"+orderId
-            );
-
-            payment.cancel(response.paymentLog(), response.approvedAt());
-        } catch (Exception ex) {
-            payment.failCancel(ex.getMessage());
-            throw new CustomException(ErrorCode.PAYMENT_CANCEL_FAILED);
-        }
+        payment.cancel(reason, paymentClient);
     }
 }

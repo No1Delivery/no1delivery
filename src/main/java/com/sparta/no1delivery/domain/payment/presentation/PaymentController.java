@@ -3,6 +3,7 @@ package com.sparta.no1delivery.domain.payment.presentation;
 import com.sparta.no1delivery.domain.payment.application.PaymentService;
 import com.sparta.no1delivery.domain.payment.presentation.dto.PaymentCancelRequest;
 import com.sparta.no1delivery.domain.payment.presentation.dto.PaymentConfirmRequest;
+import com.sparta.no1delivery.domain.payment.presentation.dto.PaymentFailRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,31 +24,28 @@ public class PaymentController {
     public ResponseEntity<String> confirmPayment(@RequestBody PaymentConfirmRequest request) {
         paymentService.approvePayment(
                 request.paymentKey(),
-                request.orderId(),
-                request.amount()
-        );
+                request.orderId());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/success")
-    public void success(@RequestParam String paymentKey, @RequestParam String orderId, @RequestParam Long amount, HttpServletResponse response) throws IOException {
-        paymentService.approvePayment(paymentKey,orderId,amount);
+    public void success(PaymentConfirmRequest request,  HttpServletResponse response) throws IOException {
+        paymentService.approvePayment(request.paymentKey(),request.orderId());
         response.sendRedirect("/demo/success.html");
     }
 
     @GetMapping("/fail")
-    public void fail(@RequestParam String code,@RequestParam String message, @RequestParam String orderId, HttpServletResponse response)  throws IOException {
-        String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
+    public void fail(PaymentFailRequest request, HttpServletResponse response)  throws IOException {
+        String encodedMessage = URLEncoder.encode("[%s]%s".formatted(request.code(), request.message()), StandardCharsets.UTF_8);
         response.sendRedirect("/demo/fail.html?message=" + encodedMessage);
     }
 
     @PostMapping("/cancel")
-    public ResponseEntity<Void> cancelPayment(@RequestBody PaymentCancelRequest request){
+    public void cancelPayment(@RequestBody PaymentCancelRequest request){
         paymentService.cancelPayment(
                 request.orderId(),
                 request.reason()
         );
-        return ResponseEntity.ok().build();
     }
 }
 
